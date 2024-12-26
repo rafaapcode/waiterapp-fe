@@ -1,57 +1,32 @@
+import { Order } from "../../types/Order";
+import OrdersBoard from "../OrdersBoard/OrdersBoard";
+
+const orders: Order[] = [
+  {
+    _id: "676ae7a6ee2020f4f99174ac",
+    status: "IN_PRODUCTION",
+    table: "2",
+   products: [
+    {
+      _id: "676ae1873a1abd5712fc84eb",
+      quantity: 2,
+      product: {
+        _id: "676ae1873a1abd5712fc84eb",
+        name: "Pizza",
+        imagePath: "1735057799136-pizza-image.jpg",
+        price: 100
+      }
+    }
+   ]
+  },
+];
+
 function Orders() {
   return (
     <div className="w-full max-w-[1216px] my-10 mx-auto flex gap-8">
-      <div className="p-4 flex-1 border border-[#ccc] rounded-2xl flex flex-col items-center">
-        <header className="p-2 text-base flex items-center gap-2">
-          <span>🕛</span>
-          <strong>Fila de espera</strong>
-          <span>(1)</span>
-        </header>
-        <div className="flex flex-col w-full mt-6 gap-6">
-          <button type="button" className="bg-white flex flex-col justify-center items-center gap-1 w-full border border-[#ccc] h-32 rounded-lg">
-            <strong className="font-medium">Mesa 2</strong>
-            <span className="text-sm text-[#666]">2 itens</span>
-          </button>
-          <button type="button" className="bg-white flex flex-col justify-center items-center gap-1 w-full border border-[#ccc] h-32 rounded-lg">
-            <strong className="font-medium">Mesa 2</strong>
-            <span className="text-sm text-[#666]">2 itens</span>
-          </button>
-        </div>
-      </div>
-      <div className="p-4 flex-1 border border-[#ccc] rounded-2xl flex flex-col items-center">
-        <header className="p-2 text-base flex items-center gap-2">
-          <span>🕛</span>
-          <strong>Fila de espera</strong>
-          <span>(1)</span>
-        </header>
-        <div className="flex flex-col w-full mt-6 gap-6">
-          <button type="button" className="bg-white flex flex-col justify-center items-center gap-1 w-full border border-[#ccc] h-32 rounded-lg">
-            <strong className="font-medium">Mesa 2</strong>
-            <span className="text-sm text-[#666]">2 itens</span>
-          </button>
-          <button type="button" className="bg-white flex flex-col justify-center items-center gap-1 w-full border border-[#ccc] h-32 rounded-lg">
-            <strong className="font-medium">Mesa 2</strong>
-            <span className="text-sm text-[#666]">2 itens</span>
-          </button>
-        </div>
-      </div>
-      <div className="p-4 flex-1 border border-[#ccc] rounded-2xl flex flex-col items-center">
-        <header className="p-2 text-base flex items-center gap-2">
-          <span>🕛</span>
-          <strong>Fila de espera</strong>
-          <span>(1)</span>
-        </header>
-        <div className="flex flex-col w-full mt-6 gap-6">
-          <button type="button" className="bg-white flex flex-col justify-center items-center gap-1 w-full border border-[#ccc] h-32 rounded-lg">
-            <strong className="font-medium">Mesa 2</strong>
-            <span className="text-sm text-[#666]">2 itens</span>
-          </button>
-          <button type="button" className="bg-white flex flex-col justify-center items-center gap-1 w-full border border-[#ccc] h-32 rounded-lg">
-            <strong className="font-medium">Mesa 2</strong>
-            <span className="text-sm text-[#666]">2 itens</span>
-          </button>
-        </div>
-      </div>
+      <OrdersBoard orders={orders} icon="🕛" title="Fila de espera" />
+      <OrdersBoard orders={orders} icon="🍪" title="Em preparação" />
+      <OrdersBoard orders={orders} icon="🆗" title="Concluído" />
     </div>
   );
 }
