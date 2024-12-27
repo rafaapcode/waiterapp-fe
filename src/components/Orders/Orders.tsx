@@ -25,8 +25,8 @@ function Orders() {
   return (
     <div className="w-full max-w-[1216px] my-10 mx-auto flex gap-8">
       <OrdersBoard orders={orders} icon="🕛" title="Fila de espera" />
-      <OrdersBoard orders={orders} icon="🍪" title="Em preparação" />
-      <OrdersBoard orders={orders} icon="🆗" title="Concluído" />
+      <OrdersBoard orders={[]} icon="🍪" title="Em preparação" />
+      <OrdersBoard orders={[]} icon="🆗" title="Concluído" />
     </div>
   );
 }
