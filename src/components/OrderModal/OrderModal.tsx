@@ -1,12 +1,15 @@
+import { useEffect } from "react";
 import CloseIcon from "../../assets/images/close-icon.svg";
 import { Order } from "../../types/Order";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 type OrderModalProps = {
   visible: boolean;
   order: Order | null;
+  handleCloseModal: () => void;
 };
 
-function OrderModal({ visible, order }: OrderModalProps) {
+function OrderModal({ visible, order, handleCloseModal }: OrderModalProps) {
   const orderStatus = {
     DONE: {
       icon: "🆗",
@@ -26,12 +29,31 @@ function OrderModal({ visible, order }: OrderModalProps) {
     return null;
   }
 
+  const total = order.products.reduce((acc, { product, quantity }) => {
+    return (acc += product.price * quantity);
+  }, 0);
+
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if(event.key === "Escape") {
+        handleCloseModal();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, []);
+
   return (
     <div className="fixed w-full h-full top-0 left-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
       <div className="bg-white w-1/4 rounded-lg p-8">
         <header className="flex items-center justify-between">
           <strong className="text-2xl">Mesa {order.table}</strong>
-          <button type="button" className="leading-[0px]">
+          <button onClick={handleCloseModal} type="button" className="leading-[0px]">
             <img src={CloseIcon} alt="close-icon" />
           </button>
         </header>
@@ -52,15 +74,31 @@ function OrderModal({ visible, order }: OrderModalProps) {
                   src={`http://localhost:3001/uploads/${product.imagePath}`}
                   alt={product.name}
                 />
-                <span className="block min-w-[20px] text-[#666] ml-3">{quantity}x</span>
+                <span className="block min-w-[20px] text-[#666] ml-3">
+                  {quantity}x
+                </span>
                 <div className="ml-1">
                   <strong className="block mb-1">{product.name}</strong>
-                  <span className="text-sm text-[#666]">{new Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(product.price)}</span>
+                  <span className="text-sm text-[#666]">
+                    {formatCurrency(product.price)}
+                  </span>
                 </div>
               </div>
             ))}
           </div>
         </div>
+        <div className="flex justify-between items-center mt-6">
+          <span className="font-normal text-sm opacity-80">Total</span>
+          <strong>{formatCurrency(total)}</strong>
+        </div>
+
+        <footer className="flex flex-col mt-8">
+          <button type="button" className="bg-[#333] rounded-[48px] border-none text-white py-3 px-6 flex justify-center items-center gap-2">
+            <span>🍪</span>
+            <strong>Iniciar Produção</strong>
+          </button>
+          <button type="button" className="py-3 px-6 text-[#D73035] font-bold border-none mt-3">Cancelar Pedido</button>
+        </footer>
       </div>
     </div>
   );

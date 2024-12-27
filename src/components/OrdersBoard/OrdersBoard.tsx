@@ -17,10 +17,14 @@ function OrdersBoard({ icon, title, orders }: OrdersBoardProps) {
     setSelectedOrder(order);
   } ;
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
+  } ;
 
   return (
     <div className="p-4 flex-1 border border-[#ccc] rounded-2xl flex flex-col items-center">
-      <OrderModal order={selectedOrder} visible={isModalOpen}/>
+      <OrderModal handleCloseModal={handleCloseModal} order={selectedOrder} visible={isModalOpen}/>
       <header className="p-2 text-base flex items-center gap-2">
         <span>{icon}</span>
         <strong>{title}</strong>
