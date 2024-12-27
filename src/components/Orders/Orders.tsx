@@ -4,7 +4,7 @@ import OrdersBoard from "../OrdersBoard/OrdersBoard";
 const orders: Order[] = [
   {
     _id: "676ae7a6ee2020f4f99174ac",
-    status: "IN_PRODUCTION",
+    status: "WAITING",
     table: "2",
    products: [
     {
@@ -13,7 +13,7 @@ const orders: Order[] = [
       product: {
         _id: "676ae1873a1abd5712fc84eb",
         name: "Pizza",
-        imagePath: "1735057799136-pizza-image.jpg",
+        imagePath: "1735058211671-pizza-image.jpg",
         price: 100
       }
     }
