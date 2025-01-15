@@ -1,30 +1,49 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { Order } from "../../types/Order";
+import { api } from "../../utils/api";
 import OrderModal from "../OrderModal/OrderModal";
 
 type OrdersBoardProps = {
   icon: string;
   title: string;
   orders: Order[];
+  onCancelOrder: (orderId: string) => void;
 };
 
-function OrdersBoard({ icon, title, orders }: OrdersBoardProps) {
+function OrdersBoard({ icon, title, orders, onCancelOrder}: OrdersBoardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isLoading, setIsloading] = useState(false);
 
   const handleOpenModal = (order: Order) => {
     setIsModalOpen(true);
     setSelectedOrder(order);
-  } ;
+  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
-  } ;
+  };
+
+  const handleCancelOrder = async () => {
+    setIsloading(true);
+    await api.delete(`/orders/${selectedOrder?._id}`);
+    toast.success(`O pedido da mesa ${selectedOrder?.table} foi cancelado!`);
+    onCancelOrder(selectedOrder?._id!);
+    setIsloading(false);
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="p-4 flex-1 border border-[#ccc] rounded-2xl flex flex-col items-center">
-      <OrderModal handleCloseModal={handleCloseModal} order={selectedOrder} visible={isModalOpen}/>
+      <OrderModal
+        handleCloseModal={handleCloseModal}
+        order={selectedOrder}
+        visible={isModalOpen}
+        handleCancelOrder={handleCancelOrder}
+        isLoading={isLoading}
+      />
       <header className="p-2 text-base flex items-center gap-2">
         <span>{icon}</span>
         <strong>{title}</strong>
@@ -41,7 +60,8 @@ function OrdersBoard({ icon, title, orders }: OrdersBoardProps) {
             >
               <strong className="font-medium">Mesa {order.table}</strong>
               <span className="text-sm text-[#666]">
-                {order.products.length} {order.products.length > 1 ? "itens" : "item"}
+                {order.products.length}{" "}
+                {order.products.length > 1 ? "itens" : "item"}
               </span>
             </button>
           ))}

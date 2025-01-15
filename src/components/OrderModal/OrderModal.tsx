@@ -7,9 +7,11 @@ type OrderModalProps = {
   visible: boolean;
   order: Order | null;
   handleCloseModal: () => void;
+  handleCancelOrder: () => Promise<void>;
+  isLoading: boolean;
 };
 
-function OrderModal({ visible, order, handleCloseModal }: OrderModalProps) {
+function OrderModal({ visible, order, handleCloseModal ,handleCancelOrder,isLoading}: OrderModalProps) {
   const orderStatus = {
     DONE: {
       icon: "🆗",
@@ -93,11 +95,11 @@ function OrderModal({ visible, order, handleCloseModal }: OrderModalProps) {
         </div>
 
         <footer className="flex flex-col mt-8">
-          <button type="button" className="bg-[#333] rounded-[48px] border-none text-white py-3 px-6 flex justify-center items-center gap-2">
+          <button disabled={isLoading} type="button" className="bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6 flex justify-center items-center gap-2">
             <span>🍪</span>
             <strong>Iniciar Produção</strong>
           </button>
-          <button type="button" className="py-3 px-6 text-[#D73035] font-bold border-none mt-3">Cancelar Pedido</button>
+          <button disabled={isLoading} onClick={handleCancelOrder} type="button" className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none mt-3">Cancelar Pedido</button>
         </footer>
       </div>
     </div>

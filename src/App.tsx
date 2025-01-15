@@ -1,3 +1,6 @@
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/ReactToastify.css';
+
 import Header from "./components/Header/Header";
 import Orders from "./components/Orders/Orders";
 
@@ -6,6 +9,7 @@ function App() {
     <>
       <Header />
       <Orders />
+      <ToastContainer position="bottom-center"/>
     </>
   )
 }

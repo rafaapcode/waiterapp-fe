@@ -1,32 +1,30 @@
+import { useEffect, useState } from "react";
 import { Order } from "../../types/Order";
+import { api } from "../../utils/api";
 import OrdersBoard from "../OrdersBoard/OrdersBoard";
 
-const orders: Order[] = [
-  {
-    _id: "676ae7a6ee2020f4f99174ac",
-    status: "WAITING",
-    table: "2",
-   products: [
-    {
-      _id: "676ae1873a1abd5712fc84eb",
-      quantity: 2,
-      product: {
-        _id: "676ae1873a1abd5712fc84eb",
-        name: "Pizza",
-        imagePath: "1735058211671-pizza-image.jpg",
-        price: 100
-      }
-    }
-   ]
-  },
-];
-
 function Orders() {
+  const [orders, setOders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    api.get("/orders").then(({data}) => {
+      setOders(data);
+    })
+  }, []);
+
+  const waiting = orders.filter((order) => order.status === "WAITING");
+  const inProduction = orders.filter((order) => order.status === "IN_PRODUCTION");
+  const done = orders.filter((order) => order.status === "DONE");
+
+  const handleCancelOrder = (orderId: string) => {
+    setOders(prev => prev.filter(order => order._id !== orderId));
+  }
+
   return (
     <div className="w-full max-w-[1216px] my-10 mx-auto flex gap-8">
-      <OrdersBoard orders={orders} icon="🕛" title="Fila de espera" />
-      <OrdersBoard orders={[]} icon="🍪" title="Em preparação" />
-      <OrdersBoard orders={[]} icon="🆗" title="Concluído" />
+      <OrdersBoard orders={waiting} icon="🕛" title="Fila de espera" onCancelOrder={handleCancelOrder} />
+      <OrdersBoard orders={inProduction} icon="🍪" title="Em preparação" onCancelOrder={handleCancelOrder} />
+      <OrdersBoard orders={done} icon="🆗" title="Concluído"  onCancelOrder={handleCancelOrder}/>
     </div>
   );
 }
