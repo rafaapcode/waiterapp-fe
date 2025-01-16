@@ -9,9 +9,10 @@ type OrdersBoardProps = {
   title: string;
   orders: Order[];
   onCancelOrder: (orderId: string) => void;
+  onChangeOrderStatus: (orderId: string, status: Order['status']) => void;
 };
 
-function OrdersBoard({ icon, title, orders, onCancelOrder}: OrdersBoardProps) {
+function OrdersBoard({ icon, title, orders, onCancelOrder, onChangeOrderStatus }: OrdersBoardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isLoading, setIsloading] = useState(false);
@@ -24,6 +25,18 @@ function OrdersBoard({ icon, title, orders, onCancelOrder}: OrdersBoardProps) {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
+  };
+
+  const handleChangeOrderStatus = async () => {
+    setIsloading(true);
+    const status =
+      selectedOrder?.status === "WAITING" ? "IN_PRODUCTION" : "DONE";
+    await api.patch(`/orders/${selectedOrder?._id}`, { status });
+
+    toast.success(`O pedido da mesa ${selectedOrder?.table} teve o status alterado!`);
+    onChangeOrderStatus(selectedOrder!._id, status);
+    setIsloading(false);
+    setIsModalOpen(false);
   };
 
   const handleCancelOrder = async () => {
@@ -43,6 +56,7 @@ function OrdersBoard({ icon, title, orders, onCancelOrder}: OrdersBoardProps) {
         visible={isModalOpen}
         handleCancelOrder={handleCancelOrder}
         isLoading={isLoading}
+        onChangeOrderStatus={handleChangeOrderStatus}
       />
       <header className="p-2 text-base flex items-center gap-2">
         <span>{icon}</span>

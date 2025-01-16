@@ -9,9 +9,17 @@ type OrderModalProps = {
   handleCloseModal: () => void;
   handleCancelOrder: () => Promise<void>;
   isLoading: boolean;
+  onChangeOrderStatus: () => void;
 };
 
-function OrderModal({ visible, order, handleCloseModal ,handleCancelOrder,isLoading}: OrderModalProps) {
+function OrderModal({
+  visible,
+  order,
+  handleCloseModal,
+  handleCancelOrder,
+  isLoading,
+  onChangeOrderStatus
+}: OrderModalProps) {
   const orderStatus = {
     DONE: {
       icon: "🆗",
@@ -35,19 +43,18 @@ function OrderModal({ visible, order, handleCloseModal ,handleCancelOrder,isLoad
     return (acc += product.price * quantity);
   }, 0);
 
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if(event.key === "Escape") {
+      if (event.key === "Escape") {
         handleCloseModal();
       }
-    }
+    };
 
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-    }
+    };
   }, []);
 
   return (
@@ -55,7 +62,11 @@ function OrderModal({ visible, order, handleCloseModal ,handleCancelOrder,isLoad
       <div className="bg-white w-1/4 rounded-lg p-8">
         <header className="flex items-center justify-between">
           <strong className="text-2xl">Mesa {order.table}</strong>
-          <button onClick={handleCloseModal} type="button" className="leading-[0px]">
+          <button
+            onClick={handleCloseModal}
+            type="button"
+            className="leading-[0px]"
+          >
             <img src={CloseIcon} alt="close-icon" />
           </button>
         </header>
@@ -95,11 +106,31 @@ function OrderModal({ visible, order, handleCloseModal ,handleCancelOrder,isLoad
         </div>
 
         <footer className="flex flex-col mt-8">
-          <button disabled={isLoading} type="button" className="bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6 flex justify-center items-center gap-2">
-            <span>🍪</span>
-            <strong>Iniciar Produção</strong>
+          {order.status !== "DONE" && (
+            <button
+              onClick={onChangeOrderStatus}
+              disabled={isLoading}
+              type="button"
+              className="bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6 flex justify-center items-center gap-2"
+            >
+              <span>
+                {order.status === 'WAITING' && '🍪'}
+                {order.status === 'IN_PRODUCTION' && '🆗'}
+              </span>
+              <strong>
+                {order.status === 'WAITING' && 'Iniciar Produção'}
+                {order.status === 'IN_PRODUCTION' && 'Concluir Pedido'}
+              </strong>
+            </button>
+          )}
+          <button
+            disabled={isLoading}
+            onClick={handleCancelOrder}
+            type="button"
+            className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none mt-3"
+          >
+            Cancelar Pedido
           </button>
-          <button disabled={isLoading} onClick={handleCancelOrder} type="button" className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none mt-3">Cancelar Pedido</button>
         </footer>
       </div>
     </div>
