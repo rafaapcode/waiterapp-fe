@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { TbRosetteDiscountFilled } from "react-icons/tb";
 import CloseIcon from "../../assets/images/close-icon.svg";
 import { Order } from "../../types/Order";
 import { formatCurrency } from "../../utils/formatCurrency";
@@ -18,7 +19,7 @@ function OrderModal({
   handleCloseModal,
   handleCancelOrder,
   isLoading,
-  onChangeOrderStatus
+  onChangeOrderStatus,
 }: OrderModalProps) {
   const orderStatus = {
     DONE: {
@@ -40,7 +41,11 @@ function OrderModal({
   }
 
   const total = order.products.reduce((acc, { product, quantity }) => {
-    return (acc += product.price * quantity);
+    const productPrice = product.discount
+      ? product.priceInDiscount
+      : product.price;
+
+    return (acc += productPrice * quantity);
   }, 0);
 
   useEffect(() => {
@@ -56,7 +61,7 @@ function OrderModal({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
+  console.log(order.products);
   return (
     <div className="fixed w-full h-full top-0 left-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
       <div className="bg-white w-1/4 rounded-lg p-8">
@@ -81,10 +86,10 @@ function OrderModal({
           <strong className="font-normal text-base opacity-80">Itens</strong>
           <div className="mt-4 flex flex-col gap-4">
             {order.products.map(({ _id, product, quantity }) => (
-              <div className="flex">
+              <div className="flex" key={_id}>
                 <img
                   className="w-14 h-[28.51px] rounded-md"
-                  src={`http://localhost:3001/uploads/${product.imagePath}`}
+                  src={`${product.imageUrl}`}
                   alt={product.name}
                 />
                 <span className="block min-w-[20px] text-[#666] ml-3">
@@ -92,10 +97,24 @@ function OrderModal({
                 </span>
                 <div className="ml-1">
                   <strong className="block mb-1">{product.name}</strong>
-                  <span className="text-sm text-[#666]">
-                    {formatCurrency(product.price)}
-                  </span>
+                  <div className="flex gap-2">
+                    {product.discount && (
+                      <span className="text-sm text-[#666] line-through">
+                        {formatCurrency(product.price)}
+                      </span>
+                    )}
+                    <span className="text-sm text-[#666]">
+                      {product.discount
+                        ? formatCurrency(product.priceInDiscount)
+                        : formatCurrency(product.price)}
+                    </span>
+                  </div>
                 </div>
+                {product.discount && (
+                  <div className="ml-2 pt-1">
+                    <TbRosetteDiscountFilled />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -114,12 +133,12 @@ function OrderModal({
               className="bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6 flex justify-center items-center gap-2"
             >
               <span>
-                {order.status === 'WAITING' && '🍪'}
-                {order.status === 'IN_PRODUCTION' && '🆗'}
+                {order.status === "WAITING" && "🍪"}
+                {order.status === "IN_PRODUCTION" && "🆗"}
               </span>
               <strong>
-                {order.status === 'WAITING' && 'Iniciar Produção'}
-                {order.status === 'IN_PRODUCTION' && 'Concluir Pedido'}
+                {order.status === "WAITING" && "Iniciar Produção"}
+                {order.status === "IN_PRODUCTION" && "Concluir Pedido"}
               </strong>
             </button>
           )}

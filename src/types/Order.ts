@@ -9,7 +9,9 @@ export interface Order {
       _id: string;
       name: string;
       price: number;
-      imagePath: string;
+      imageUrl: string;
+      discount: boolean;
+      priceInDiscount: number;
     };
   }[];
 };

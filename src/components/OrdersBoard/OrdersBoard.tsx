@@ -9,10 +9,16 @@ type OrdersBoardProps = {
   title: string;
   orders: Order[];
   onCancelOrder: (orderId: string) => void;
-  onChangeOrderStatus: (orderId: string, status: Order['status']) => void;
+  onChangeOrderStatus: (orderId: string, status: Order["status"]) => void;
 };
 
-function OrdersBoard({ icon, title, orders, onCancelOrder, onChangeOrderStatus }: OrdersBoardProps) {
+function OrdersBoard({
+  icon,
+  title,
+  orders,
+  onCancelOrder,
+  onChangeOrderStatus,
+}: OrdersBoardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isLoading, setIsloading] = useState(false);
@@ -31,9 +37,11 @@ function OrdersBoard({ icon, title, orders, onCancelOrder, onChangeOrderStatus }
     setIsloading(true);
     const status =
       selectedOrder?.status === "WAITING" ? "IN_PRODUCTION" : "DONE";
-    await api.patch(`/orders/${selectedOrder?._id}`, { status });
+    await api.patch(`/order/${selectedOrder?._id}`, { status });
 
-    toast.success(`O pedido da mesa ${selectedOrder?.table} teve o status alterado!`);
+    toast.success(
+      `O pedido da mesa ${selectedOrder?.table} teve o status alterado!`
+    );
     onChangeOrderStatus(selectedOrder!._id, status);
     setIsloading(false);
     setIsModalOpen(false);
@@ -41,7 +49,7 @@ function OrdersBoard({ icon, title, orders, onCancelOrder, onChangeOrderStatus }
 
   const handleCancelOrder = async () => {
     setIsloading(true);
-    await api.delete(`/orders/${selectedOrder?._id}`);
+    await api.delete(`/order/${selectedOrder?._id}`);
     toast.success(`O pedido da mesa ${selectedOrder?.table} foi cancelado!`);
     onCancelOrder(selectedOrder?._id!);
     setIsloading(false);
@@ -63,7 +71,7 @@ function OrdersBoard({ icon, title, orders, onCancelOrder, onChangeOrderStatus }
         <strong>{title}</strong>
         <span>({orders.length})</span>
       </header>
-      {orders.length > 0 && (
+      {orders.length > 0 ? (
         <div className="flex flex-col w-full mt-6 gap-6">
           {orders.map((order) => (
             <button
@@ -79,6 +87,10 @@ function OrdersBoard({ icon, title, orders, onCancelOrder, onChangeOrderStatus }
               </span>
             </button>
           ))}
+        </div>
+      ) : (
+        <div className="flex flex-col w-full mt-6 gap-6 items-center">
+          <h1>Nenhum produto encontrado</h1>
         </div>
       )}
     </div>
