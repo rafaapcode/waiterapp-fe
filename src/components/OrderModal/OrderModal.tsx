@@ -61,7 +61,6 @@ function OrderModal({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-  console.log(order.products);
   return (
     <div className="fixed w-full h-full top-0 left-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
       <div className="bg-white w-1/4 rounded-lg p-8">
@@ -100,13 +99,13 @@ function OrderModal({
                   <div className="flex gap-2">
                     {product.discount && (
                       <span className="text-sm text-[#666] line-through">
-                        {formatCurrency(product.price)}
+                        {formatCurrency(product.price * quantity)}
                       </span>
                     )}
                     <span className="text-sm text-[#666]">
                       {product.discount
-                        ? formatCurrency(product.priceInDiscount)
-                        : formatCurrency(product.price)}
+                        ? formatCurrency(product.priceInDiscount * quantity)
+                        : formatCurrency(product.price * quantity)}
                     </span>
                   </div>
                 </div>

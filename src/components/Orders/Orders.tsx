@@ -13,19 +13,22 @@ function Orders() {
     });
 
     socket.on('orders@new', (order) => {
-      console.log(order);
-      setOrders(prev => prev.concat(order));
+      const newOrder = {
+        _id: order._id,
+        table: order.table,
+        status: order.status,
+        products: order.products,
+        createdAt: order.createdAt
+      };
+      setOrders(prev => [...prev, newOrder]);
     });
   }, []);
 
   useEffect(() => {
     api.get("/order").then(({ data }) => {
-      console.log(data);
       setOrders(data);
     });
   }, []);
-
-  console.log(orders);
   const waiting = orders ? orders.filter((order) => order.status === "WAITING") : [];
   const inProduction = orders ? orders.filter(
     (order) => order.status === "IN_PRODUCTION"
