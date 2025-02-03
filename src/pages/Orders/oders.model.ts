@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import socketIo from "socket.io-client";
 import { Order } from "../../types/Order";
 import { api } from "../../utils/api";
-import OrdersBoard from "../OrdersBoard/OrdersBoard";
+import { OrdersViewType } from "./orders.type";
 
-function Orders() {
+export const useOrdersModel = (): OrdersViewType => {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
@@ -12,7 +12,7 @@ function Orders() {
       transports: ['websocket'],
     });
 
-    socket.on('orders@new', (order) => {
+    socket.on('orders@new', (order: any) => {
       const newOrder = {
         _id: order._id,
         table: order.table,
@@ -47,31 +47,13 @@ function Orders() {
     );
   };
 
-  return (
-    <div className="w-full max-w-[1216px] my-10 mx-auto flex gap-8">
-      <OrdersBoard
-        orders={waiting}
-        icon="🕛"
-        title="Fila de espera"
-        onCancelOrder={handleCancelOrder}
-        onChangeOrderStatus={handleStatusChange}
-      />
-      <OrdersBoard
-        orders={inProduction}
-        icon="🍪"
-        title="Em preparação"
-        onCancelOrder={handleCancelOrder}
-        onChangeOrderStatus={handleStatusChange}
-      />
-      <OrdersBoard
-        orders={done}
-        icon="🆗"
-        title="Concluído"
-        onCancelOrder={handleCancelOrder}
-        onChangeOrderStatus={handleStatusChange}
-      />
-    </div>
-  );
-}
-
-export default Orders;
+  return {
+   props: {
+    done,
+    waiting,
+    inProduction,
+    handleCancelOrder,
+    handleStatusChange
+   }
+  }
+};
