@@ -1,0 +1,5 @@
+export type ProductsViewProps = {
+ props: {
+
+ }
+};
