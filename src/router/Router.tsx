@@ -10,6 +10,9 @@ function Router() {
       <Route element={<Outlet />}>
         <Route path="/app" element={<Layout />}>
           <Route path="home" element={<Orders />} />
+          <Route path="history" element={<Orders />} />
+          <Route path="menu" element={<Orders />} />
+          <Route path="users" element={<Orders />} />
         </Route>
       </Route>
     </Routes>
