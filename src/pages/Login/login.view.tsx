@@ -1,23 +1,16 @@
 import { BsEye, BsEyeSlash } from "react-icons/bs";
-import { VscLoading } from "react-icons/vsc";
-import logo from "../../assets/images/logo.svg";
+import SplashScreen from "../../components/SplashScreen/SplashScreen";
 import { LoginModelType } from "./login.type";
-
-const SplashScreen = () => (
-  <div className="bg-neutral-900 flex flex-col gap-16 h-screen justify-center items-center">
-    <img src={logo} alt="waiter logo" />
-    <VscLoading className="text-neutral-600 animate-spin" size={32} />
-  </div>
-);
 
 function LoginView({ props }: LoginModelType) {
   const {
     splashTimeout,
     passwordVisibility,
     setPasswordVisibility,
-    setUserCredentials,
     isValid,
-    handleSubmit
+    handleSubmit,
+    handleChange,
+    userCredentials
   } = props;
 
   if (splashTimeout) {
@@ -42,12 +35,8 @@ function LoginView({ props }: LoginModelType) {
                 E-mail
               </label>
               <input
-                onChange={(e) =>
-                  setUserCredentials((prev) => ({
-                    ...prev,
-                    email: e.target.value,
-                  }))
-                }
+                onChange={handleChange}
+                value={userCredentials.email}
                 type="email"
                 name="email"
                 id="email"
@@ -61,14 +50,10 @@ function LoginView({ props }: LoginModelType) {
               </label>
               <div className="border border-[#CCCCCC] rounded-lg flex items-center pr-3 group">
                 <input
-                  onChange={(e) =>
-                    setUserCredentials((prev) => ({
-                      ...prev,
-                      password: e.target.value,
-                    }))
-                  }
+                  value={userCredentials.password}
+                  onChange={handleChange}
                   type={passwordVisibility}
-                  name="senha"
+                  name="password"
                   id="senha"
                   className="w-full h-full p-4 outline-none border-none bg-transparent"
                   placeholder="Informe sua senha"
