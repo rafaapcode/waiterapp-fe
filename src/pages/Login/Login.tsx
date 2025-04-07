@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BsEyeFill } from "react-icons/bs";
+import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { VscLoading } from "react-icons/vsc";
 import logo from "../../assets/images/logo.svg";
 
@@ -12,6 +12,7 @@ const SplashScreen = () => (
 
 function Login() {
   const [splashTimeout, setSplashTimeout] = useState<boolean>(true);
+  const [passwordVisibility, setPasswordVisibility] = useState<"password" | "text">("password");
   const [userCredentials, setUserCredentials] = useState<{
     email: string;
     password: string;
@@ -74,7 +75,7 @@ function Login() {
               <label htmlFor="senha" className="text-[#999999]">
                 Senha
               </label>
-              <div className="border border-[#CCCCCC] rounded-lg flex items-center pr-3">
+              <div className="border border-[#CCCCCC] rounded-lg flex items-center pr-3 group">
                 <input
                   onChange={(e) =>
                     setUserCredentials((prev) => ({
@@ -82,13 +83,14 @@ function Login() {
                       password: e.target.value,
                     }))
                   }
-                  type="password"
+                  type={passwordVisibility}
                   name="senha"
                   id="senha"
                   className="w-full h-full p-4 outline-none border-none bg-transparent"
                   placeholder="Informe sua senha"
                 />
-                <BsEyeFill size={24} className="text-[#666666]"/>
+                {passwordVisibility === "password" && <BsEye onClick={() => setPasswordVisibility("text")} size={24} className="cursor-pointer text-[#666666] hidden group-hover:block"/>}
+                {passwordVisibility === "text" && <BsEyeSlash onClick={() => setPasswordVisibility("password")} size={24} className="cursor-pointer text-[#666666] hidden group-hover:block"/>}
               </div>
             </div>
             <button
