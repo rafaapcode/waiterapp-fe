@@ -80,7 +80,7 @@ function LoginView({ props }: LoginModelType) {
             <button
               disabled={!isValid}
               type="submit"
-              className="bg-neutral-900 text-white p-2 disabled:bg-[#CCCCCC] py-[14px] px-7 rounded-[44px]"
+              className="bg-[#D73035] hover:bg-[#ec4248] text-white p-2 disabled:bg-[#CCCCCC] py-[14px] px-7 rounded-[44px] transition-all  duration-200"
             >
               Fazer Login
             </button>
