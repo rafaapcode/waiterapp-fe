@@ -1,22 +1,15 @@
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 
-import TabsContent from "./components/tabs/TabContent";
-import Tabs from "./components/tabs/Tabs";
-import TabsProvider from "./contexts/TabsProvider";
-import Header from "./pages/Header/Header";
+import { BrowserRouter } from "react-router";
+import Router from "./Router";
 
 function App() {
-
   return (
-    <TabsProvider>
-      <>
-        <Header />
-        <Tabs />
-        <TabsContent />
-        <ToastContainer position="bottom-center" />
-      </>
-    </TabsProvider>
+    <BrowserRouter>
+      <Router />
+      <ToastContainer position="bottom-center" />
+    </BrowserRouter>
   );
 }
 
