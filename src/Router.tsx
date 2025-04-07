@@ -1,5 +1,5 @@
 import { Outlet, Route, Routes } from "react-router";
-import Login from "./pages/Login/Login";
+import Login from "./pages/Login/Login.page";
 import Orders from "./pages/Orders/OrdersPage";
 
 function Router() {

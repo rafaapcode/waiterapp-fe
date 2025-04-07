@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { VscLoading } from "react-icons/vsc";
 import logo from "../../assets/images/logo.svg";
+import { LoginModelType } from "./login.type";
 
 const SplashScreen = () => (
   <div className="bg-neutral-900 flex flex-col gap-16 h-screen justify-center items-center">
@@ -10,31 +10,15 @@ const SplashScreen = () => (
   </div>
 );
 
-function Login() {
-  const [splashTimeout, setSplashTimeout] = useState<boolean>(true);
-  const [passwordVisibility, setPasswordVisibility] = useState<"password" | "text">("password");
-  const [userCredentials, setUserCredentials] = useState<{
-    email: string;
-    password: string;
-  }>({
-    email: "",
-    password: "",
-  });
-
-  const isValid = useMemo(() => {
-    return (
-      userCredentials.email &&
-      userCredentials.password &&
-      userCredentials.email.length > 0 &&
-      userCredentials.password.length >= 8
-    );
-  }, [userCredentials]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setSplashTimeout(false);
-    }, 1000);
-  }, []);
+function LoginView({ props }: LoginModelType) {
+  const {
+    splashTimeout,
+    passwordVisibility,
+    setPasswordVisibility,
+    setUserCredentials,
+    isValid,
+    handleSubmit
+  } = props;
 
   if (splashTimeout) {
     return <SplashScreen />;
@@ -51,7 +35,7 @@ function Login() {
             <span className="font-bold">WAITER</span>APP
           </p>
         </div>
-        <form action="" className="w-[384px] h-[394px]">
+        <form onSubmit={handleSubmit} className="w-[384px] h-[394px]">
           <div className="w-full flex flex-col gap-4">
             <div className="w-full flex flex-col gap-2">
               <label htmlFor="email" className="text-[#999999]">
@@ -107,4 +91,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginView;
