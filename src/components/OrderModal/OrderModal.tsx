@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { TbRosetteDiscountFilled } from "react-icons/tb";
-import CloseIcon from "../../assets/images/close-icon.svg";
 import { Order } from "../../types/Order";
 import { formatCurrency } from "../../utils/formatCurrency";
+import Modal from "../Modal";
 
 type OrderModalProps = {
   visible: boolean;
@@ -62,18 +62,12 @@ function OrderModal({
     };
   }, []);
   return (
-    <div className="fixed w-full h-full top-0 left-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-      <div className="bg-white w-1/4 rounded-lg p-8">
-        <header className="flex items-center justify-between">
-          <strong className="text-2xl">Mesa {order.table}</strong>
-          <button
-            onClick={handleCloseModal}
-            type="button"
-            className="leading-[0px]"
-          >
-            <img src={CloseIcon} alt="close-icon" />
-          </button>
-        </header>
+    <Modal.Root isVisible={visible} size="sm">
+      <Modal.Header onClose={handleCloseModal}>
+        <strong className="text-2xl">Mesa {order.table}</strong>
+      </Modal.Header>
+
+      <Modal.Body className="">
         <div className="mt-8">
           <small className="text-sm opacity-80">Status do pedido</small>
           <div className="flex gap-2 items-center mt-2">
@@ -122,36 +116,33 @@ function OrderModal({
           <span className="font-normal text-sm opacity-80">Total</span>
           <strong>{formatCurrency(total)}</strong>
         </div>
+      </Modal.Body>
 
-        <footer className="flex flex-col mt-8">
-          {order.status !== "DONE" && (
-            <button
-              onClick={onChangeOrderStatus}
-              disabled={isLoading}
-              type="button"
-              className="bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6 flex justify-center items-center gap-2"
-            >
-              <span>
-                {order.status === "WAITING" && "🍪"}
-                {order.status === "IN_PRODUCTION" && "🆗"}
-              </span>
-              <strong>
-                {order.status === "WAITING" && "Iniciar Produção"}
-                {order.status === "IN_PRODUCTION" && "Concluir Pedido"}
-              </strong>
-            </button>
-          )}
+      <Modal.Footer
+        cancelTitle="Cancelar Pedido"
+        isLoading={isLoading}
+        onCancel={handleCancelOrder}
+        orientation="vertical"
+      >
+        {order.status !== "DONE" && (
           <button
+            onClick={onChangeOrderStatus}
             disabled={isLoading}
-            onClick={handleCancelOrder}
             type="button"
-            className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none mt-3"
+            className="bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6 flex justify-center items-center gap-2 w-full"
           >
-            Cancelar Pedido
+            <span>
+              {order.status === "WAITING" && "🍪"}
+              {order.status === "IN_PRODUCTION" && "🆗"}
+            </span>
+            <strong>
+              {order.status === "WAITING" && "Iniciar Produção"}
+              {order.status === "IN_PRODUCTION" && "Concluir Pedido"}
+            </strong>
           </button>
-        </footer>
-      </div>
-    </div>
+        )}
+      </Modal.Footer>
+    </Modal.Root>
   );
 }
 
