@@ -5,7 +5,7 @@ function Layout() {
   return (
     <main className="bg-[#FAFAFA] flex h-screen">
       <Sidebar />
-      <section className="w-full h-full p-6">
+      <section className="w-full h-full px-9">
         <Outlet />
       </section>
     </main>

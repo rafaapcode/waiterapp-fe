@@ -72,7 +72,7 @@ function OrdersBoard({
         <span>({orders.length})</span>
       </header>
       {orders.length > 0 ? (
-        <div className="flex flex-col w-full mt-6 gap-6">
+        <div className="flex flex-col w-full mt-6 gap-6 overflow-y-auto max-h-full">
           {orders.map((order) => (
             <button
               onClick={() => handleOpenModal(order)}

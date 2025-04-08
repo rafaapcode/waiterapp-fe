@@ -5,7 +5,7 @@ function OrdersView({props}: OrdersViewType) {
   const {done, handleCancelOrder, handleStatusChange, inProduction, waiting} = props;
 
    return (
-    <div className="w-full max-w-[1216px] my-10 mx-auto flex gap-8">
+    <div className="max-w-full  mt-12 mx-auto flex gap-8">
       <OrdersBoard
         orders={waiting}
         icon="🕛"
