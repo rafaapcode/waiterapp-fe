@@ -1,15 +1,11 @@
-import { useCallback, useState } from "react"
 import { RiHomeLine } from "react-icons/ri"
 import { RxUpdate } from "react-icons/rx"
 import RestartModal from "../../components/RestartModal/RestartModal"
 import Orders from "../Orders/OrdersPage"
+import HomePageProps from "./home.type"
 
-function Home() {
-  const [restartModal, setRestartModal] = useState<boolean>(false);
-
-  const toogleRestartModal = useCallback(() => setRestartModal(prev => !prev), []);
-
-  const refetchData = async () => console.log("teste")
+function HomeView({props}: HomePageProps) {
+  const { refetchData, restartModal,  toogleRestartModal} = props;
 
   return (
     <main className="w-full h-full pt-10 overflow-y-auto">
@@ -37,4 +33,4 @@ function Home() {
   )
 }
 
-export default Home
+export default HomeView

@@ -77,7 +77,7 @@ function OrderModal({
         </div>
         <div className="mt-8">
           <strong className="font-normal text-base opacity-80">Itens</strong>
-          <div className="mt-4 flex flex-col gap-4">
+          <div className="mt-4 flex flex-col gap-4 max-h-full overflow-y-auto">
             {order.products.map(({ _id, product, quantity }) => (
               <div className="flex" key={_id}>
                 <img

@@ -30,7 +30,7 @@ function Footer({
         disabled={isLoading}
         onClick={onCancel}
         type="button"
-        className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none w-full"
+        className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none"
       >
         {cancelTitle}
       </button>
