@@ -1,18 +1,15 @@
 import { BiFoodMenu } from "react-icons/bi"
+import Header from "../../components/Header/Header"
 
 function Menu() {
   return (
     <main className="w-full h-full pt-10 overflow-y-auto">
-          <header className="flex justify-between">
-            <div className="flex flex-col">
-              <div className="flex gap-2">
-                <BiFoodMenu size={32} />
-                <p className="font-semibold text-2xl">Cardápio</p>
-              </div>
-              <p className="text-[#666666] mt-4">Gerencie os produtos do seu estabelecimento</p>
-            </div>
-          </header>
-        </main>
+      <Header
+        Icon={BiFoodMenu}
+        subtitle="Gerencie os produtos do seu estabelecimento"
+        title="Cardápio"
+      />
+    </main>
   )
 }
 
