@@ -1,5 +1,5 @@
 import Modal from "../Modal";
-import ProductInfo from "../ProductInfo/productInfo";
+import ProductInfo from "../ProductInfo/ProductInfo";
 
 function HistoryModal() {
   return (
@@ -14,24 +14,26 @@ function HistoryModal() {
           <p className="text-[#333333] font-semibold">07/12/2022</p>
         </div>
 
-        <div className="w-full flex flex-col gap-6 h-full mt-8">
+        <div className="w-full flex flex-col gap-6 mt-8">
           <p className="text-sm text-[#333333]">Itens</p>
-          <div className="max-h-full overflow-y-auto">
-            <ProductInfo
-              products={{
-                _id: "123",
-                quantity: 12,
-                product: {
-                  _id: "123312",
-                  discount: false,
-                  imageUrl:
-                    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                  name: "Saudavel",
-                  price: 12.0,
-                  priceInDiscount: 0.0,
-                },
-              }}
-            />
+          <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto">
+            {Array.from({length: 10}).map(() => (
+              <ProductInfo
+                products={{
+                  _id: "123",
+                  quantity: 12,
+                  product: {
+                    _id: "123312",
+                    discount: false,
+                    imageUrl:
+                      "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    name: "Saudavel",
+                    price: 12.0,
+                    priceInDiscount: 0.0,
+                  },
+                }}
+              />
+            ))}
           </div>
           <footer className="flex justify-between items-center">
             <p className="text-sm text-[#333333]">Total</p>

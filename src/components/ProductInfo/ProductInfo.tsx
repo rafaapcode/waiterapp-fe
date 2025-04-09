@@ -16,7 +16,7 @@ function ProductInfo({ products }: ProductInfoProps) {
   return (
     <div className="flex" key={_id}>
       <img
-        className="w-14 h-[28.51px] rounded-md"
+        className="w-14 h-full rounded-md"
         src={`${product.imageUrl}`}
         alt={product.name}
       />

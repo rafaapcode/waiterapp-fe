@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Order } from "../../types/Order";
 import { formatCurrency } from "../../utils/formatCurrency";
 import Modal from "../Modal";
-import ProductInfo from "../ProductInfo/productInfo";
+import ProductInfo from "../ProductInfo/ProductInfo";
 
 type OrderModalProps = {
   visible: boolean;
