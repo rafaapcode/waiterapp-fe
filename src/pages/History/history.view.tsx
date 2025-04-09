@@ -1,5 +1,6 @@
 import { IoNewspaperOutline } from "react-icons/io5";
 import Header from "../../components/Header/Header";
+import HistoryModal from "../../components/HistoryModal/HistoryModal";
 
 function History() {
   return (
@@ -9,6 +10,7 @@ function History() {
         subtitle="Visualize pedidos anteriores"
         title="Histórico"
       />
+      <HistoryModal />
     </main>
   );
 }

@@ -26,7 +26,7 @@ function Footer({
 
   return (
     <footer className={`flex ${orientationOption[orientation]} items-center mt-8`}>
-       <button
+      <button
         disabled={isLoading}
         onClick={onCancel}
         type="button"
