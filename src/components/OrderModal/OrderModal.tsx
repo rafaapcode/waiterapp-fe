@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { TbRosetteDiscountFilled } from "react-icons/tb";
 import { Order } from "../../types/Order";
 import { formatCurrency } from "../../utils/formatCurrency";
 import Modal from "../Modal";
+import ProductInfo from "../ProductInfo/productInfo";
 
 type OrderModalProps = {
   visible: boolean;
@@ -78,37 +78,8 @@ function OrderModal({
         <div className="mt-8">
           <strong className="font-normal text-base opacity-80">Itens</strong>
           <div className="mt-4 flex flex-col gap-4 max-h-full overflow-y-auto">
-            {order.products.map(({ _id, product, quantity }) => (
-              <div className="flex" key={_id}>
-                <img
-                  className="w-14 h-[28.51px] rounded-md"
-                  src={`${product.imageUrl}`}
-                  alt={product.name}
-                />
-                <span className="block min-w-[20px] text-[#666] ml-3">
-                  {quantity}x
-                </span>
-                <div className="ml-1">
-                  <strong className="block mb-1">{product.name}</strong>
-                  <div className="flex gap-2">
-                    {product.discount && (
-                      <span className="text-sm text-[#666] line-through">
-                        {formatCurrency(product.price * quantity)}
-                      </span>
-                    )}
-                    <span className="text-sm text-[#666]">
-                      {product.discount
-                        ? formatCurrency(product.priceInDiscount * quantity)
-                        : formatCurrency(product.price * quantity)}
-                    </span>
-                  </div>
-                </div>
-                {product.discount && (
-                  <div className="ml-2 pt-1">
-                    <TbRosetteDiscountFilled />
-                  </div>
-                )}
-              </div>
+            {order.products.map((product) => (
+              <ProductInfo products={product} />
             ))}
           </div>
         </div>
