@@ -1,10 +1,17 @@
 import Modal from "../Modal";
 import ProductInfo from "../ProductInfo/ProductInfo";
 
-function HistoryModal() {
+interface HistoryModal {
+  isVisible: boolean;
+  onClose: () => void;
+  onDelete: () => Promise<void>;
+  isLoading: boolean
+}
+
+function HistoryModal({ isVisible, onClose, onDelete,isLoading }: HistoryModal) {
   return (
-    <Modal.Root size="sm" isVisible>
-      <Modal.Header onClose={() => {}}>
+    <Modal.Root size="sm" isVisible={isVisible}>
+      <Modal.Header onClose={onClose}>
         <p className="text-2xl font-semibold text-[#333333]">Mesa 2</p>
       </Modal.Header>
 
@@ -43,7 +50,7 @@ function HistoryModal() {
       </Modal.Body>
 
       <Modal.CustomFooter>
-        <button className="text-[#D73035] font-semibold">
+        <button disabled={isLoading} onClick={onDelete} className="text-[#D73035] font-semibold">
           Excluir Registro
         </button>
       </Modal.CustomFooter>
