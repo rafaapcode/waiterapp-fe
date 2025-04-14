@@ -1,10 +1,9 @@
 import { useCallback, useState } from "react";
 import { BiFoodMenu } from "react-icons/bi";
 import Header from "../../components/Header/Header";
-import MenuHeader from "../../components/MenuComponents/MenuHeader";
+import CategoriesTable from "../../components/MenuComponents/CategoriesTable";
 import Menutab from "../../components/MenuComponents/Menutab";
 import ProductsTable from "../../components/MenuComponents/ProductsTable";
-import CategoriesTable from "../../components/MenuComponents/CategoriesTable";
 
 function Menu() {
   const [tab, setTab] = useState<"products" | "categories">("products");
