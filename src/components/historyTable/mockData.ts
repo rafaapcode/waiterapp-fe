@@ -5,7 +5,7 @@ export const orders = [
     date: "07/12/2022",
     name: "Frango com Catupiry, Quatro Queijos",
     category: "🍕 Pizza",
-    total: "R$ 40,00",
+    total: 40.00,
   },
   {
     id: 2,
@@ -13,7 +13,7 @@ export const orders = [
     date: "07/12/2022",
     name: "Frango com Catupiry, Quatro Queijos",
     category: "🍕 Pizza",
-    total: "R$ 40,00",
+    total: 40.00,
   },
   {
     id: 3,
@@ -21,6 +21,6 @@ export const orders = [
     date: "07/12/2022",
     name: "Frango com Catupiry, Quatro Queijos",
     category: "🍕 Pizza",
-    total: "R$ 40,00",
+    total: 40.00,
   },
 ]

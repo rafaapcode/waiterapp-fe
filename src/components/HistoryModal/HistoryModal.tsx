@@ -24,8 +24,9 @@ function HistoryModal({ isVisible, onClose, onDelete,isLoading }: HistoryModal) 
         <div className="w-full flex flex-col gap-6 mt-8">
           <p className="text-sm text-[#333333]">Itens</p>
           <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto">
-            {Array.from({length: 10}).map(() => (
+            {Array.from({length: 10}).map((_, i) => (
               <ProductInfo
+                key={i}
                 products={{
                   _id: "123",
                   quantity: 12,
