@@ -18,7 +18,7 @@ function Root({ children, isVisible,size}: RootProps) {
   }
 
   return (
-    <div className="fixed w-full h-full top-0 left-0 bg-black/80 backdrop-blur-sm flex items-center justify-center">
+    <div className="fixed w-full h-full top-0 left-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10">
       <div className={`bg-white ${sizeClass[size]} rounded-lg p-8`}>{children}</div>
     </div>
   );
