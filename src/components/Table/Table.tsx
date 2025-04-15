@@ -11,13 +11,11 @@ import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-tabl
 interface TableComponentProps<TData> {
   data: TData[];
   columns: any[];
-  custom?: boolean;
 }
 
 function TableComponent<TData>({
   data,
   columns,
-  custom = false,
 }: TableComponentProps<TData>) {
   const table = useReactTable({
     data,
@@ -49,9 +47,7 @@ function TableComponent<TData>({
               {row.getAllCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className={`py-6 px-4 ${
-                    custom && cell.id.includes("emoji") && "w-[5%]"
-                  } ${cell.id.includes("actions") && "w-[8%]"}`}
+                  className="py-6 px-4"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
