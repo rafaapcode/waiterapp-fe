@@ -1,6 +1,6 @@
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Cell } from "@tanstack/react-table";
-import { Eye, Trash } from "lucide-react";
+import { EditIcon, Trash } from "lucide-react";
 import { useMemo } from "react";
 import TableComponent from "../Table/Table";
 import { products } from "./data";
@@ -38,7 +38,7 @@ function ProductsTable() {
         return (
           <div className="flex gap-4">
             <button className="text-[#666666] hover:text-[#9e9e9e] transition-all duration-200">
-              <Eye size={20} />
+              <EditIcon size={20} />
             </button>
             <button className="text-red-600 hover:text-red-800 transition-all duration-200">
               <Trash size={20} />

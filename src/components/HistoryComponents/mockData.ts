@@ -1,3 +1,12 @@
+export type Order = {
+  id: number;
+  table: string;
+  date: string;
+  name: string;
+  category: string;
+  total: number;
+}
+
 export const orders = [
   {
     id: 1,

@@ -1,21 +1,21 @@
 import { formatCurrency } from "@/utils/formatCurrency";
-import { Cell } from "@tanstack/react-table";
+import { Cell, ColumnDef } from "@tanstack/react-table";
 import { Eye, Funnel, Trash } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import HistoryModal from "../HistoryModal/HistoryModal";
 import TableComponent from "../Table/Table";
-import { orders } from "./mockData";
+import { Order, orders } from "./mockData";
+import HistoryModal from "./modals/HistoryModal";
 
 function HistoryTable() {
-  const [selectedHistory, setSelectedHistory] = useState<string>("");
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-  const handleSelectedHistory = useCallback(
-    (id: string) => setSelectedHistory(id),
+  const handleSelectedOrder = useCallback(
+    (order: Order | null) => setSelectedOrder(order),
     []
   );
 
   const columns = useMemo(
-    () => [
+    (): ColumnDef<Order>[] => [
       {
         accessorKey: "table",
         header: () => <p className="text-[#333333] font-semibold">Mesa</p>,
@@ -29,17 +29,17 @@ function HistoryTable() {
             <Funnel size={14} />
           </div>
         ),
-        size: 10
+        size: 10,
       },
       {
         accessorKey: "name",
         header: () => <p className="text-[#333333] font-semibold">Nome</p>,
-        size: 40
+        size: 40,
       },
       {
         accessorKey: "category",
         header: () => <p className="text-[#333333] font-semibold">Categoria</p>,
-        size: 20
+        size: 20,
       },
       {
         accessorKey: "total",
@@ -47,16 +47,23 @@ function HistoryTable() {
         cell: ({ cell }: { cell: Cell<any, any> }) => (
           <p>{formatCurrency(Number(cell.getValue() ?? 0))}</p>
         ),
-        size: 16
+        size: 16,
       },
       {
+        enableColumnFilter: false,
+        enableGlobalFilter: false,
+        enableHiding: false,
+        enableGrouping: false,
+        enableSorting: false,
+        enableResizing: false,
+        enableMultiSort: false,
         id: "actions",
         header: () => <p className="text-[#333333] font-semibold">Ações</p>,
-        cell: () => {
+        cell: ({ row }) => {
           return (
             <div className="flex gap-4">
               <button
-                onClick={() => handleSelectedHistory("123")}
+                onClick={() => handleSelectedOrder(row.original)}
                 className="text-[#666666] hover:text-[#9e9e9e] transition-all duration-200"
               >
                 <Eye size={20} />
@@ -75,11 +82,18 @@ function HistoryTable() {
   return (
     <>
       <HistoryModal
+        order={selectedOrder}
         isLoading={false}
-        isVisible={ !!selectedHistory }
-        onClose={() => handleSelectedHistory("")}
+        isVisible={!!selectedOrder}
+        onClose={() => handleSelectedOrder(null)}
         onDelete={() => Promise.resolve()}
       />
+      <div className="flex items-center gap-2">
+        <h2 className="text-lg font-semibold text=[#333333]">Pedidos</h2>
+        <span className="bg-[#CCCCCC33] ml-4 px-2 py-1 rounded-md font-semibold">
+          3
+        </span>
+      </div>
       <TableComponent data={orders} columns={columns} />
     </>
   );

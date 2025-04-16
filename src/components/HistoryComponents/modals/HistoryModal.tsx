@@ -1,24 +1,33 @@
-import Modal from "../Modal";
-import ProductInfo from "../ProductInfo/ProductInfo";
+import { formatCurrency } from "@/utils/formatCurrency";
+import Modal from "../../Modal";
+import ProductInfo from "../../ProductInfo/ProductInfo";
+import { Order } from "../mockData";
 
 interface HistoryModal {
   isVisible: boolean;
   onClose: () => void;
   onDelete: () => Promise<void>;
-  isLoading: boolean
+  isLoading: boolean;
+  order: Order | null;
 }
 
-function HistoryModal({ isVisible, onClose, onDelete,isLoading }: HistoryModal) {
+function HistoryModal({ isVisible, onClose, onDelete,isLoading, order }: HistoryModal) {
+
+  if (!order) {
+    return null;
+  }
+
+  console.log(order);
   return (
     <Modal.Root size="sm" isVisible={isVisible}>
       <Modal.Header onClose={onClose}>
-        <p className="text-2xl font-semibold text-[#333333]">Mesa 2</p>
+        <p className="text-2xl font-semibold text-[#333333]">Mesa {order.table}</p>
       </Modal.Header>
 
       <Modal.Body className="mb-8">
         <div className="w-full flex flex-col gap-2 mt-8">
           <p className="text-sm text-[#333333]">Data do pedido</p>
-          <p className="text-[#333333] font-semibold">07/12/2022</p>
+          <p className="text-[#333333] font-semibold">{order.date}</p>
         </div>
 
         <div className="w-full flex flex-col gap-6 mt-8">
@@ -45,7 +54,7 @@ function HistoryModal({ isVisible, onClose, onDelete,isLoading }: HistoryModal) 
           </div>
           <footer className="flex justify-between items-center">
             <p className="text-sm text-[#333333]">Total</p>
-            <p className="text-[#333333] font-semibold">R$ 120,00</p>
+            <p className="text-[#333333] font-semibold">{formatCurrency(order.total)}</p>
           </footer>
         </div>
       </Modal.Body>
