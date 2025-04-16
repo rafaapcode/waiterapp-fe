@@ -20,6 +20,9 @@ function TableComponent<TData>({
   const table = useReactTable({
     data,
     columns,
+    defaultColumn: {
+      minSize: 5
+    },
     getCoreRowModel: getCoreRowModel()
   });
 
@@ -30,7 +33,7 @@ function TableComponent<TData>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="px-4">
+                <TableHead key={header.id} className="px-4" style={{width: `${header.getSize()}%`}}>
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
@@ -48,6 +51,7 @@ function TableComponent<TData>({
                 <TableCell
                   key={cell.id}
                   className="py-6 px-4"
+                  style={{ width: `${cell.column.getSize()}%` }}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>

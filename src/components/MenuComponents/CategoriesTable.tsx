@@ -16,12 +16,14 @@ function CategoriesTable() {
         cell: ({ cell }: { cell: Cell<any, any> }) => (
           <p className=" w-fit">{cell.getValue()}</p>
         ),
+        size: 10
       },
       {
         accessorKey: "name",
         header: () => (
           <p className="text-[#333333] font-semibold flex-1">Nome</p>
         ),
+        size: 80
       },
       {
         id: "actions",

@@ -12,20 +12,24 @@ function ProductsTable() {
     {
       accessorKey: "imageUrl",
       header: () => <p className="text-[#333333] font-semibold">Imagem</p>,
-      cell: ({cell}: {cell: Cell<any, any>}) => <img src={cell.getValue()} alt="food image" className="w-14 rounded-md"/>
+      cell: ({cell}: {cell: Cell<any, any>}) => <img src={cell.getValue()} alt="food image" className="w-14 rounded-md"/>,
+      size: 10
     },
     {
       accessorKey: "name",
       header: () => <p className="text-[#333333] font-semibold">Nome</p>,
+      size: 20
     },
     {
       accessorKey: "categoria",
       header: () => <p className="text-[#333333] font-semibold">Categoria</p>,
+      size: 25
     },
     {
       accessorKey: "preco",
       header: () => <p className="text-[#333333] font-semibold">Preço</p>,
       cell: ({cell}: {cell: Cell<any, any>}) => <p>{formatCurrency(Number(cell.getValue()))}</p>,
+      size: 36
     },
     {
       id: 'actions',

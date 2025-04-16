@@ -19,6 +19,7 @@ function HistoryTable() {
       {
         accessorKey: "table",
         header: () => <p className="text-[#333333] font-semibold">Mesa</p>,
+        size: 6,
       },
       {
         accessorKey: "date",
@@ -28,14 +29,17 @@ function HistoryTable() {
             <Funnel size={14} />
           </div>
         ),
+        size: 10
       },
       {
         accessorKey: "name",
         header: () => <p className="text-[#333333] font-semibold">Nome</p>,
+        size: 40
       },
       {
         accessorKey: "category",
         header: () => <p className="text-[#333333] font-semibold">Categoria</p>,
+        size: 20
       },
       {
         accessorKey: "total",
@@ -43,6 +47,7 @@ function HistoryTable() {
         cell: ({ cell }: { cell: Cell<any, any> }) => (
           <p>{formatCurrency(Number(cell.getValue() ?? 0))}</p>
         ),
+        size: 16
       },
       {
         id: "actions",
