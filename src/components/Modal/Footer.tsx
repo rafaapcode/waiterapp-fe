@@ -20,7 +20,7 @@ function Footer({
   successTitle,
 }: FooterProps) {
   const orientationOption: Record<typeof orientation, string> = {
-    horizontal: "flex-row",
+    horizontal: "flex-row justify-between",
     vertical: "flex-col-reverse",
   };
 

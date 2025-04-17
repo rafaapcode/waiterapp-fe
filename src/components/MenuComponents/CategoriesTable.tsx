@@ -11,6 +11,8 @@ function CategoriesTable() {
   const [newCategorieModal, setNewCategorieModal] = useState<boolean>(false);
   const [editCategorieModal, setEditCategorieModal] = useState<boolean>(false);
 
+  const [data, setData] = useState<{id: string; emoji: string; name: string}>({id: '', emoji: '', name: ''});
+
   const handleNewCategorieModal = useCallback(
     () => setNewCategorieModal((prev) => !prev),
     []
@@ -21,7 +23,7 @@ function CategoriesTable() {
   );
 
   const columns = useMemo(
-    (): ColumnDef<{ emoji: string; name: string }>[] => [
+    (): ColumnDef<{id: string; emoji: string; name: string }>[] => [
       {
         accessorKey: "emoji",
         header: () => (
@@ -44,24 +46,20 @@ function CategoriesTable() {
         header: () => <p className="text-[#333333] font-semibold">Ações</p>,
         cell: ({ row }) => {
           return (
-            <>
-              <EditCategorieModal
-                data={row.original}
-                isVisible={editCategorieModal}
-                onClose={handleEditCategorieModal}
-              />
-              <div className="flex gap-6">
-                <button
-                  onClick={handleEditCategorieModal}
-                  className="text-[#666666] hover:text-[#9e9e9e] transition-all duration-200"
-                >
-                  <EditIcon size={20} />
-                </button>
-                <button className="text-red-600 hover:text-red-800 transition-all duration-200">
-                  <Trash size={20} />
-                </button>
-              </div>
-            </>
+            <div className="flex gap-6">
+              <button
+                onClick={() => {
+                  setData(row.original);
+                  handleEditCategorieModal();
+                }}
+                className="text-[#666666] hover:text-[#9e9e9e] transition-all duration-200"
+              >
+                <EditIcon size={20} />
+              </button>
+              <button className="text-red-600 hover:text-red-800 transition-all duration-200">
+                <Trash size={20} />
+              </button>
+            </div>
           );
         },
       },
@@ -74,6 +72,11 @@ function CategoriesTable() {
       <CategorieModal
         isVisible={newCategorieModal}
         onClose={handleNewCategorieModal}
+      />
+      <EditCategorieModal
+        data={data}
+        isVisible={editCategorieModal}
+        onClose={handleEditCategorieModal}
       />
       <MenuHeader onClick={handleNewCategorieModal} title="Nova Categoria" />
       <div className="mt-2 max-h-full overflow-y-auto">

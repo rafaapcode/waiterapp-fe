@@ -4,9 +4,10 @@ interface RootProps {
   children: ReactNode;
   isVisible: boolean;
   size: "sm" | "md" | "lg";
+  priority?: boolean;
 }
 
-function Root({ children, isVisible,size}: RootProps) {
+function Root({ children, isVisible,size, priority}: RootProps) {
   const sizeClass: Record<typeof size, string> = {
     sm: "w-1/4",
     md: "w-1/2",
@@ -18,7 +19,7 @@ function Root({ children, isVisible,size}: RootProps) {
   }
 
   return (
-    <div className="fixed w-full h-full top-0 left-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-10">
+    <div className={`fixed w-full h-full top-0 left-0 bg-black/80 backdrop-blur-sm flex items-center justify-center ${priority ? "z-20" : "z-10"}`}>
       <div className={`bg-white ${sizeClass[size]} rounded-lg p-8`}>{children}</div>
     </div>
   );
