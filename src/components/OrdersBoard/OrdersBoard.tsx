@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { toast } from "react-toastify";
 import { Order } from "../../types/Order";
 import { api } from "../../utils/api";
-import OrderModal from "../OrderModal/OrderModal";
+import OrderModalSkeleton from "../OrderModal/OrderModalSkeleton";
+
+const OrderModal = lazy(() => import("../OrderModal/OrderModal"));
 
 type OrdersBoardProps = {
   icon: string;
@@ -58,14 +60,18 @@ function OrdersBoard({
 
   return (
     <div className="p-4 flex-1 border border-[#ccc] rounded-2xl flex flex-col items-center">
-      <OrderModal
-        handleCloseModal={handleCloseModal}
-        order={selectedOrder}
-        visible={isModalOpen}
-        handleCancelOrder={handleCancelOrder}
-        isLoading={isLoading}
-        onChangeOrderStatus={handleChangeOrderStatus}
-      />
+      {
+        isModalOpen && <Suspense fallback={<OrderModalSkeleton visible={isModalOpen} />}>
+          <OrderModal
+            handleCloseModal={handleCloseModal}
+            order={selectedOrder}
+            visible={isModalOpen}
+            handleCancelOrder={handleCancelOrder}
+            isLoading={isLoading}
+            onChangeOrderStatus={handleChangeOrderStatus}
+          />
+        </Suspense>
+      }
       <header className="p-2 text-base flex items-center gap-2">
         <span>{icon}</span>
         <strong>{title}</strong>
