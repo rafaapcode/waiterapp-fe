@@ -1,10 +1,12 @@
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Cell, ColumnDef } from "@tanstack/react-table";
 import { Eye, Funnel, Trash } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import TableComponent from "../Table/Table";
 import { Order, orders } from "./mockData";
-import HistoryModal from "./modals/HistoryModal";
+import HistoryModalSkeleton from "./modals/HistoryModalSkeleton";
+
+const HistoryModal = lazy(() => import("./modals/HistoryModal"));
 
 function HistoryTable() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -81,13 +83,15 @@ function HistoryTable() {
 
   return (
     <>
-      <HistoryModal
-        order={selectedOrder}
-        isLoading={false}
-        isVisible={!!selectedOrder}
-        onClose={() => handleSelectedOrder(null)}
-        onDelete={() => Promise.resolve()}
-      />
+      {!!selectedOrder && <Suspense fallback={<HistoryModalSkeleton isVisible={!!selectedOrder} />}>
+        <HistoryModal
+          order={selectedOrder}
+          isLoading={false}
+          isVisible={!!selectedOrder}
+          onClose={() => handleSelectedOrder(null)}
+          onDelete={() => Promise.resolve()}
+        />
+      </Suspense>}
       <div className="flex items-center gap-2">
         <h2 className="text-lg font-semibold text=[#333333]">Pedidos</h2>
         <span className="bg-[#CCCCCC33] ml-4 px-2 py-1 rounded-md font-semibold">
