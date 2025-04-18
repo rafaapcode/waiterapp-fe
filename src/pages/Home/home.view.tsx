@@ -1,21 +1,32 @@
-import { RiHomeLine } from "react-icons/ri"
-import { RxUpdate } from "react-icons/rx"
-import Header from "../../components/Header/Header"
-import RestartModal from "../../components/RestartModal/RestartModal"
-import Orders from "../Orders/OrdersPage"
-import HomePageProps from "./home.type"
+import RestartModalSkeleton from "@/components/RestartModal/RestartModalSkeleton";
+import { lazy, Suspense } from "react";
+import { RiHomeLine } from "react-icons/ri";
+import { RxUpdate } from "react-icons/rx";
+import Header from "../../components/Header/Header";
+import Orders from "../Orders/OrdersPage";
+import HomePageProps from "./home.type";
 
-function HomeView({props}: HomePageProps) {
-  const { refetchData, restartModal,  toogleRestartModal} = props;
+const RestartModal = lazy(
+  () => import("../../components/RestartModal/RestartModal")
+);
+
+function HomeView({ props }: HomePageProps) {
+  const { refetchData, restartModal, toogleRestartModal } = props;
 
   return (
     <main className="w-full h-full pt-10 overflow-y-auto">
-      <RestartModal
-        onCancel={toogleRestartModal}
-        onClose={toogleRestartModal}
-        isVisible={restartModal}
-        onClick={refetchData}
-      />
+      {restartModal && (
+        <Suspense
+          fallback={<RestartModalSkeleton isVisible={restartModal} size="sm"/>}
+        >
+          <RestartModal
+            onCancel={toogleRestartModal}
+            onClose={toogleRestartModal}
+            isVisible={restartModal}
+            onClick={refetchData}
+          />
+        </Suspense>
+      )}
       <Header
         title="Home"
         subtitle="Acompanhe os pedidos dos clientes"
@@ -23,12 +34,12 @@ function HomeView({props}: HomePageProps) {
         rightButton={{
           Icon: RxUpdate,
           text: "Reiniciar o dia",
-          onClick: toogleRestartModal
+          onClick: toogleRestartModal,
         }}
       />
       <Orders />
     </main>
-  )
+  );
 }
 
-export default HomeView
+export default HomeView;
