@@ -96,7 +96,7 @@ function HistoryTable() {
       <div className="flex items-center gap-2">
         <h2 className="text-lg font-semibold text=[#333333]">Pedidos</h2>
         <span className="bg-[#CCCCCC33] ml-4 px-2 py-1 rounded-md font-semibold">
-          3
+          {orders.length ?? 0}
         </span>
       </div>
 
