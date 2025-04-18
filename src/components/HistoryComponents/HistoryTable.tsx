@@ -1,6 +1,6 @@
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Cell, ColumnDef } from "@tanstack/react-table";
-import { Eye, Funnel, Trash } from "lucide-react";
+import { Eye, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import TableComponent from "../Table/Table";
 import { Order, orders } from "./mockData";
@@ -28,7 +28,6 @@ function HistoryTable() {
         header: () => (
           <div className="flex gap-2 items-center text-[#333333] font-semibold">
             <p>Data</p>
-            <Funnel size={14} />
           </div>
         ),
         size: 10,
