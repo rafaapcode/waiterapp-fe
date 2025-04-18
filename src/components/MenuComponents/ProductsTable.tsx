@@ -52,7 +52,7 @@ function ProductsTable() {
 
   return (
     <div>
-      <MenuHeader onClick={() => {}} title="Produtos"/>
+      <MenuHeader onClick={() => {}} title="Novo Produto"/>
       <div className="mt-2 max-h-full overflow-y-auto">
         <TableComponent data={products} columns={columns}/>
       </div>

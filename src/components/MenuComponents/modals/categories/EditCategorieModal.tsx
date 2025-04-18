@@ -1,8 +1,10 @@
 import Modal from "@/components/Modal";
 import { Categorie } from "@/types/Categorie";
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import DeleteCategorieModal from "./DeleteCategorieModal";
+import DeleteCategorieModalSkeleton from "./DeleteCategorieModalSkeleton";
+
+const DeleteCategorieModal = lazy(() => import("./DeleteCategorieModal"));
 
 interface NewCategorieModalProps {
   data: Categorie | null;
@@ -43,7 +45,11 @@ function EditCategorieModal({
 
   return (
     <>
-      <DeleteCategorieModal closeEditModal={onClose} isVisible={deleteModal} data={data} onClose={handleDeleteModal} />
+      {
+        deleteModal && <Suspense fallback={<DeleteCategorieModalSkeleton isVisible={deleteModal} />}>
+          <DeleteCategorieModal closeEditModal={onClose} isVisible={deleteModal} data={data} onClose={handleDeleteModal} />
+        </Suspense>
+      }
       <Modal.Root size="sm" isVisible={isVisible}>
         <Modal.Header onClose={onClose}>
           <p className="text-[#333333] text-2xl font-semibold">

@@ -1,9 +1,11 @@
-import { useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 import { BiFoodMenu } from "react-icons/bi";
+import { VscLoading } from "react-icons/vsc";
 import Header from "../../components/Header/Header";
-import CategoriesTable from "../../components/MenuComponents/CategoriesTable";
 import Menutab from "../../components/MenuComponents/Menutab";
 import ProductsTable from "../../components/MenuComponents/ProductsTable";
+
+const CategoriesTable = lazy(() => import("../../components/MenuComponents/CategoriesTable"));
 
 function Menu() {
   const [tab, setTab] = useState<"products" | "categories">("products");
@@ -23,7 +25,7 @@ function Menu() {
 
     <section className="w-full mt-8">
       {tab === "products" && <ProductsTable />}
-      {tab === "categories" && <CategoriesTable />}
+      {tab === "categories" && <Suspense fallback={<div className="flex justify-center py-10"><VscLoading size={40} className="animate-spin"/></div>}><CategoriesTable /></Suspense>}
     </section>
 
     </main>

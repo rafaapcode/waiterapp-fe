@@ -1,12 +1,15 @@
 import { Categorie } from "@/types/Categorie";
 import { Cell, ColumnDef } from "@tanstack/react-table";
 import { EditIcon, Trash } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import TableComponent from "../Table/Table";
 import { categories } from "./data";
 import MenuHeader from "./MenuHeader";
-import EditCategorieModal from "./modals/categories/EditCategorieModal";
-import CategorieModal from "./modals/categories/NewCategorieModal";
+import EditCategorieModalSkeleton from "./modals/categories/EditCategorieModalSkeleton";
+import NewCategorieModalSkeleton from "./modals/categories/NewCategorieModalSkeleton";
+
+const CategorieModal = lazy(() => import("./modals/categories/NewCategorieModal"));
+const EditCategorieModal = lazy(() => import("./modals/categories/EditCategorieModal"));
 
 function CategoriesTable() {
   const [newCategorieModal, setNewCategorieModal] = useState<boolean>(false);
@@ -22,7 +25,7 @@ function CategoriesTable() {
   );
 
   const columns = useMemo(
-    (): ColumnDef<{id: string; emoji: string; name: string }>[] => [
+    (): ColumnDef<{ id: string; emoji: string; name: string }>[] => [
       {
         accessorKey: "emoji",
         header: () => (
@@ -65,15 +68,23 @@ function CategoriesTable() {
 
   return (
     <div>
-      <CategorieModal
-        isVisible={newCategorieModal}
-        onClose={handleNewCategorieModal}
-      />
-      <EditCategorieModal
-        data={editCategorieModal}
-        isVisible={ !!editCategorieModal }
-        onClose={() => handleEditCategorieModal(null)}
-      />
+      {
+        newCategorieModal && <Suspense fallback={<NewCategorieModalSkeleton isVisible={newCategorieModal} />}>
+          <CategorieModal
+            isVisible={newCategorieModal}
+            onClose={handleNewCategorieModal}
+          />
+        </Suspense>
+      }
+      {
+        editCategorieModal && <Suspense fallback={<EditCategorieModalSkeleton isVisible={!!editCategorieModal} />}>
+          <EditCategorieModal
+            data={editCategorieModal}
+            isVisible={!!editCategorieModal}
+            onClose={() => handleEditCategorieModal(null)}
+          />
+        </Suspense>
+      }
       <MenuHeader onClick={handleNewCategorieModal} title="Nova Categoria" />
       <div className="mt-2 max-h-full overflow-y-auto">
         <TableComponent data={categories} columns={columns} />
