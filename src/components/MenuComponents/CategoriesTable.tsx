@@ -1,3 +1,4 @@
+import { Categorie } from "@/types/Categorie";
 import { Cell, ColumnDef } from "@tanstack/react-table";
 import { EditIcon, Trash } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -9,16 +10,14 @@ import CategorieModal from "./modals/categories/NewCategorieModal";
 
 function CategoriesTable() {
   const [newCategorieModal, setNewCategorieModal] = useState<boolean>(false);
-  const [editCategorieModal, setEditCategorieModal] = useState<boolean>(false);
-
-  const [data, setData] = useState<{id: string; emoji: string; name: string}>({id: '', emoji: '', name: ''});
+  const [editCategorieModal, setEditCategorieModal] = useState<Categorie | null>(null);
 
   const handleNewCategorieModal = useCallback(
     () => setNewCategorieModal((prev) => !prev),
     []
   );
   const handleEditCategorieModal = useCallback(
-    () => setEditCategorieModal((prev) => !prev),
+    (data: Categorie | null) => setEditCategorieModal(data),
     []
   );
 
@@ -48,10 +47,7 @@ function CategoriesTable() {
           return (
             <div className="flex gap-6">
               <button
-                onClick={() => {
-                  setData(row.original);
-                  handleEditCategorieModal();
-                }}
+                onClick={() => handleEditCategorieModal(row.original)}
                 className="text-[#666666] hover:text-[#9e9e9e] transition-all duration-200"
               >
                 <EditIcon size={20} />
@@ -74,9 +70,9 @@ function CategoriesTable() {
         onClose={handleNewCategorieModal}
       />
       <EditCategorieModal
-        data={data}
-        isVisible={editCategorieModal}
-        onClose={handleEditCategorieModal}
+        data={editCategorieModal}
+        isVisible={ !!editCategorieModal }
+        onClose={() => handleEditCategorieModal(null)}
       />
       <MenuHeader onClick={handleNewCategorieModal} title="Nova Categoria" />
       <div className="mt-2 max-h-full overflow-y-auto">

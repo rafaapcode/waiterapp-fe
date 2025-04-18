@@ -1,13 +1,18 @@
 import Modal from "@/components/Modal";
+import { Categorie } from "@/types/Categorie";
 
 interface DeleteCategorieModalProps {
-  data: {id: string; emoji: string; name: string};
+  data: Categorie | null;
   isVisible: boolean;
   onClose: () => void;
   closeEditModal: () => void;
 }
 
 function DeleteCategorieModal({ isVisible, onClose, data, closeEditModal}: DeleteCategorieModalProps) {
+
+  if (!data) {
+    return null;
+  }
 
   const onDelete = async () => {
     console.log(data.id);

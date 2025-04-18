@@ -1,10 +1,11 @@
 import Modal from "@/components/Modal";
+import { Categorie } from "@/types/Categorie";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import DeleteCategorieModal from "./DeleteCategorieModal";
 
 interface NewCategorieModalProps {
-  data: { id: string; emoji: string; name: string };
+  data: Categorie | null;
   isVisible: boolean;
   onClose: () => void;
 }
@@ -17,15 +18,19 @@ function EditCategorieModal({
   const [emojiValue, setEmoji] = useState<string>("");
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [categoryName, setCategorieName] = useState<string>("");
-
   const handleDeleteModal = useCallback(() => setDeleteModal(prev => !prev), []);
 
   useEffect(() => {
-    if (isVisible && data) {
+    if(data && isVisible) {
       setEmoji(data.emoji);
       setCategorieName(data.name);
     }
   }, [data, isVisible]);
+
+  if(!data) {
+    return null;
+  }
+
 
   const onSave = () => {
     if (!categoryName) {

@@ -17,7 +17,6 @@ function HistoryModal({ isVisible, onClose, onDelete,isLoading, order }: History
     return null;
   }
 
-  console.log(order);
   return (
     <Modal.Root size="sm" isVisible={isVisible}>
       <Modal.Header onClose={onClose}>
