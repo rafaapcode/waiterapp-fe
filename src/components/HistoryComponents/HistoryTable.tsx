@@ -1,8 +1,9 @@
+import createTable from "@/hooks/createTable";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Cell, ColumnDef } from "@tanstack/react-table";
 import { Eye, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
-import TableComponent from "../Table/Table";
+import Table from "../Table";
 import { Order, orders } from "./mockData";
 import HistoryModalSkeleton from "./modals/HistoryModalSkeleton";
 
@@ -79,10 +80,11 @@ function HistoryTable() {
     ],
     []
   );
+  const table = createTable(orders, columns);
 
   return (
     <>
-      {!!selectedOrder && <Suspense fallback={<HistoryModalSkeleton isVisible={!!selectedOrder} />}>
+      { !!selectedOrder && <Suspense fallback={<HistoryModalSkeleton isVisible={!!selectedOrder} />}>
         <HistoryModal
           order={selectedOrder}
           isLoading={false}
@@ -97,7 +99,11 @@ function HistoryTable() {
           3
         </span>
       </div>
-      <TableComponent data={orders} columns={columns} />
+
+      <Table.Root table={table}>
+        <Table.Header />
+        <Table.Body />
+      </Table.Root>
     </>
   );
 }

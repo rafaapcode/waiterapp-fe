@@ -1,8 +1,9 @@
+import createTable from "@/hooks/createTable";
 import { Categorie } from "@/types/Categorie";
 import { Cell, ColumnDef } from "@tanstack/react-table";
 import { EditIcon, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
-import TableComponent from "../Table/Table";
+import Table from "../Table";
 import { categories } from "./data";
 import MenuHeader from "./MenuHeader";
 import EditCategorieModalSkeleton from "./modals/categories/EditCategorieModalSkeleton";
@@ -66,6 +67,8 @@ function CategoriesTable() {
     []
   );
 
+  const table = createTable(categories, columns);
+
   return (
     <div>
       {
@@ -85,9 +88,12 @@ function CategoriesTable() {
           />
         </Suspense>
       }
-      <MenuHeader onClick={handleNewCategorieModal} title="Nova Categoria" />
+      <MenuHeader quantity={categories.length ?? 0} onClick={handleNewCategorieModal} title="Nova Categoria" />
       <div className="mt-2 max-h-full overflow-y-auto">
-        <TableComponent data={categories} columns={columns} />
+        <Table.Root table={table}>
+          <Table.Header />
+          <Table.Body />
+        </Table.Root>
       </div>
     </div>
   );
