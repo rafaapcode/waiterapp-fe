@@ -1,14 +1,21 @@
 import { formatCurrency } from "@/utils/formatCurrency";
-import { Cell } from "@tanstack/react-table";
+import { Cell, ColumnDef } from "@tanstack/react-table";
 import { EditIcon, Trash } from "lucide-react";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import TableComponent from "../Table/Table";
 import { products } from "./data";
 import MenuHeader from "./MenuHeader";
+import EditProductModal from "./modals/products/EditProductModal";
+import NewProductModal from "./modals/products/NewProductModal";
 
 function ProductsTable() {
+  const [newProductModal, setNewProductModal] = useState<boolean>(false);
+  const [productIdToEdit, setProductIdToEdit] = useState<string | null>(null);
 
-  const columns = useMemo(() =>  [
+  const handleNewProductModal = useCallback(() => setNewProductModal(prev => !prev),[]);
+  const handleProductIdToEdit = useCallback((id: string | null) => setProductIdToEdit(id),[]);
+
+  const columns = useMemo((): ColumnDef<typeof products[0]>[] =>  [
     {
       accessorKey: "imageUrl",
       header: () => <p className="text-[#333333] font-semibold">Imagem</p>,
@@ -34,10 +41,11 @@ function ProductsTable() {
     {
       id: 'actions',
       header: () => <p className="text-[#333333] font-semibold">Ações</p>,
-      cell: () => {
+      cell: ({row}) => {
+        const { id } = row.original
         return (
           <div className="flex gap-4">
-            <button className="text-[#666666] hover:text-[#9e9e9e] transition-all duration-200">
+            <button onClick={() => handleProductIdToEdit(id)} className="text-[#666666] hover:text-[#9e9e9e] transition-all duration-200">
               <EditIcon size={20} />
             </button>
             <button className="text-red-600 hover:text-red-800 transition-all duration-200">
@@ -52,7 +60,13 @@ function ProductsTable() {
 
   return (
     <div>
-      <MenuHeader onClick={() => {}} title="Novo Produto"/>
+      {
+        newProductModal && <NewProductModal isVisible={newProductModal} onClose={handleNewProductModal}/>
+      }
+      {
+        productIdToEdit && <EditProductModal isVisible={ !!productIdToEdit } onClose={() => handleProductIdToEdit(null)}/>
+      }
+      <MenuHeader onClick={handleNewProductModal} title="Novo Produto"/>
       <div className="mt-2 max-h-full overflow-y-auto">
         <TableComponent data={products} columns={columns}/>
       </div>
