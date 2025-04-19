@@ -1,11 +1,13 @@
 import Body from "./Body";
+import Container from "./Container";
 import Header from "./Header";
 import Root from "./Root";
 
 const Table = {
   Header,
   Body,
-  Root
+  Root,
+  Container
 };
 
 export default Table;

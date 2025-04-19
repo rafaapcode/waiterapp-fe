@@ -1,6 +1,5 @@
 import { Table } from "@tanstack/react-table";
 import { ReactNode } from "react";
-import { Table as TableUI } from "../ui/table";
 import TableContext from "./TableContext";
 
 interface RootProps {
@@ -9,13 +8,7 @@ interface RootProps {
 }
 
 function Root({ children, table }: RootProps) {
-  return (
-    <div className="w-full mt-4 rounded-xl border bg-white overflow-y-auto max-h-full">
-      <TableUI>
-        <TableContext table={table}>{children}</TableContext>
-      </TableUI>
-    </div>
-  );
+  return <TableContext table={table}>{children}</TableContext>;
 }
 
 export default Root;

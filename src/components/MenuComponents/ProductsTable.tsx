@@ -97,8 +97,10 @@ function ProductsTable() {
       <MenuHeader onClick={handleNewProductModal} title="Novo Produto" />
       <div className="mt-2 max-h-full overflow-y-auto">
         <Table.Root table={table}>
-          <Table.Header />
-          <Table.Body />
+          <Table.Container>
+            <Table.Header />
+            <Table.Body />
+          </Table.Container>
         </Table.Root>
       </div>
     </div>

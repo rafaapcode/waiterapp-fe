@@ -9,12 +9,17 @@ import MenuHeader from "./MenuHeader";
 import EditCategorieModalSkeleton from "./modals/categories/EditCategorieModalSkeleton";
 import NewCategorieModalSkeleton from "./modals/categories/NewCategorieModalSkeleton";
 
-const CategorieModal = lazy(() => import("./modals/categories/NewCategorieModal"));
-const EditCategorieModal = lazy(() => import("./modals/categories/EditCategorieModal"));
+const CategorieModal = lazy(
+  () => import("./modals/categories/NewCategorieModal")
+);
+const EditCategorieModal = lazy(
+  () => import("./modals/categories/EditCategorieModal")
+);
 
 function CategoriesTable() {
   const [newCategorieModal, setNewCategorieModal] = useState<boolean>(false);
-  const [editCategorieModal, setEditCategorieModal] = useState<Categorie | null>(null);
+  const [editCategorieModal, setEditCategorieModal] =
+    useState<Categorie | null>(null);
 
   const handleNewCategorieModal = useCallback(
     () => setNewCategorieModal((prev) => !prev),
@@ -71,28 +76,40 @@ function CategoriesTable() {
 
   return (
     <div>
-      {
-        newCategorieModal && <Suspense fallback={<NewCategorieModalSkeleton isVisible={newCategorieModal} />}>
+      {newCategorieModal && (
+        <Suspense
+          fallback={<NewCategorieModalSkeleton isVisible={newCategorieModal} />}
+        >
           <CategorieModal
             isVisible={newCategorieModal}
             onClose={handleNewCategorieModal}
           />
         </Suspense>
-      }
-      {
-        editCategorieModal && <Suspense fallback={<EditCategorieModalSkeleton isVisible={!!editCategorieModal} />}>
+      )}
+      {editCategorieModal && (
+        <Suspense
+          fallback={
+            <EditCategorieModalSkeleton isVisible={!!editCategorieModal} />
+          }
+        >
           <EditCategorieModal
             data={editCategorieModal}
             isVisible={!!editCategorieModal}
             onClose={() => handleEditCategorieModal(null)}
           />
         </Suspense>
-      }
-      <MenuHeader quantity={categories.length ?? 0} onClick={handleNewCategorieModal} title="Nova Categoria" />
+      )}
+      <MenuHeader
+        quantity={categories.length ?? 0}
+        onClick={handleNewCategorieModal}
+        title="Nova Categoria"
+      />
       <div className="mt-2 max-h-full overflow-y-auto">
         <Table.Root table={table}>
-          <Table.Header />
-          <Table.Body />
+          <Table.Container>
+            <Table.Header />
+            <Table.Body />
+          </Table.Container>
         </Table.Root>
       </div>
     </div>
