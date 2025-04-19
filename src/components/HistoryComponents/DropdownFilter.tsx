@@ -3,7 +3,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import useTable from "@/hooks/useTable";
 import { Funnel } from "lucide-react";
 import { type DateRange } from "react-day-picker";
 import { Calendar } from "../ui/calendar";
@@ -14,10 +13,6 @@ interface DropdownDateFilterProps {
 }
 
 function DropdownDateFilter({ date, onSelectDates }: DropdownDateFilterProps) {
-  const { table } = useTable();
-
-  const column = table.getColumn('date');
-
   return (
     <div className="flex justify-end">
       <DropdownMenu>

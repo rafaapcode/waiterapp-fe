@@ -1,8 +1,9 @@
 import createTable from "@/hooks/createTable";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { formatDate } from "@/utils/formatDate";
 import { Cell, ColumnDef, getFilteredRowModel, TableOptions } from "@tanstack/react-table";
 import { Eye, Trash } from "lucide-react";
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { type DateRange } from "react-day-picker";
 import Table from "../Table";
 import DropdownDateFilter from "./DropdownFilter";
@@ -16,16 +17,28 @@ function HistoryTable() {
   const [filterDateSelected, setFilterDateSelected] = useState<
     DateRange | undefined
   >(undefined);
+  const [data] = useState<Order[]>(orders);
+  const [filteredDate, setFilteredData] = useState<Order[]>(orders);
 
   const handleSelectedDate = useCallback(
     (date: DateRange | undefined) => setFilterDateSelected(date),
     []
   );
-
   const handleSelectedOrder = useCallback(
     (order: Order | null) => setSelectedOrder(order),
     []
   );
+
+  useEffect(() => {
+    if(filterDateSelected?.to && filterDateSelected.from) {
+      const formatToDate = formatDate(filterDateSelected.to);
+      const formatFromDate = formatDate(filterDateSelected.from);
+
+      const newOrders = data.filter(order => order.date >= formatFromDate && order.date <= formatToDate);
+
+      setFilteredData(newOrders);
+    }
+  }, [filterDateSelected]);
 
   const columns = useMemo(
     (): ColumnDef<Order>[] => [
@@ -97,12 +110,11 @@ function HistoryTable() {
   );
 
   const optionsTable: Omit<TableOptions<Order>, "columns" | "data" | "getCoreRowModel"> = {
+    manualFiltering: true,
     getFilteredRowModel: getFilteredRowModel()
   };
 
-  const table = createTable(orders, columns, optionsTable);
-
-  console.log(filterDateSelected);
+  const table = createTable(filteredDate, columns, optionsTable);
 
   return (
     <>
