@@ -28,6 +28,13 @@ function HistoryTable() {
     (order: Order | null) => setSelectedOrder(order),
     []
   );
+  const handleResetData = useCallback(
+    () => {
+      setFilteredData(data);
+      setFilterDateSelected(undefined);
+    },
+    []
+  );
 
   useEffect(() => {
     if(filterDateSelected?.to && filterDateSelected.from) {
@@ -142,6 +149,7 @@ function HistoryTable() {
 
       <Table.Root table={table}>
         <DropdownDateFilter
+          handleResetData={handleResetData}
           date={filterDateSelected}
           onSelectDates={handleSelectedDate}
         />
