@@ -1,4 +1,5 @@
 import Modal from "@/components/Modal";
+import ProductForm from "./ProductForm";
 
 interface NewProductModalProps {
   isVisible: boolean;
@@ -13,10 +14,8 @@ function NewProductModal({isVisible, onClose}: NewProductModalProps) {
         <p className="text-[#333333] text-2xl font-semibold">Novo Produto</p>
       </Modal.Header>
 
-      <Modal.Body className="my-4">
-        <div className="bg-red-300">
-          <h1>rafael</h1>
-        </div>
+      <Modal.Body className="my-2">
+       <ProductForm />
       </Modal.Body>
 
       <Modal.CustomFooter>

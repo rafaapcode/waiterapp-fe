@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 interface RootProps {
   children: ReactNode;
   isVisible: boolean;
-  size: "sm" | "md" | "lg";
+  size: "sm" | "md" | "lg" | "xl";
   priority?: boolean;
 }
 
@@ -11,7 +11,8 @@ function Root({ children, isVisible,size, priority}: RootProps) {
   const sizeClass: Record<typeof size, string> = {
     sm: "w-1/4",
     md: "w-1/2",
-    lg: "w-3/4",
+    lg: "w-3/5",
+    xl: "w-3/4",
   };
 
   if (!isVisible) {
