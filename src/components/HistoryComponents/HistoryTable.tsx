@@ -1,10 +1,23 @@
 import createTable from "@/hooks/createTable";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
-import { Cell, ColumnDef, getFilteredRowModel, TableOptions } from "@tanstack/react-table";
+import {
+  Cell,
+  ColumnDef,
+  getFilteredRowModel,
+  TableOptions,
+} from "@tanstack/react-table";
 import { Eye, Trash } from "lucide-react";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { type DateRange } from "react-day-picker";
+import Pagination from "../pagination/Pagination";
 import Table from "../Table";
 import DropdownDateFilter from "./DropdownFilter";
 import { Order, orders } from "./mockData";
@@ -28,20 +41,19 @@ function HistoryTable() {
     (order: Order | null) => setSelectedOrder(order),
     []
   );
-  const handleResetData = useCallback(
-    () => {
-      setFilteredData(data);
-      setFilterDateSelected(undefined);
-    },
-    []
-  );
+  const handleResetData = useCallback(() => {
+    setFilteredData(data);
+    setFilterDateSelected(undefined);
+  }, []);
 
   useEffect(() => {
-    if(filterDateSelected?.to && filterDateSelected.from) {
+    if (filterDateSelected?.to && filterDateSelected.from) {
       const formatToDate = formatDate(filterDateSelected.to);
       const formatFromDate = formatDate(filterDateSelected.from);
 
-      const newOrders = data.filter(order => order.date >= formatFromDate && order.date <= formatToDate);
+      const newOrders = data.filter(
+        (order) => order.date >= formatFromDate && order.date <= formatToDate
+      );
 
       setFilteredData(newOrders);
     }
@@ -116,9 +128,12 @@ function HistoryTable() {
     []
   );
 
-  const optionsTable: Omit<TableOptions<Order>, "columns" | "data" | "getCoreRowModel"> = {
+  const optionsTable: Omit<
+    TableOptions<Order>,
+    "columns" | "data" | "getCoreRowModel"
+  > = {
     manualFiltering: true,
-    getFilteredRowModel: getFilteredRowModel()
+    getFilteredRowModel: getFilteredRowModel(),
   };
 
   const table = createTable(filteredDate, columns, optionsTable);
@@ -157,6 +172,12 @@ function HistoryTable() {
           <Table.Header />
           <Table.Body />
         </Table.Container>
+        <Pagination
+          toFirstPage={() => {}}
+          toLastPage={() => {}}
+          toNextPage={() => {}}
+          toPreviousPage={() => {}}
+        />
       </Table.Root>
     </>
   );
