@@ -2,12 +2,14 @@ import createTable from "@/hooks/createTable";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { Cell, ColumnDef } from "@tanstack/react-table";
 import { EditIcon, Trash } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import Table from "../Table";
 import { products } from "./data";
 import MenuHeader from "./MenuHeader";
 import EditProductModal from "./modals/products/EditProductModal";
-import NewProductModal from "./modals/products/NewProductModal";
+import NewProductModalSkeleton from "./modals/products/NewProductModalSkeleton";
+
+const NewProductModal = lazy(() => import("./modals/products/NewProductModal"));
 
 function ProductsTable() {
   const [newProductModal, setNewProductModal] = useState<boolean>(false);
@@ -83,10 +85,12 @@ function ProductsTable() {
   return (
     <div>
       {newProductModal && (
-        <NewProductModal
+        <Suspense fallback={<NewProductModalSkeleton isVisible={newProductModal}/>}>
+          <NewProductModal
           isVisible={newProductModal}
           onClose={handleNewProductModal}
         />
+        </Suspense>
       )}
       {productIdToEdit && (
         <EditProductModal
