@@ -5,14 +5,20 @@ import {
 } from "@tanstack/react-table";
 import { Edit, Trash } from "lucide-react";
 import {
-  useMemo
+  useCallback,
+  useMemo,
+  useState
 } from "react";
 import MenuHeader from "../MenuComponents/MenuHeader";
 import Pagination from "../pagination/Pagination";
 import Table from "../Table";
 import { users } from "./mockdata";
+import NewUserModal from "./modals/NewUserModal";
 
 function UsersTable() {
+  const [newUserModal, setNewUserModal] = useState<boolean>(false);
+
+  const toggleNewUserModal = useCallback(() => setNewUserModal(prev => !prev),[]);
 
   const columns = useMemo(
     (): ColumnDef<Users>[] => [
@@ -70,9 +76,14 @@ function UsersTable() {
 
   return (
     <>
+    {
+      newUserModal && (
+        <NewUserModal isVisible={newUserModal} onClose={toggleNewUserModal}/>
+      )
+    }
      <MenuHeader
         quantity={users.length ?? 0}
-        onClick={() => {}}
+        onClick={toggleNewUserModal}
         title="Novo usuário"
       />
 
