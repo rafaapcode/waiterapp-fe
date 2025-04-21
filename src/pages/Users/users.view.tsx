@@ -1,3 +1,4 @@
+import UsersTable from "@/components/UsersComponents/usersTable";
 import { FiUsers } from "react-icons/fi";
 import Header from "../../components/Header/Header";
 
@@ -9,6 +10,9 @@ function Users() {
         subtitle="Cadastre e gerencie seus usuários"
         title="Usuários"
       />
+      <section className="w-full mt-8">
+        <UsersTable />
+      </section>
     </main>
   );
 }
