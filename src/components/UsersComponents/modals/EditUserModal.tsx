@@ -53,7 +53,7 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
     <Modal.Root size="sm" isVisible={isVisible}>
       <form action="" onSubmit={onSave}>
         <Modal.Header onClose={onClose}>
-          <p className="text-[#333333] text-2xl font-semibold">Novo Usuário</p>
+          <p className="text-[#333333] text-2xl font-semibold">Editar Usuário</p>
         </Modal.Header>
 
         <Modal.Body className="my-12">
@@ -156,7 +156,7 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
                 type="button"
                 className="disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-red-500 px-6 font-semibold"
               >
-                Excluir Produto
+                Excluir usuário
               </button>
             )}
             <button
