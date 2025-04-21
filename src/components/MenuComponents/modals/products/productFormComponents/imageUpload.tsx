@@ -1,7 +1,11 @@
 import { Image, Upload } from "lucide-react";
 import { ChangeEvent, useRef, useState } from "react";
 
-function ImageUpload() {
+interface ImageUploadProps {
+  imageurl?: string;
+}
+
+function ImageUpload({ imageurl }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
@@ -18,8 +22,11 @@ function ImageUpload() {
       <div className="border rounded-lg overflow-hidden h-[230px]">
         <div className="bg-gray-50 h-[75%] flex items-center justify-center">
           {
-            selectedImage ? <img src={URL.createObjectURL(selectedImage)} alt="image-preview" className="w-full h-full object-cover"/> : <Image size={26} className="text-gray-400" />
+            !imageurl ? (
+              selectedImage ? <img src={URL.createObjectURL(selectedImage)} alt="image-preview" className="w-full h-full object-cover"/> : <Image size={26} className="text-gray-400" />
+            ) : selectedImage ? <img src={URL.createObjectURL(selectedImage)} alt="image-preview" className="w-full h-full object-cover"/> : <img src={imageurl} alt="image-preview" className="w-full h-full object-cover"/>
           }
+
         </div>
         <label
             htmlFor="image-upload"

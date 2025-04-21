@@ -6,10 +6,10 @@ import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import Table from "../Table";
 import { products } from "./data";
 import MenuHeader from "./MenuHeader";
-import EditProductModal from "./modals/products/EditProductModal";
-import NewProductModalSkeleton from "./modals/products/NewProductModalSkeleton";
+import NewProductModalSkeleton from "./modals/products/skeletons/NewProductModalSkeleton";
 
 const NewProductModal = lazy(() => import("./modals/products/NewProductModal"));
+const EditProductModal = lazy(() => import("./modals/products/EditProductModal"));
 
 function ProductsTable() {
   const [newProductModal, setNewProductModal] = useState<boolean>(false);
@@ -85,18 +85,24 @@ function ProductsTable() {
   return (
     <div>
       {newProductModal && (
-        <Suspense fallback={<NewProductModalSkeleton isVisible={newProductModal}/>}>
+        <Suspense
+          fallback={<NewProductModalSkeleton isVisible={newProductModal} />}
+        >
           <NewProductModal
-          isVisible={newProductModal}
-          onClose={handleNewProductModal}
-        />
+            isVisible={newProductModal}
+            onClose={handleNewProductModal}
+          />
         </Suspense>
       )}
       {productIdToEdit && (
-        <EditProductModal
-          isVisible={!!productIdToEdit}
-          onClose={() => handleProductIdToEdit(null)}
-        />
+        <Suspense
+          fallback={<NewProductModalSkeleton isVisible={!!productIdToEdit} />}
+        >
+          <EditProductModal
+            isVisible={!!productIdToEdit}
+            onClose={() => handleProductIdToEdit(null)}
+          />
+        </Suspense>
       )}
       <MenuHeader onClick={handleNewProductModal} title="Novo Produto" />
       <div className="mt-2 max-h-full overflow-y-auto">

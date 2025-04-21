@@ -1,11 +1,11 @@
 import { lazy, Suspense, useCallback, useState } from "react";
-import IngredientModalSkeleton from "./ingredientsModal/IngredientModalSkeleton";
-import Categories from "./productFormComponents/categories";
-import ImageUpload from "./productFormComponents/imageUpload";
-import Ingredients from "./productFormComponents/ingredients";
+import IngredientModalSkeleton from "../ingredientsModal/IngredientModalSkeleton";
+import Categories from "../productFormComponents/categories";
+import ImageUpload from "../productFormComponents/imageUpload";
+import Ingredients from "../productFormComponents/ingredients";
 
 const IngredientModal = lazy(
-  () => import("./ingredientsModal/IngredientModal")
+  () => import("../ingredientsModal/IngredientModal")
 );
 
 export default function ProductForm() {

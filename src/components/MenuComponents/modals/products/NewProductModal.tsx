@@ -1,5 +1,5 @@
 import Modal from "@/components/Modal";
-import ProductForm from "./ProductForm";
+import ProductForm from "./forms/ProductForm";
 
 interface NewProductModalProps {
   isVisible: boolean;

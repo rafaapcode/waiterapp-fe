@@ -1,45 +1,64 @@
 import Modal from "@/components/Modal";
+import { lazy, Suspense, useCallback, useState } from "react";
+import EditProductForm from "./forms/EditProductForm";
+import RemoveProductModalSkeleton from "./skeletons/RemoveProductModalSkeleton";
+
+const RemoveProductModal = lazy(() => import("./RemoveProductModal"));
 
 interface EditProductModalProps {
   isVisible: boolean;
   onClose: () => void;
 }
 
+function EditProductModal({ isVisible, onClose }: EditProductModalProps) {
+  const [removeProductModal, setRemoveProductModal] = useState<boolean>(false);
 
-function EditProductModal({isVisible, onClose}: EditProductModalProps) {
+  const toggleRemoveProductModal = useCallback(
+    () => setRemoveProductModal((prev) => !prev),
+    []
+  );
+
   return (
-    <Modal.Root size="lg" isVisible={isVisible}>
-      <Modal.Header onClose={onClose}>
-        <p className="text-[#333333] text-2xl font-semibold">Editar Produto</p>
-      </Modal.Header>
+    <>
+      {
+        removeProductModal && (
+          <Suspense fallback={<RemoveProductModalSkeleton isVisible={removeProductModal}/>}>
+             <RemoveProductModal data={{imageUrl: "", category: "🍕 Pizza",name: "pizza", price: "12.00"}}  isVisible={removeProductModal} onClose={toggleRemoveProductModal} />
+          </Suspense>
+        )
+      }
+      <Modal.Root size="lg" isVisible={isVisible}>
+        <Modal.Header onClose={onClose}>
+          <p className="text-[#333333] text-2xl font-semibold">
+            Editar Produto
+          </p>
+        </Modal.Header>
 
-      <Modal.Body className="my-4">
-        <div className="bg-red-300">
-          <h1>Edição</h1>
-        </div>
-      </Modal.Body>
+        <Modal.Body className="my-4">
+          <EditProductForm />
+        </Modal.Body>
 
-      <Modal.CustomFooter>
-        <div className="w-full flex justify-between">
-        <button
-            // onClick={onSave}
-            // disabled={categoryName.length < 4}
-            type="button"
-            className="disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-red-500 px-6 font-semibold"
-          >
-            Excluir Produto
-          </button>
-          <button
-            // onClick={onSave}
-            // disabled={categoryName.length < 4}
-            type="button"
-            className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
-          >
-            Salvar alterações
-          </button>
-        </div>
-      </Modal.CustomFooter>
-    </Modal.Root>
+        <Modal.CustomFooter>
+          <div className="w-full flex justify-between">
+            <button
+              onClick={toggleRemoveProductModal}
+              type="button"
+              className="disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-red-500 px-6 font-semibold"
+            >
+              Excluir Produto
+            </button>
+            <button
+              // onClick={onSave}
+              // disabled={categoryName.length < 4}
+              type="button"
+              className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
+            >
+              Salvar alterações
+            </button>
+          </div>
+        </Modal.CustomFooter>
+      </Modal.Root>
+    </>
   );
 }
 
