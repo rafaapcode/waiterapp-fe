@@ -4,10 +4,13 @@ import { FormEvent } from "react";
 interface DeleteUserModalProps {
   isVisible: boolean;
   onClose: () => void;
-  userId: string;
+  userData: {
+    name: string;
+    email: string;
+  };
 }
 
-function DeleteUserModal({ isVisible, onClose, userId }: DeleteUserModalProps) {
+function DeleteUserModal({ isVisible, onClose, userData }: DeleteUserModalProps) {
 
   const onSave = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,7 +18,7 @@ function DeleteUserModal({ isVisible, onClose, userId }: DeleteUserModalProps) {
   };
 
   return (
-    <Modal.Root size="sm" isVisible={isVisible}>
+    <Modal.Root size="sm" isVisible={isVisible} priority>
       <form action="" onSubmit={onSave}>
         <Modal.Header onClose={onClose}>
           <p className="text-[#333333] text-2xl font-semibold">Editar Usuário</p>
@@ -30,11 +33,12 @@ function DeleteUserModal({ isVisible, onClose, userId }: DeleteUserModalProps) {
               <input
                 required
                 readOnly
+                defaultValue={userData.name}
                 minLength={4}
                 type="text"
                 id="name"
                 name="name"
-                className="p-4 w-full border border-gray-300 rounded-md transition-all duration-200 outline-red-500 focus:outline-red-500"
+                className="p-4 w-full border border-gray-300 rounded-md transition-all duration-200 text-gray-400"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -42,12 +46,13 @@ function DeleteUserModal({ isVisible, onClose, userId }: DeleteUserModalProps) {
                 Email
               </label>
               <input
+                defaultValue={userData.email}
                 required
                 readOnly
                 type="email"
                 id="email"
                 name="email"
-                className="p-4 w-full border border-gray-300 rounded-md transition-all duration-200 outline-red-500 focus:outline-red-500"
+                className="p-4 w-full border border-gray-300 rounded-md transition-all duration-200 text-gray-400"
               />
             </div>
           </div>
@@ -56,7 +61,7 @@ function DeleteUserModal({ isVisible, onClose, userId }: DeleteUserModalProps) {
         <Modal.CustomFooter>
           <div className="w-full flex justify-between">
           <button
-                // onClick={toggleRemoveProductModal}
+                onClick={onClose}
                 type="button"
                 className="disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-red-500 px-6 font-semibold"
               >
@@ -68,7 +73,7 @@ function DeleteUserModal({ isVisible, onClose, userId }: DeleteUserModalProps) {
               type="submit"
               className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
             >
-              Salvar alterações
+              Excluir usuário
             </button>
           </div>
         </Modal.CustomFooter>
