@@ -1,5 +1,3 @@
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { lazy, Suspense, useCallback, useState } from "react";
 import IngredientModalSkeleton from "./ingredientsModal/IngredientModalSkeleton";
 import Categories from "./productFormComponents/categories";
@@ -11,10 +9,8 @@ const IngredientModal = lazy(
 );
 
 export default function ProductForm() {
-  const [productName, setProductName] = useState("Quatro Queijos");
-  const [description, setDescription] = useState(
-    "Pizza de Quatro Queijos com borda tradicional"
-  );
+  const [productName, setProductName] = useState("");
+  const [description, setDescription] = useState("");
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
 
   const handleIngredientModal = useCallback(
@@ -46,11 +42,13 @@ export default function ProductForm() {
           >
             Nome do Produto
           </label>
-          <Input
+          <input
             id="productName"
+            type="text"
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
-            className="w-full"
+            className="p-4 w-full border border-gray-200 rounded-md transition-all duration-200 outline-red-500 focus:outline-red-500"
+            placeholder="Ex: Pizza de Mussarela"
           />
         </div>
 
@@ -62,13 +60,14 @@ export default function ProductForm() {
           >
             Descrição
           </label>
-          <Textarea
+          <textarea
+            rows={3}
+            maxLength={110}
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full resize-none"
-            maxLength={110}
-            rows={3}
+            className="w-full resize-none border border-gray-200 rounded-md px-2 py-1 transition-all duration-200 outline-red-500 focus:outline-red-500"
+            placeholder="Ex: Pizza de Quatro Queijos com borda tradicional"
           />
           <p className="text-xs text-gray-500 mt-1">Máximo 110 caracteres</p>
         </div>

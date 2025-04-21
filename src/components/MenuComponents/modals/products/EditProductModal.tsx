@@ -20,7 +20,15 @@ function EditProductModal({isVisible, onClose}: EditProductModalProps) {
       </Modal.Body>
 
       <Modal.CustomFooter>
-        <div className="w-full flex justify-end">
+        <div className="w-full flex justify-between">
+        <button
+            // onClick={onSave}
+            // disabled={categoryName.length < 4}
+            type="button"
+            className="disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-red-500 px-6 font-semibold"
+          >
+            Excluir Produto
+          </button>
           <button
             // onClick={onSave}
             // disabled={categoryName.length < 4}

@@ -1,5 +1,4 @@
 import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 
 interface Ingredient {
@@ -54,12 +53,13 @@ function Ingredients({onClick}:IngredientsProps) {
         <div className="my-6">
           <label htmlFor="ingredientSearch">Busque o ingrediente</label>
           <div className="mt-2 relative">
-            <Input
+            <input
               id='ingredientSearch'
-              placeholder="Ex: Mussarela"
+              type="text"
               value={searchTerm}
               onChange={(e: any) => setSearchTerm(e.target.value)}
-              className="w-full h-full p-4"
+              className="p-4 w-full border border-gray-200 rounded-md transition-all duration-200 outline-red-500 focus:outline-red-500"
+              placeholder="Ex: Mussarela"
             />
           </div>
         </div>
@@ -68,7 +68,8 @@ function Ingredients({onClick}:IngredientsProps) {
           {filteredIngredients.map((ingredient) => (
             <div
               key={ingredient.id}
-              className="flex items-center justify-between p-4 border rounded-lg"
+              className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-gray-100 transition-all duration-200"
+              onClick={() => toggleIngredient(ingredient.id)}
             >
               <div className="flex items-center">
                 <span className="mr-2">
