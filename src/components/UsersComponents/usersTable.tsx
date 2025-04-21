@@ -13,10 +13,12 @@ import MenuHeader from "../MenuComponents/MenuHeader";
 import Pagination from "../pagination/Pagination";
 import Table from "../Table";
 import { users } from "./mockdata";
+import EditUserModal from "./modals/EditUserModal";
 import NewUserModal from "./modals/NewUserModal";
 
 function UsersTable() {
   const [newUserModal, setNewUserModal] = useState<boolean>(false);
+  const [userToEdit, setUserToEditModal] = useState<string | null>(null);
 
   const toggleNewUserModal = useCallback(() => setNewUserModal(prev => !prev),[]);
 
@@ -56,7 +58,7 @@ function UsersTable() {
           return (
             <div className="flex gap-4">
               <button
-                onClick={() => {}}
+                onClick={() => setUserToEditModal(row.original.id)}
                 className="text-[#666666] hover:text-[#9e9e9e] transition-all duration-200"
               >
                 <Edit size={20} />
@@ -79,6 +81,11 @@ function UsersTable() {
     {
       newUserModal && (
         <NewUserModal isVisible={newUserModal} onClose={toggleNewUserModal}/>
+      )
+    }
+    {
+      userToEdit && (
+        <EditUserModal userId={userToEdit} isVisible={!!userToEdit} onClose={() => setUserToEditModal(null)}/>
       )
     }
      <MenuHeader
