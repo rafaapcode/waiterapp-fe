@@ -5,6 +5,8 @@ import {
 } from "@tanstack/react-table";
 import { Edit, Trash } from "lucide-react";
 import {
+  lazy,
+  Suspense,
   useCallback,
   useMemo,
   useState
@@ -13,8 +15,11 @@ import MenuHeader from "../MenuComponents/MenuHeader";
 import Pagination from "../pagination/Pagination";
 import Table from "../Table";
 import { users } from "./mockdata";
-import EditUserModal from "./modals/EditUserModal";
-import NewUserModal from "./modals/NewUserModal";
+import EditUserModalSkeleton from "./skeletons/EditUserModalSkeleton";
+import NewUserModalSkeleton from "./skeletons/NewUserModalSkeleton";
+
+const NewUserModal = lazy(() => import("./modals/NewUserModal"));
+const EditUserModal = lazy(() => import("./modals/EditUserModal"));
 
 function UsersTable() {
   const [newUserModal, setNewUserModal] = useState<boolean>(false);
@@ -80,12 +85,16 @@ function UsersTable() {
     <>
     {
       newUserModal && (
-        <NewUserModal isVisible={newUserModal} onClose={toggleNewUserModal}/>
+        <Suspense fallback={<NewUserModalSkeleton isVisible={newUserModal}/>}>
+          <NewUserModal isVisible={newUserModal} onClose={toggleNewUserModal}/>
+        </Suspense>
       )
     }
     {
       userToEdit && (
-        <EditUserModal userId={userToEdit} isVisible={!!userToEdit} onClose={() => setUserToEditModal(null)}/>
+        <Suspense fallback={<EditUserModalSkeleton isVisible={!!userToEdit}/>}>
+          <EditUserModal userId={userToEdit} isVisible={!!userToEdit} onClose={() => setUserToEditModal(null)}/>
+        </Suspense>
       )
     }
      <MenuHeader

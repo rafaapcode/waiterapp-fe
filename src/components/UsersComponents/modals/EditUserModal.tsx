@@ -1,7 +1,9 @@
 import Modal from "@/components/Modal";
-import { ChangeEvent, FormEvent, useCallback, useState } from "react";
+import { ChangeEvent, FormEvent, lazy, Suspense, useCallback, useState } from "react";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
-import DeleteUserModal from "./DeleteUserModal";
+import DeleteUserModalSkeleton from "../skeletons/DeleteUserModalSkeleton";
+
+const DeleteUserModal = lazy(() => import("./DeleteUserModal"));
 
 interface EditUserModalProps {
   isVisible: boolean;
@@ -61,7 +63,9 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
     <>
       {
         deleteUserModal && (
-          <DeleteUserModal isVisible={deleteUserModal} onClose={toggleDeleteUserModel} userData={{name: "Lucas", email: "lucas@gmail.com"}}/>
+          <Suspense fallback={<DeleteUserModalSkeleton isVisible={deleteUserModal}/>}>
+            <DeleteUserModal isVisible={deleteUserModal} onClose={toggleDeleteUserModel} userData={{name: "Lucas", email: "lucas@gmail.com"}}/>
+          </Suspense>
         )
       }
       <Modal.Root size="sm" isVisible={isVisible}>
