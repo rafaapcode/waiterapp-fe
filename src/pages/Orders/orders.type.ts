@@ -6,6 +6,6 @@ export type OrdersViewType = {
   inProduction: Order[];
   done: Order[];
   handleCancelOrder: (orderId: string) => void;
-  handleStatusChange: (orderId: string, status: Order['status']) => Promise<void>;
+  handleStatusChange: (orderId: string, status: Order['status']) => void;
  }
 };

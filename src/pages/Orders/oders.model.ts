@@ -42,12 +42,10 @@ export const useOrdersModel = (): OrdersViewType => {
     setOrders((prev) => prev.filter((order) => order._id !== orderId));
   };
 
-  const handleStatusChange = async (
+  const handleStatusChange = (
     orderId: string,
     status: Order["status"]
   ) => {
-    await apiclient.patch(`/order/${orderId}`, { status });
-
     setOrders((prev) =>
       prev.map((order) =>
         order._id === orderId ? { ...order, status } : order

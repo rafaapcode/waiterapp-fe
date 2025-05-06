@@ -46,28 +46,32 @@ function OrdersBoard({
       toast.success(
         `O pedido da mesa ${selectedOrder?.table} teve o status alterado!`
       );
-      await onChangeOrderStatus(selectedOrder!._id, status);
+      await apiclient.patch(`/order/${selectedOrder!._id}`, { status });
+      onChangeOrderStatus(selectedOrder!._id, status);
       setIsloading(false);
       setIsModalOpen(false);
     } catch (error: any) {
       if (error.response && error.response.data.message) {
-        toast.error(
-          error.response.data.message
-        );
+        toast.error(error.response.data.message);
       }
-      toast.error(
-        "Erro ao mudar o status da sua ordem."
-      );
+      toast.error("Erro ao mudar o status da sua ordem.");
     }
   };
 
   const handleCancelOrder = async () => {
-    setIsloading(true);
-    await apiclient.delete(`/order/${selectedOrder?._id}`);
-    toast.success(`O pedido da mesa ${selectedOrder?.table} foi cancelado!`);
-    onCancelOrder(selectedOrder?._id!);
-    setIsloading(false);
-    setIsModalOpen(false);
+    try {
+      setIsloading(true);
+      await apiclient.delete(`/order/${selectedOrder?._id}`);
+      toast.success(`O pedido da mesa ${selectedOrder?.table} foi cancelado!`);
+      onCancelOrder(selectedOrder?._id!);
+      setIsloading(false);
+      setIsModalOpen(false);
+    } catch (error: any) {
+      if (error.response && error.response.data.message) {
+        toast.error(error.response.data.message);
+      }
+      toast.error("Erro ao mudar ao cancelar a sua ordem.");
+    }
   };
 
   return (

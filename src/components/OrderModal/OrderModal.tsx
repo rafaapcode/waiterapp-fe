@@ -10,7 +10,7 @@ type OrderModalProps = {
   handleCloseModal: () => void;
   handleCancelOrder: () => Promise<void>;
   isLoading: boolean;
-  onChangeOrderStatus: () => Promise<void>;
+  onChangeOrderStatus: () => void;
 };
 
 function OrderModal({
@@ -61,6 +61,7 @@ function OrderModal({
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
+
   return (
     <Modal.Root isVisible={visible} size="sm">
       <Modal.Header onClose={handleCloseModal}>
