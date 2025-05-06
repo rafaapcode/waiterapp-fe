@@ -1,3 +1,4 @@
+import { CONSTANTS } from "@/constants";
 import { BiFoodMenu } from "react-icons/bi";
 import { CgLogOff, CgProfile } from "react-icons/cg";
 import { FiUsers } from "react-icons/fi";
@@ -10,7 +11,7 @@ function Sidebar() {
   const navigate = useNavigate();
 
   const logoutUser = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem(CONSTANTS.TOKEN);
     return navigate("/");
   }
 

@@ -10,7 +10,7 @@ type OrderModalProps = {
   handleCloseModal: () => void;
   handleCancelOrder: () => Promise<void>;
   isLoading: boolean;
-  onChangeOrderStatus: () => void;
+  onChangeOrderStatus: () => Promise<void>;
 };
 
 function OrderModal({

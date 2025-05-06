@@ -1,3 +1,4 @@
+import { useSetToken } from "@/hooks/useToken";
 import { apiclient } from "@/utils/apiClient";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -5,6 +6,7 @@ import { toast } from "react-toastify";
 import { LoginModelType } from "./login.type";
 
 export const useLoginModel = (): LoginModelType => {
+  const setToken = useSetToken();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [splashTimeout, setSplashTimeout] = useState<boolean>(true);
@@ -34,12 +36,11 @@ export const useLoginModel = (): LoginModelType => {
   }, []);
 
   useEffect(() => {
-    const isValidCredentials = (
+    const isValidCredentials =
       !!userCredentials.email &&
       !!userCredentials.password &&
       userCredentials.email.length > 0 &&
-      userCredentials.password.length >= 8
-    );
+      userCredentials.password.length >= 8;
 
     setIsValid(isValidCredentials);
   }, [userCredentials]);
@@ -51,22 +52,24 @@ export const useLoginModel = (): LoginModelType => {
       if (isValid) {
         const res = await apiclient.post("/user/login", userCredentials);
 
-        if(res.status !== 200) {
+        if (res.status !== 200) {
           toast.error(res.data.message || "Erro ao realizar o login");
           return;
         }
-        if(!window.localStorage) {
+        const tokenResponse = setToken(res.data.access_token);
+
+        if (!tokenResponse) {
           toast.error(res.data.message || "Erro ao realizar o login");
-          return
+          return;
         }
-        localStorage.setItem("token", res.data.access_token);
-        return navigate('/app/home')
+
+        return navigate("/app/home");
       } else {
         console.error("Invalid credentials");
         toast.error("Credenciais inválidas");
       }
     } catch (error: any) {
-      if(error.response && error.response.status === 404) {
+      if (error.response && error.response.status === 404) {
         toast.warning("Usuário não encontrado !");
       } else {
         toast.error(error.message);
@@ -85,7 +88,7 @@ export const useLoginModel = (): LoginModelType => {
       splashTimeout,
       handleSubmit,
       userCredentials,
-      isLoading
+      isLoading,
     },
   };
 };

@@ -1,7 +1,7 @@
+import { apiclient } from "@/utils/apiClient";
 import { lazy, Suspense, useState } from "react";
 import { toast } from "react-toastify";
 import { Order } from "../../types/Order";
-import { api } from "../../utils/api";
 import OrderModalSkeleton from "../OrderModal/OrderModalSkeleton";
 
 const OrderModal = lazy(() => import("../OrderModal/OrderModal"));
@@ -11,7 +11,10 @@ type OrdersBoardProps = {
   title: string;
   orders: Order[];
   onCancelOrder: (orderId: string) => void;
-  onChangeOrderStatus: (orderId: string, status: Order["status"]) => void;
+  onChangeOrderStatus: (
+    orderId: string,
+    status: Order["status"]
+  ) => Promise<void>;
 };
 
 function OrdersBoard({
@@ -36,22 +39,31 @@ function OrdersBoard({
   };
 
   const handleChangeOrderStatus = async () => {
-    setIsloading(true);
-    const status =
-      selectedOrder?.status === "WAITING" ? "IN_PRODUCTION" : "DONE";
-    await api.patch(`/order/${selectedOrder?._id}`, { status });
-
-    toast.success(
-      `O pedido da mesa ${selectedOrder?.table} teve o status alterado!`
-    );
-    onChangeOrderStatus(selectedOrder!._id, status);
-    setIsloading(false);
-    setIsModalOpen(false);
+    try {
+      setIsloading(true);
+      const status =
+        selectedOrder?.status === "WAITING" ? "IN_PRODUCTION" : "DONE";
+      toast.success(
+        `O pedido da mesa ${selectedOrder?.table} teve o status alterado!`
+      );
+      await onChangeOrderStatus(selectedOrder!._id, status);
+      setIsloading(false);
+      setIsModalOpen(false);
+    } catch (error: any) {
+      if (error.response && error.response.data.message) {
+        toast.error(
+          error.response.data.message
+        );
+      }
+      toast.error(
+        "Erro ao mudar o status da sua ordem."
+      );
+    }
   };
 
   const handleCancelOrder = async () => {
     setIsloading(true);
-    await api.delete(`/order/${selectedOrder?._id}`);
+    await apiclient.delete(`/order/${selectedOrder?._id}`);
     toast.success(`O pedido da mesa ${selectedOrder?.table} foi cancelado!`);
     onCancelOrder(selectedOrder?._id!);
     setIsloading(false);
@@ -60,8 +72,8 @@ function OrdersBoard({
 
   return (
     <div className="p-4 flex-1 border border-[#ccc] rounded-2xl flex flex-col items-center">
-      {
-        isModalOpen && <Suspense fallback={<OrderModalSkeleton visible={isModalOpen} />}>
+      {isModalOpen && (
+        <Suspense fallback={<OrderModalSkeleton visible={isModalOpen} />}>
           <OrderModal
             handleCloseModal={handleCloseModal}
             order={selectedOrder}
@@ -71,7 +83,7 @@ function OrdersBoard({
             onChangeOrderStatus={handleChangeOrderStatus}
           />
         </Suspense>
-      }
+      )}
       <header className="p-2 text-base flex items-center gap-2">
         <span>{icon}</span>
         <strong>{title}</strong>
