@@ -12,6 +12,11 @@ export const useOrdersModel = (): OrdersViewType => {
       transports: ["websocket"],
     });
 
+    socket.on("orders@restart_day", () => {
+      setOrders([]);
+    });
+
+
     socket.on("orders@new", (order: any) => {
       const newOrder = {
         _id: order._id,
