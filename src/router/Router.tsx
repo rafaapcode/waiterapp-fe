@@ -10,8 +10,10 @@ import Layout from "./Layout";
 function Router() {
   return (
     <Routes>
-      <Route index element={<Login />} />
-      <Route element={<Authentication />}>
+      <Route element={<Authentication isPrivate={false}/>}>
+        <Route index element={<Login />} />
+      </Route>
+      <Route element={<Authentication isPrivate/>}>
         <Route path="/app" element={<Layout />}>
           <Route path="home" element={<Home />} />
           <Route path="history" element={<History />} />

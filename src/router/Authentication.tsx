@@ -1,21 +1,18 @@
-import { Navigate, Outlet, useLocation } from "react-router";
+import { Navigate, Outlet } from "react-router";
 
-function Authentication() {
-  const location = useLocation();
-  const pathname = location.pathname;
-
+function Authentication({ isPrivate }: {isPrivate: boolean}) {
   if (!window.localStorage) {
     return <Navigate to="/" replace />;
   }
 
   const token = localStorage.getItem("token")
 
-  if (!token && pathname.includes("/app")) {
+  if (!token && isPrivate) {
     return <Navigate to="/" replace />;
   }
 
-  if(token && pathname === "/") {
-    return <Navigate to="/" replace />;
+  if(token && !isPrivate) {
+    return <Navigate to="/app/home" replace />;
   }
 
   return <Outlet />;

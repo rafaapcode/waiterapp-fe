@@ -3,10 +3,16 @@ import { CgLogOff, CgProfile } from "react-icons/cg";
 import { FiUsers } from "react-icons/fi";
 import { IoNewspaperOutline } from "react-icons/io5";
 import { RiHomeLine } from "react-icons/ri";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import LogoSidebar from "../../assets/images/icon-sidebar.svg";
 
 function Sidebar() {
+  const navigate = useNavigate();
+
+  const logoutUser = () => {
+    localStorage.removeItem("token");
+    return navigate("/");
+  }
 
   const styleStyleConditional = ({isActive}: {isActive: boolean}) => isActive ? "group relative h-[108px] w-[108px] flex flex-col gap-2 items-center justify-center text-[#D73035]" : "group h-[108px] w-[108px] flex flex-col gap-2 items-center justify-center text-[#666666]"
 
@@ -58,14 +64,14 @@ function Sidebar() {
           <p>Meu Perfil</p>
           <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150"/>
         </NavLink>
-        <NavLink
-          to={"/app/logout"}
-          className={styleStyleConditional}
+        <button
+          onClick={logoutUser}
+          className="h-[108px] w-[108px] flex flex-col gap-2 items-center justify-center text-[#666666]"
         >
           <CgLogOff  size={28} />
           <p>Sair</p>
           <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150"/>
-        </NavLink>
+        </button>
       </nav>
     </section>
   );
