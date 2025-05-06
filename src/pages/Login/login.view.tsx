@@ -1,3 +1,4 @@
+import { LoaderCircle } from "lucide-react";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
 import SplashScreen from "../../components/SplashScreen/SplashScreen";
 import { LoginModelType } from "./login.type";
@@ -10,9 +11,9 @@ function LoginView({ props }: LoginModelType) {
     isValid,
     handleSubmit,
     handleChange,
-    userCredentials
+    userCredentials,
+    isLoading
   } = props;
-
   if (splashTimeout) {
     return <SplashScreen />;
   }
@@ -63,11 +64,11 @@ function LoginView({ props }: LoginModelType) {
               </div>
             </div>
             <button
-              disabled={!isValid}
+              disabled={!isValid || isLoading}
               type="submit"
               className="bg-[#D73035] hover:bg-[#ec4248] text-white p-2 disabled:bg-[#CCCCCC] py-[14px] px-7 rounded-[44px] transition-all  duration-200"
             >
-              Fazer Login
+              {isLoading ? <LoaderCircle size={26} className="animate-spin mx-auto"/> : "Fazer Login"}
             </button>
           </div>
         </form>

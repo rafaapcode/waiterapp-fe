@@ -9,5 +9,6 @@ export interface LoginModelType {
     isValid: boolean | string;
     handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
     userCredentials: {email: string; password: string};
+    isLoading: boolean;
   };
 }

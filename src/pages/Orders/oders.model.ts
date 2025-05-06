@@ -1,7 +1,7 @@
+import { apiclient } from "@/lib/apiClient";
 import { useEffect, useState } from "react";
 import socketIo from "socket.io-client";
 import { Order } from "../../types/Order";
-import { api } from "../../utils/api";
 import { OrdersViewType } from "./orders.type";
 
 export const useOrdersModel = (): OrdersViewType => {
@@ -9,7 +9,7 @@ export const useOrdersModel = (): OrdersViewType => {
 
   useEffect(() => {
     const socket = socketIo('http://localhost:3001', {
-      transports: ['websocket'],
+      transports: ['websocket']
     });
 
     socket.on('orders@new', (order: any) => {
@@ -25,10 +25,12 @@ export const useOrdersModel = (): OrdersViewType => {
   }, []);
 
   useEffect(() => {
-    api.get("/order").then(({ data }) => {
+    apiclient.get("/order", { withCredentials: true }).then(({ data }) => {
       setOrders(data);
     });
   }, []);
+
+
   const waiting = orders ? orders.filter((order) => order.status === "WAITING") : [];
   const inProduction = orders ? orders.filter(
     (order) => order.status === "IN_PRODUCTION"
