@@ -1,4 +1,4 @@
-import { apiclient } from "@/lib/apiClient";
+import { apiclient } from "@/utils/apiClient";
 import { useEffect, useState } from "react";
 import { redirect } from "react-router";
 import { toast } from "react-toastify";
@@ -59,7 +59,7 @@ export const useLoginModel = (): LoginModelType => {
           return
         }
         localStorage.setItem("token", res.data.access_token);
-        return redirect('/app/home')
+        redirect('/app/home')
       } else {
         console.error("Invalid credentials");
         toast.error("Credenciais inválidas");

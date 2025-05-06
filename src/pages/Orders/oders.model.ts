@@ -1,4 +1,4 @@
-import { apiclient } from "@/lib/apiClient";
+import { apiclient } from "@/utils/apiClient";
 import { useEffect, useState } from "react";
 import socketIo from "socket.io-client";
 import { Order } from "../../types/Order";
