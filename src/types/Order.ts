@@ -16,8 +16,23 @@ export interface Order {
   }[];
 }
 
+export type HistoryOrder = {
+  id: string;
+  table: string;
+  data: string;
+  totalPrice: string;
+  name: string;
+  category: string;
+  itens: {
+    imageUrl: string;
+    quantity: number;
+    name: string;
+    price: string;
+  }[];
+}
+
 export interface Products {
-  _id: string;
+  _id: string | number;
   quantity: number;
   product: {
     _id: string;
@@ -28,3 +43,4 @@ export interface Products {
     priceInDiscount: number;
   };
 }
+

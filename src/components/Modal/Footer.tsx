@@ -1,3 +1,4 @@
+import { LoaderCircle } from "lucide-react";
 import { ReactNode } from "react";
 
 interface FooterProps {
@@ -32,7 +33,7 @@ function Footer({
         type="button"
         className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none"
       >
-        {cancelTitle}
+        {isLoading ? <LoaderCircle size={22} className="animate-spin"/> :cancelTitle}
       </button>
       {children && children}
       {!children && (
@@ -42,7 +43,7 @@ function Footer({
           type="button"
           className="bg-[#D73035] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
         >
-          {successTitle}
+          {isLoading ? <LoaderCircle size={22} className="animate-spin"/> :successTitle}
         </button>
       )}
     </footer>

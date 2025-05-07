@@ -25,8 +25,11 @@ export const useOrdersModel = (): OrdersViewType => {
         products: order.products,
         createdAt: order.createdAt,
       };
+
       setOrders((prev) => [...prev, newOrder]);
     });
+
+
   }, []);
 
   useEffect(() => {

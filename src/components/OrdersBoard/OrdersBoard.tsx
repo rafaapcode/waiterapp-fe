@@ -14,7 +14,7 @@ type OrdersBoardProps = {
   onChangeOrderStatus: (
     orderId: string,
     status: Order["status"]
-  ) => Promise<void>;
+  ) => void;
 };
 
 function OrdersBoard({

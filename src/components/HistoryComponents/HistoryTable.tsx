@@ -1,5 +1,6 @@
 import createTable from "@/hooks/createTable";
-import { formatCurrency } from "@/utils/formatCurrency";
+import { HistoryOrder } from "@/types/Order";
+import { apiclient } from "@/utils/apiClient";
 import { formatDate } from "@/utils/formatDate";
 import {
   Cell,
@@ -20,30 +21,41 @@ import { type DateRange } from "react-day-picker";
 import Pagination from "../pagination/Pagination";
 import Table from "../Table";
 import DropdownDateFilter from "./DropdownFilter";
-import { Order, orders } from "./mockData";
 import HistoryModalSkeleton from "./modals/HistoryModalSkeleton";
 
 const HistoryModal = lazy(() => import("./modals/HistoryModal"));
 
 function HistoryTable() {
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<HistoryOrder | null>(null);
   const [filterDateSelected, setFilterDateSelected] = useState<
     DateRange | undefined
   >(undefined);
-  const [data] = useState<Order[]>(orders);
-  const [filteredDate, setFilteredData] = useState<Order[]>(orders);
+  const [data, setOrders] = useState<HistoryOrder[]>([]);
+  const [filteredData, setFilteredData] = useState<HistoryOrder[]>([]);
 
   const handleSelectedDate = useCallback(
     (date: DateRange | undefined) => setFilterDateSelected(date),
     []
   );
   const handleSelectedOrder = useCallback(
-    (order: Order | null) => setSelectedOrder(order),
+    (order: HistoryOrder | null) => setSelectedOrder(order),
     []
   );
+
   const handleResetData = useCallback(() => {
     setFilteredData(data);
     setFilterDateSelected(undefined);
+  }, []);
+
+  useEffect(() => {
+    apiclient
+      .get("/order/0")
+      .then((res) => {
+        const { data } = res;
+        setOrders(data as HistoryOrder[]);
+        setFilteredData(data as HistoryOrder[]);
+      })
+      .catch(() => setOrders([]));
   }, []);
 
   useEffect(() => {
@@ -52,15 +64,16 @@ function HistoryTable() {
       const formatFromDate = formatDate(filterDateSelected.from);
 
       const newOrders = data.filter(
-        (order) => order.date >= formatFromDate && order.date <= formatToDate
+        (order) => order.data >= formatFromDate && order.data <= formatToDate
       );
 
       setFilteredData(newOrders);
     }
   }, [filterDateSelected]);
 
+
   const columns = useMemo(
-    (): ColumnDef<Order>[] => [
+    (): ColumnDef<HistoryOrder>[] => [
       {
         id: "table",
         accessorKey: "table",
@@ -69,11 +82,14 @@ function HistoryTable() {
       },
       {
         id: "date",
-        accessorKey: "date",
+        accessorKey: "data",
         header: () => (
           <div className="flex gap-2 items-center text-[#333333] font-semibold">
             <p>Data</p>
           </div>
+        ),
+        cell: ({ cell }: { cell: Cell<any, any> }) => (
+          <p>{Intl.DateTimeFormat("pt-BR", {dateStyle: "short"}).format(new Date(cell.getValue()))}</p>
         ),
         size: 10,
       },
@@ -91,10 +107,10 @@ function HistoryTable() {
       },
       {
         id: "total",
-        accessorKey: "total",
+        accessorKey: "totalPrice",
         header: () => <p className="text-[#333333] font-semibold">Total</p>,
         cell: ({ cell }: { cell: Cell<any, any> }) => (
-          <p>{formatCurrency(Number(cell.getValue() ?? 0))}</p>
+          <p>{cell.getValue() ?? "R$ 0,00"}</p>
         ),
         size: 16,
       },
@@ -129,14 +145,14 @@ function HistoryTable() {
   );
 
   const optionsTable: Omit<
-    TableOptions<Order>,
+    TableOptions<HistoryOrder>,
     "columns" | "data" | "getCoreRowModel"
   > = {
     manualFiltering: true,
     getFilteredRowModel: getFilteredRowModel(),
   };
 
-  const table = createTable(filteredDate, columns, optionsTable);
+  const table = createTable(filteredData, columns, optionsTable);
 
   return (
     <>
@@ -146,10 +162,9 @@ function HistoryTable() {
         >
           <HistoryModal
             order={selectedOrder}
-            isLoading={false}
             isVisible={!!selectedOrder}
             onClose={() => handleSelectedOrder(null)}
-            onDelete={() => Promise.resolve()}
+            onDelete={(id: string) => apiclient.delete(`/order/history/${id}`)}
           />
         </Suspense>
       )}
@@ -157,7 +172,7 @@ function HistoryTable() {
         <div className="flex">
           <h2 className="text-lg font-semibold text=[#333333]">Pedidos</h2>
           <span className="bg-[#CCCCCC33] ml-4 px-2 py-1 rounded-md font-semibold">
-            {orders.length ?? 0}
+            {data.length ?? 0}
           </span>
         </div>
       </div>
