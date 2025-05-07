@@ -55,17 +55,17 @@ function HistoryModal({ isVisible, onClose, onDelete, order }: HistoryModal) {
           <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto">
             {order.itens.map((iten, i) => (
               <ProductInfo
-                key={i}
+                key={iten.id}
                 products={{
-                  _id: i,
+                  _id: iten.id,
                   quantity: iten.quantity,
                   product: {
-                    _id: "123312",
-                    discount: false,
+                    _id: iten.id,
+                    discount: iten.discount,
                     imageUrl: iten.imageUrl,
                     name: iten.name,
-                    price: 12.0,
-                    priceInDiscount: 0.0,
+                    price: iten.price,
+                    priceInDiscount: iten.priceInDiscount,
                   },
                 }}
               />

@@ -49,7 +49,7 @@ function HistoryTable() {
 
   useEffect(() => {
     apiclient
-      .get("/order/0")
+      .get("/order/history/0")
       .then((res) => {
         const { data } = res;
         setOrders(data as HistoryOrder[]);
