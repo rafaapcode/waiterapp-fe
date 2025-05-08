@@ -45,7 +45,7 @@ function HistoryTable() {
   const handleResetData = useCallback(() => {
     setFilteredData(data);
     setFilterDateSelected(undefined);
-  }, []);
+  }, [data]);
 
   useEffect(() => {
     apiclient

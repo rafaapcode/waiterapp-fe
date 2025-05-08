@@ -28,8 +28,6 @@ export const useOrdersModel = (): OrdersViewType => {
 
       setOrders((prev) => [...prev, newOrder]);
     });
-
-
   }, []);
 
   useEffect(() => {
