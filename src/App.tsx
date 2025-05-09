@@ -1,14 +1,20 @@
 import { ToastContainer } from "react-toastify";
 import "react-toastify/ReactToastify.css";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router";
 import Router from "./router/Router";
+
+
+const queryClient = new QueryClient();
 
 function App() {
   return (
     <BrowserRouter>
-      <Router />
-      <ToastContainer position="bottom-center" />
+      <QueryClientProvider client={queryClient}>
+        <Router />
+        <ToastContainer position="bottom-center" />
+      </QueryClientProvider>
     </BrowserRouter>
   );
 }

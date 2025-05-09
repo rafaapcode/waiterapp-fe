@@ -1,19 +1,25 @@
 import { apiclient } from "@/utils/apiClient";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import socketIo from "socket.io-client";
 import { Order } from "../../types/Order";
 import { OrdersViewType } from "./orders.type";
 
 export const useOrdersModel = (): OrdersViewType => {
-  const [orders, setOrders] = useState<Order[]>([]);
-
+  const { data: orders } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async (): Promise<Order[]> => {
+      const {data: orders} = await apiclient.get("/order");
+      return orders;
+    }
+  });
   useEffect(() => {
     const socket = socketIo("http://localhost:3001", {
       transports: ["websocket"],
     });
 
     socket.on("orders@restart_day", () => {
-      setOrders([]);
+      // setOrders([]);
     });
 
 
@@ -26,15 +32,15 @@ export const useOrdersModel = (): OrdersViewType => {
         createdAt: order.createdAt,
       };
 
-      setOrders((prev) => [...prev, newOrder]);
+      // setOrders((prev) => [...prev, newOrder]);
     });
   }, []);
 
-  useEffect(() => {
-    apiclient.get("/order").then(({ data }) => {
-      setOrders(data);
-    });
-  }, []);
+  // useEffect(() => {
+  //   apiclient.get("/order").then(({ data }) => {
+  //     setOrders(data);
+  //   });
+  // }, []);
 
   const waiting = orders
     ? orders.filter((order) => order.status === "WAITING")
@@ -45,18 +51,18 @@ export const useOrdersModel = (): OrdersViewType => {
   const done = orders ? orders.filter((order) => order.status === "DONE") : [];
 
   const handleCancelOrder = (orderId: string) => {
-    setOrders((prev) => prev.filter((order) => order._id !== orderId));
+    // setOrders((prev) => prev.filter((order) => order._id !== orderId));
   };
 
   const handleStatusChange = (
     orderId: string,
     status: Order["status"]
   ) => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order._id === orderId ? { ...order, status } : order
-      )
-    );
+    // setOrders((prev) =>
+    //   prev.map((order) =>
+    //     order._id === orderId ? { ...order, status } : order
+    //   )
+    // );
   };
 
   return {
