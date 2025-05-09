@@ -1,11 +1,13 @@
 import { apiclient } from "@/utils/apiClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import socketIo from "socket.io-client";
 import { Order } from "../../types/Order";
 import { OrdersViewType } from "./orders.type";
 
 export const useOrdersModel = (): OrdersViewType => {
+  const queryClient = useQueryClient();
+
   const { data: orders } = useQuery({
     queryKey: ['orders'],
     queryFn: async (): Promise<Order[]> => {
@@ -13,13 +15,27 @@ export const useOrdersModel = (): OrdersViewType => {
       return orders;
     }
   });
+  const {mutateAsync: cancelOrderMutation} = useMutation({
+    mutationFn: async (orderId: string) => await apiclient.delete(`/order/${orderId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['orders']})
+    },
+  })
+    const {mutateAsync: updateOrderMutation} = useMutation({
+    mutationFn: async (data: {orderId: string; status: Order['status']}) => await apiclient.patch(`/order/${data.orderId}`, { status: data.status }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['orders']})
+    },
+  })
+
   useEffect(() => {
     const socket = socketIo("http://localhost:3001", {
       transports: ["websocket"],
     });
 
     socket.on("orders@restart_day", () => {
-      // setOrders([]);
+      console.log('ordens resetadas');
+      queryClient.invalidateQueries({queryKey: ['orders']})
     });
 
 
@@ -31,16 +47,15 @@ export const useOrdersModel = (): OrdersViewType => {
         products: order.products,
         createdAt: order.createdAt,
       };
+      console.log('Chegou novo pedido', newOrder);
 
-      // setOrders((prev) => [...prev, newOrder]);
+      queryClient.invalidateQueries({queryKey: ['orders']})
     });
-  }, []);
 
-  // useEffect(() => {
-  //   apiclient.get("/order").then(({ data }) => {
-  //     setOrders(data);
-  //   });
-  // }, []);
+    return () => {
+      socket.close();
+    }
+  }, []);
 
   const waiting = orders
     ? orders.filter((order) => order.status === "WAITING")
@@ -50,19 +65,15 @@ export const useOrdersModel = (): OrdersViewType => {
     : [];
   const done = orders ? orders.filter((order) => order.status === "DONE") : [];
 
-  const handleCancelOrder = (orderId: string) => {
-    // setOrders((prev) => prev.filter((order) => order._id !== orderId));
+  const handleCancelOrder = async (orderId: string) => {
+    await cancelOrderMutation(orderId);
   };
 
-  const handleStatusChange = (
+  const handleStatusChange = async (
     orderId: string,
     status: Order["status"]
   ) => {
-    // setOrders((prev) =>
-    //   prev.map((order) =>
-    //     order._id === orderId ? { ...order, status } : order
-    //   )
-    // );
+    await updateOrderMutation({orderId, status});
   };
 
   return {

@@ -1,4 +1,3 @@
-import { apiclient } from "@/utils/apiClient";
 import { lazy, Suspense, useState } from "react";
 import { toast } from "react-toastify";
 import { Order } from "../../types/Order";
@@ -10,11 +9,11 @@ type OrdersBoardProps = {
   icon: string;
   title: string;
   orders: Order[];
-  onCancelOrder: (orderId: string) => void;
+  onCancelOrder: (orderId: string) => Promise<void>;
   onChangeOrderStatus: (
     orderId: string,
     status: Order["status"]
-  ) => void;
+  ) => Promise<void>;
 };
 
 function OrdersBoard({
@@ -43,11 +42,10 @@ function OrdersBoard({
       setIsloading(true);
       const status =
         selectedOrder?.status === "WAITING" ? "IN_PRODUCTION" : "DONE";
+      await onChangeOrderStatus(selectedOrder!._id, status);
       toast.success(
         `O pedido da mesa ${selectedOrder?.table} teve o status alterado!`
       );
-      await apiclient.patch(`/order/${selectedOrder!._id}`, { status });
-      onChangeOrderStatus(selectedOrder!._id, status);
       setIsloading(false);
       setIsModalOpen(false);
     } catch (error: any) {
@@ -61,9 +59,8 @@ function OrdersBoard({
   const handleCancelOrder = async () => {
     try {
       setIsloading(true);
-      await apiclient.delete(`/order/${selectedOrder?._id}`);
+      await onCancelOrder(selectedOrder?._id!);
       toast.success(`O pedido da mesa ${selectedOrder?.table} foi cancelado!`);
-      onCancelOrder(selectedOrder?._id!);
       setIsloading(false);
       setIsModalOpen(false);
     } catch (error: any) {
