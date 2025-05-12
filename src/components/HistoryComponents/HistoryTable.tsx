@@ -258,11 +258,19 @@ function HistoryTable() {
             onSelectDates={handleSelectedDate}
           />
         </div>
-        <Table.Container>
-          <Table.Header />
-          <Table.Body />
-        </Table.Container>
+        {filteredData.history.length === 0 && (
+          <div className="w-full mt-4 rounded-md border bg-white overflow-y-auto max-h-full text-center text-2xl py-10">
+            <p>Nenhum pedido encontrado !</p>
+          </div>
+        )}
+        {filteredData.history.length > 0 && (
+          <Table.Container>
+            <Table.Header />
+            <Table.Body />
+          </Table.Container>
+        )}
         <Pagination
+          existsOrder={filteredData.history.length !== 0}
           totalPage={filteredData.total_pages}
           page={page}
           handlePage={handlePage}
