@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { AxiosError } from "axios";
 import { Eye, Trash } from "lucide-react";
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { type DateRange } from "react-day-picker";
 import { toast } from "react-toastify";
 import Pagination from "../pagination/Pagination";
@@ -28,7 +28,7 @@ function HistoryTable() {
     DateRange | undefined
   >(undefined);
   const [filteredData, setFilteredData] = useState<HistoryOrder[]>([]);
-  const [page, setCurrentPage] = useState<number>(0);
+  const [page, setCurrentPage] = useState<number>(1);
 
   const { mutateAsync: deleteOrder, isPending } = useMutation({
     mutationFn: async (id: string) =>
@@ -50,7 +50,7 @@ function HistoryTable() {
   });
 
   const {refetch: refetchData} = useQuery({
-    queryKey: ["history_orders"],
+    queryKey: ["history_orders", {page}],
     queryFn: async (): Promise<HistoryOrder[]> => {
       try {
         const { data: historyOrders } = await apiclient.get(
@@ -68,7 +68,7 @@ function HistoryTable() {
 
   const { isFetching, refetch: refetchFilteredData } = useQuery({
     enabled: !!(filterDateSelected?.to && filterDateSelected.from),
-    queryKey: ["history_orders", filterDateSelected],
+    queryKey: ["history_orders", {page}, filterDateSelected],
     queryFn: async (): Promise<HistoryOrder[]> => {
       try {
         const { data: historyOrdersFiltered } = await apiclient.get(
@@ -84,36 +84,37 @@ function HistoryTable() {
 
         return historyOrdersFiltered;
       } catch (error) {
-        queryClient.invalidateQueries({ queryKey: ["history_orders"] });
-        setFilterDateSelected(undefined);
-        toast.error("Nenhum pedido encontrado nessa data !");
+        setFilteredData([]);
         return [];
       }
     },
   });
 
+  useEffect(() => {
+     if(filterDateSelected?.to && filterDateSelected.from) {
+      refetchFilteredData();
+    } else {
+      refetchData();
+    }
+  }, [page, refetchFilteredData, refetchData]);
+
   const handlePage = (type: "Next" | "Previous" | "First" | "Last") => {
     switch (type) {
       case "First":
-        setCurrentPage(0);
+        setCurrentPage(1);
         break;
       case "Previous":
-        setCurrentPage((prev) => (prev > 0 ? prev - 1 : 0));
+        setCurrentPage((prev) => ((prev >= 0 && prev > 1) ? prev - 1 : 1));
         break;
       case "Next":
         setCurrentPage((prev) => prev + 1);
         break;
       case "Last":
-        setCurrentPage(0);
+        setCurrentPage(1);
         break;
       default:
-        setCurrentPage(0);
+        setCurrentPage(1);
         break;
-    }
-    if(filterDateSelected?.to && filterDateSelected.from) {
-      refetchFilteredData();
-    } else {
-      refetchData();
     }
   };
 
@@ -127,7 +128,7 @@ function HistoryTable() {
   );
 
   const handleResetData = () => {
-    queryClient.invalidateQueries({ queryKey: ["history_orders"] });
+    queryClient.invalidateQueries({ queryKey: ["history_orders", {page}] });
     setFilterDateSelected(undefined);
   };
 
@@ -219,7 +220,6 @@ function HistoryTable() {
   };
 
   const table = createTable(filteredData, columns, optionsTable);
-
   return (
     <>
       {!!selectedOrder && (
@@ -259,7 +259,7 @@ function HistoryTable() {
           <Table.Header />
           <Table.Body />
         </Table.Container>
-        <Pagination page={page} handlePage={handlePage} />
+        <Pagination page={page - 1} handlePage={handlePage} />
       </Table.Root>
     </>
   );
