@@ -22,18 +22,20 @@ const HistoryModal = lazy(() => import("./modals/HistoryModal"));
 
 function HistoryTable() {
   const queryClient = useQueryClient();
+
   const [selectedOrder, setSelectedOrder] = useState<HistoryOrder | null>(null);
   const [filterDateSelected, setFilterDateSelected] = useState<
     DateRange | undefined
   >(undefined);
   const [filteredData, setFilteredData] = useState<HistoryOrder[]>([]);
+  const [page, setCurrentPage] = useState<number>(0);
 
   const { mutateAsync: deleteOrder, isPending } = useMutation({
     mutationFn: async (id: string) =>
       await apiclient.delete(`/order/history/${id}`),
     onSuccess: () => {
       toast.success("Registro deletado com Sucesso !");
-      queryClient.invalidateQueries({queryKey: ["history_orders"]})
+      queryClient.invalidateQueries({ queryKey: ["history_orders"] });
       setSelectedOrder(null);
     },
     onError: (error) => {
@@ -47,11 +49,13 @@ function HistoryTable() {
     },
   });
 
-  useQuery({
+  const {refetch: refetchData} = useQuery({
     queryKey: ["history_orders"],
     queryFn: async (): Promise<HistoryOrder[]> => {
       try {
-        const { data: historyOrders } = await apiclient.get("/order/history/0");
+        const { data: historyOrders } = await apiclient.get(
+          `/order/history/${page}`
+        );
         setFilteredData(historyOrders as HistoryOrder[]);
         return historyOrders;
       } catch (error) {
@@ -62,13 +66,19 @@ function HistoryTable() {
     },
   });
 
-  const { isFetching } = useQuery({
+  const { isFetching, refetch: refetchFilteredData } = useQuery({
     enabled: !!(filterDateSelected?.to && filterDateSelected.from),
     queryKey: ["history_orders", filterDateSelected],
     queryFn: async (): Promise<HistoryOrder[]> => {
       try {
         const { data: historyOrdersFiltered } = await apiclient.get(
-          `/order/history/filter/0?from=${filterDateSelected?.from}&to=${filterDateSelected?.to}`
+          `/order/history/filter/${page}`,
+          {
+            params: {
+              to: filterDateSelected?.to,
+              from: filterDateSelected?.from,
+            },
+          }
         );
         setFilteredData(historyOrdersFiltered as HistoryOrder[]);
 
@@ -81,6 +91,31 @@ function HistoryTable() {
       }
     },
   });
+
+  const handlePage = (type: "Next" | "Previous" | "First" | "Last") => {
+    switch (type) {
+      case "First":
+        setCurrentPage(0);
+        break;
+      case "Previous":
+        setCurrentPage((prev) => (prev > 0 ? prev - 1 : 0));
+        break;
+      case "Next":
+        setCurrentPage((prev) => prev + 1);
+        break;
+      case "Last":
+        setCurrentPage(0);
+        break;
+      default:
+        setCurrentPage(0);
+        break;
+    }
+    if(filterDateSelected?.to && filterDateSelected.from) {
+      refetchFilteredData();
+    } else {
+      refetchData();
+    }
+  };
 
   const handleSelectedDate = useCallback(
     (date: DateRange | undefined) => setFilterDateSelected(date),
@@ -161,7 +196,10 @@ function HistoryTable() {
               >
                 <Eye size={20} />
               </button>
-              <button onClick={() => deleteOrder(row.original.id)} className="text-red-600 hover:text-red-800 transition-all duration-200">
+              <button
+                onClick={() => deleteOrder(row.original.id)}
+                className="text-red-600 hover:text-red-800 transition-all duration-200"
+              >
                 <Trash size={20} />
               </button>
             </div>
@@ -221,12 +259,7 @@ function HistoryTable() {
           <Table.Header />
           <Table.Body />
         </Table.Container>
-        <Pagination
-          toFirstPage={() => {}}
-          toLastPage={() => {}}
-          toNextPage={() => {}}
-          toPreviousPage={() => {}}
-        />
+        <Pagination page={page} handlePage={handlePage} />
       </Table.Root>
     </>
   );

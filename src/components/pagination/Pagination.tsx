@@ -7,31 +7,27 @@ import {
 import { Button } from "../ui/button";
 
 interface PaginationProps {
-  toNextPage: () => void;
-  toPreviousPage: () => void;
-  toFirstPage: () => void;
-  toLastPage: () => void;
+  page: number;
+  handlePage: (type: "Next" | "Previous" | "First" | "Last") => void;
 }
 
 function Pagination({
-  toFirstPage,
-  toLastPage,
-  toNextPage,
-  toPreviousPage,
+  page,
+  handlePage
 }: PaginationProps) {
   return (
     <div className="flex justify-end mt-2 gap-2">
-      <Button onClick={toFirstPage} variant="outline">
+      <Button disabled={page === 0} onClick={() => handlePage("First")} variant="outline">
         <ChevronsLeftIcon />
       </Button>
-      <Button onClick={toPreviousPage} variant="outline">
+      <Button disabled={page === 0} onClick={() => handlePage("Previous")} variant="outline">
         <ChevronLeftIcon />
       </Button>
 
-      <Button onClick={toNextPage} variant="outline">
+      <Button onClick={() => handlePage("Next")} variant="outline">
         <ChevronRightIcon />
       </Button>
-      <Button onClick={toLastPage} variant="outline">
+      <Button onClick={() => handlePage("Last")} variant="outline">
         <ChevronsRightIcon />
       </Button>
     </div>
