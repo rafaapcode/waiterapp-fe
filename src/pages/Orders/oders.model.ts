@@ -11,10 +11,15 @@ export const useOrdersModel = (): OrdersViewType => {
   const { data: orders } = useQuery({
     queryKey: ["orders"],
     queryFn: async (): Promise<Order[]> => {
-      const { data: orders } = await apiclient.get("/order");
-      return orders;
+      try {
+        const { data: orders } = await apiclient.get("/order");
+        return orders;
+      } catch (error) {
+        return [];
+      }
     },
   });
+
   const { mutateAsync: cancelOrderMutation } = useMutation({
     mutationFn: async (orderId: string) =>
       await apiclient.delete(`/order/${orderId}`),

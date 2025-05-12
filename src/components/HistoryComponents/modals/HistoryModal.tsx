@@ -1,30 +1,22 @@
 import { HistoryOrder } from "@/types/Order";
+import { AxiosResponse } from "axios";
 import { LoaderCircle } from "lucide-react";
-import { useState } from "react";
 import { toast } from "react-toastify";
 import Modal from "../../Modal";
 import ProductInfo from "../../ProductInfo/ProductInfo";
 
 interface HistoryModal {
   isVisible: boolean;
+  isLoading: boolean;
   onClose: () => void;
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (id: string) => Promise<AxiosResponse<any, any>>;
   order: HistoryOrder | null;
 }
 
-function HistoryModal({ isVisible, onClose, onDelete, order }: HistoryModal) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
+function HistoryModal({ isVisible, onClose, onDelete, order, isLoading }: HistoryModal) {
   const handleOnDelete = () => {
     if (order?.id) {
-      setIsLoading(true);
-      onDelete(order.id)
-        .then(() => {
-          toast.success("Registro deletado com Sucesso !");
-          onClose();
-        })
-        .catch(() => toast.error("Erro ao deletar o registro"))
-        .finally(() => setIsLoading(false));
+      onDelete(order.id);
     } else {
       toast.error("Erro ao encontrar o ID do registro");
     }

@@ -1,23 +1,18 @@
 import createTable from "@/hooks/createTable";
 import { HistoryOrder } from "@/types/Order";
 import { apiclient } from "@/utils/apiClient";
-import { formatDate } from "@/utils/formatDate";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Cell,
   ColumnDef,
   getFilteredRowModel,
   TableOptions,
 } from "@tanstack/react-table";
+import { AxiosError } from "axios";
 import { Eye, Trash } from "lucide-react";
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { type DateRange } from "react-day-picker";
+import { toast } from "react-toastify";
 import Pagination from "../pagination/Pagination";
 import Table from "../Table";
 import DropdownDateFilter from "./DropdownFilter";
@@ -26,12 +21,66 @@ import HistoryModalSkeleton from "./modals/HistoryModalSkeleton";
 const HistoryModal = lazy(() => import("./modals/HistoryModal"));
 
 function HistoryTable() {
+  const queryClient = useQueryClient();
   const [selectedOrder, setSelectedOrder] = useState<HistoryOrder | null>(null);
   const [filterDateSelected, setFilterDateSelected] = useState<
     DateRange | undefined
   >(undefined);
-  const [data, setOrders] = useState<HistoryOrder[]>([]);
   const [filteredData, setFilteredData] = useState<HistoryOrder[]>([]);
+
+  const { mutateAsync: deleteOrder, isPending } = useMutation({
+    mutationFn: async (id: string) =>
+      await apiclient.delete(`/order/history/${id}`),
+    onSuccess: () => {
+      toast.success("Registro deletado com Sucesso !");
+      queryClient.invalidateQueries({queryKey: ["history_orders"]})
+      setSelectedOrder(null);
+    },
+    onError: (error) => {
+      const err = error as AxiosError;
+      if (err.status === 404) {
+        toast.warning("Id não encontrado !");
+      } else {
+        toast.error("Erro ao encontrar o ID do registro");
+      }
+      return;
+    },
+  });
+
+  useQuery({
+    queryKey: ["history_orders"],
+    queryFn: async (): Promise<HistoryOrder[]> => {
+      try {
+        const { data: historyOrders } = await apiclient.get("/order/history/0");
+        setFilteredData(historyOrders as HistoryOrder[]);
+        return historyOrders;
+      } catch (error) {
+        setFilteredData([]);
+        toast.error("Nenhum pedido encontrado !");
+        return [];
+      }
+    },
+  });
+
+  const { isFetching } = useQuery({
+    enabled: !!(filterDateSelected?.to && filterDateSelected.from),
+    queryKey: ["history_orders", filterDateSelected],
+    queryFn: async (): Promise<HistoryOrder[]> => {
+      try {
+        const { data: historyOrdersFiltered } = await apiclient.get(
+          `/order/history/filter/0?from=${filterDateSelected?.from}&to=${filterDateSelected?.to}`
+        );
+        setFilteredData(historyOrdersFiltered as HistoryOrder[]);
+
+        return historyOrdersFiltered;
+      } catch (error) {
+        queryClient.invalidateQueries({ queryKey: ["history_orders"] });
+        setFilterDateSelected(undefined);
+        toast.error("Nenhum pedido encontrado nessa data !");
+        return [];
+      }
+    },
+  });
 
   const handleSelectedDate = useCallback(
     (date: DateRange | undefined) => setFilterDateSelected(date),
@@ -42,35 +91,10 @@ function HistoryTable() {
     []
   );
 
-  const handleResetData = useCallback(() => {
-    setFilteredData(data);
+  const handleResetData = () => {
+    queryClient.invalidateQueries({ queryKey: ["history_orders"] });
     setFilterDateSelected(undefined);
-  }, [data]);
-
-  useEffect(() => {
-    apiclient
-      .get("/order/history/0")
-      .then((res) => {
-        const { data } = res;
-        setOrders(data as HistoryOrder[]);
-        setFilteredData(data as HistoryOrder[]);
-      })
-      .catch(() => setOrders([]));
-  }, []);
-
-  useEffect(() => {
-    if (filterDateSelected?.to && filterDateSelected.from) {
-      const formatToDate = formatDate(filterDateSelected.to);
-      const formatFromDate = formatDate(filterDateSelected.from);
-
-      const newOrders = data.filter(
-        (order) => order.data >= formatFromDate && order.data <= formatToDate
-      );
-
-      setFilteredData(newOrders);
-    }
-  }, [filterDateSelected]);
-
+  };
 
   const columns = useMemo(
     (): ColumnDef<HistoryOrder>[] => [
@@ -89,7 +113,11 @@ function HistoryTable() {
           </div>
         ),
         cell: ({ cell }: { cell: Cell<any, any> }) => (
-          <p>{Intl.DateTimeFormat("pt-BR", {dateStyle: "short"}).format(new Date(cell.getValue()))}</p>
+          <p>
+            {Intl.DateTimeFormat("pt-BR", { dateStyle: "short" }).format(
+              new Date(cell.getValue())
+            )}
+          </p>
         ),
         size: 10,
       },
@@ -133,7 +161,7 @@ function HistoryTable() {
               >
                 <Eye size={20} />
               </button>
-              <button className="text-red-600 hover:text-red-800 transition-all duration-200">
+              <button onClick={() => deleteOrder(row.original.id)} className="text-red-600 hover:text-red-800 transition-all duration-200">
                 <Trash size={20} />
               </button>
             </div>
@@ -161,10 +189,11 @@ function HistoryTable() {
           fallback={<HistoryModalSkeleton isVisible={!!selectedOrder} />}
         >
           <HistoryModal
+            isLoading={isPending}
             order={selectedOrder}
             isVisible={!!selectedOrder}
             onClose={() => handleSelectedOrder(null)}
-            onDelete={(id: string) => apiclient.delete(`/order/history/${id}`)}
+            onDelete={(id: string) => deleteOrder(id)}
           />
         </Suspense>
       )}
@@ -172,17 +201,22 @@ function HistoryTable() {
         <div className="flex">
           <h2 className="text-lg font-semibold text=[#333333]">Pedidos</h2>
           <span className="bg-[#CCCCCC33] ml-4 px-2 py-1 rounded-md font-semibold">
-            {data.length ?? 0}
+            {filteredData.length ?? 0}
           </span>
         </div>
       </div>
 
       <Table.Root table={table}>
-        <DropdownDateFilter
-          handleResetData={handleResetData}
-          date={filterDateSelected}
-          onSelectDates={handleSelectedDate}
-        />
+        <div className="flex justify-end items-center gap-14">
+          {isFetching && (
+            <p className="text-zinc-400 animate-pulse">Atualizando dados...</p>
+          )}
+          <DropdownDateFilter
+            handleResetData={handleResetData}
+            date={filterDateSelected}
+            onSelectDates={handleSelectedDate}
+          />
+        </div>
         <Table.Container>
           <Table.Header />
           <Table.Body />
