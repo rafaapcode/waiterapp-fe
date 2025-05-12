@@ -1,5 +1,7 @@
 import { useSetToken } from "@/hooks/useToken";
 import { apiclient } from "@/utils/apiClient";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
@@ -8,7 +10,6 @@ import { LoginModelType } from "./login.type";
 export const useLoginModel = (): LoginModelType => {
   const setToken = useSetToken();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [splashTimeout, setSplashTimeout] = useState<boolean>(true);
   const [isValid, setIsValid] = useState<boolean>(false);
   const [passwordVisibility, setPasswordVisibility] = useState<
@@ -20,6 +21,38 @@ export const useLoginModel = (): LoginModelType => {
   }>({
     email: "",
     password: "",
+  });
+
+  const { mutateAsync: loginUser, isPending } = useMutation({
+    mutationFn: async (data: typeof userCredentials) =>
+      await apiclient.post("/user/login", data),
+    onSuccess: ({ data, status }) => {
+      if (isValid) {
+        if (status !== 200) {
+          toast.error(data.message || "Erro ao realizar o login");
+          return;
+        }
+        const tokenResponse = setToken(data.access_token);
+
+        if (!tokenResponse) {
+          toast.error(data.message || "Erro ao realizar o login");
+          return;
+        }
+
+        return navigate("/app/home");
+      } else {
+        toast.error("Credenciais inválidas");
+      }
+    },
+    onError: (error) => {
+      const err = error as AxiosError;
+      if(err.status === 404) {
+        toast.warning("Usuário ou senha incorretos");
+      } else {
+        toast.error("Erro ao realizar o login , contate o suporte");
+      }
+      return;
+    },
   });
 
   const handleChangeCredentials = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,36 +80,7 @@ export const useLoginModel = (): LoginModelType => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      setIsLoading(true);
-      if (isValid) {
-        const res = await apiclient.post("/user/login", userCredentials);
-
-        if (res.status !== 200) {
-          toast.error(res.data.message || "Erro ao realizar o login");
-          return;
-        }
-        const tokenResponse = setToken(res.data.access_token);
-
-        if (!tokenResponse) {
-          toast.error(res.data.message || "Erro ao realizar o login");
-          return;
-        }
-
-        return navigate("/app/home");
-      } else {
-        console.error("Invalid credentials");
-        toast.error("Credenciais inválidas");
-      }
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
-        toast.warning("Usuário não encontrado !");
-      } else {
-        toast.error(error.message);
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    await loginUser(userCredentials);
   };
 
   return {
@@ -88,7 +92,7 @@ export const useLoginModel = (): LoginModelType => {
       splashTimeout,
       handleSubmit,
       userCredentials,
-      isLoading,
+      isLoading: isPending,
     },
   };
 };

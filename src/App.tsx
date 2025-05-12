@@ -12,8 +12,8 @@ function App() {
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
+        <ToastContainer position="top-center" />
         <Router />
-        <ToastContainer position="bottom-center" />
       </QueryClientProvider>
     </BrowserRouter>
   );

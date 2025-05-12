@@ -9,24 +9,26 @@ export const useOrdersModel = (): OrdersViewType => {
   const queryClient = useQueryClient();
 
   const { data: orders } = useQuery({
-    queryKey: ['orders'],
+    queryKey: ["orders"],
     queryFn: async (): Promise<Order[]> => {
-      const {data: orders} = await apiclient.get("/order");
+      const { data: orders } = await apiclient.get("/order");
       return orders;
-    }
+    },
   });
-  const {mutateAsync: cancelOrderMutation} = useMutation({
-    mutationFn: async (orderId: string) => await apiclient.delete(`/order/${orderId}`),
+  const { mutateAsync: cancelOrderMutation } = useMutation({
+    mutationFn: async (orderId: string) =>
+      await apiclient.delete(`/order/${orderId}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['orders']})
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-  })
-    const {mutateAsync: updateOrderMutation} = useMutation({
-    mutationFn: async (data: {orderId: string; status: Order['status']}) => await apiclient.patch(`/order/${data.orderId}`, { status: data.status }),
+  });
+  const { mutateAsync: updateOrderMutation } = useMutation({
+    mutationFn: async (data: { orderId: string; status: Order["status"] }) =>
+      await apiclient.patch(`/order/${data.orderId}`, { status: data.status }),
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['orders']})
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-  })
+  });
 
   useEffect(() => {
     const socket = socketIo("http://localhost:3001", {
@@ -34,10 +36,9 @@ export const useOrdersModel = (): OrdersViewType => {
     });
 
     socket.on("orders@restart_day", () => {
-      console.log('ordens resetadas');
-      queryClient.invalidateQueries({queryKey: ['orders']})
+      console.log("ordens resetadas");
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     });
-
 
     socket.on("orders@new", (order: any) => {
       const newOrder = {
@@ -47,14 +48,14 @@ export const useOrdersModel = (): OrdersViewType => {
         products: order.products,
         createdAt: order.createdAt,
       };
-      console.log('Chegou novo pedido', newOrder);
+      console.log("Chegou novo pedido", newOrder);
 
-      queryClient.invalidateQueries({queryKey: ['orders']})
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
     });
 
     return () => {
       socket.close();
-    }
+    };
   }, []);
 
   const waiting = orders
@@ -73,7 +74,7 @@ export const useOrdersModel = (): OrdersViewType => {
     orderId: string,
     status: Order["status"]
   ) => {
-    await updateOrderMutation({orderId, status});
+    await updateOrderMutation({ orderId, status });
   };
 
   return {
