@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router";
-import History from "../pages/History/history.view";
+import History from "../pages/History/history.page";
 import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login.page";
 import Menu from "../pages/Menu/menu.view";
