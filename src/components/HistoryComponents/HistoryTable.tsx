@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { AxiosError } from "axios";
 import { Eye, Trash } from "lucide-react";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { type DateRange } from "react-day-picker";
 import { toast } from "react-toastify";
 import Pagination from "../pagination/Pagination";
@@ -27,7 +27,10 @@ function HistoryTable() {
   const [filterDateSelected, setFilterDateSelected] = useState<
     DateRange | undefined
   >(undefined);
-  const [filteredData, setFilteredData] = useState<HistoryOrder[]>([]);
+  const [filteredData, setFilteredData] = useState<{
+    total_pages: number;
+    history: HistoryOrder[];
+  }>({ total_pages: 0, history: [] });
   const [page, setCurrentPage] = useState<number>(1);
 
   const { mutateAsync: deleteOrder, isPending } = useMutation({
@@ -49,27 +52,34 @@ function HistoryTable() {
     },
   });
 
-  const {refetch: refetchData} = useQuery({
-    queryKey: ["history_orders", {page}],
-    queryFn: async (): Promise<HistoryOrder[]> => {
+  useQuery({
+    queryKey: ["history_orders", { page }],
+    queryFn: async (): Promise<{
+      total_pages: number;
+      history: HistoryOrder[];
+    }> => {
       try {
         const { data: historyOrders } = await apiclient.get(
           `/order/history/${page}`
         );
-        setFilteredData(historyOrders as HistoryOrder[]);
+        setFilteredData(historyOrders);
         return historyOrders;
       } catch (error) {
-        setFilteredData([]);
+        console.log(error);
+        setFilteredData({ total_pages: 0, history: [] });
         toast.error("Nenhum pedido encontrado !");
-        return [];
+        return { total_pages: 0, history: [] };
       }
     },
   });
 
-  const { isFetching, refetch: refetchFilteredData } = useQuery({
+  const { isFetching } = useQuery({
     enabled: !!(filterDateSelected?.to && filterDateSelected.from),
-    queryKey: ["history_orders", {page}, filterDateSelected],
-    queryFn: async (): Promise<HistoryOrder[]> => {
+    queryKey: ["history_orders", { page }, filterDateSelected],
+    queryFn: async (): Promise<{
+      total_pages: number;
+      history: HistoryOrder[];
+    }> => {
       try {
         const { data: historyOrdersFiltered } = await apiclient.get(
           `/order/history/filter/${page}`,
@@ -80,23 +90,15 @@ function HistoryTable() {
             },
           }
         );
-        setFilteredData(historyOrdersFiltered as HistoryOrder[]);
+        setFilteredData(historyOrdersFiltered);
 
         return historyOrdersFiltered;
       } catch (error) {
-        setFilteredData([]);
-        return [];
+        setFilteredData({ total_pages: 0, history: [] });
+        return { total_pages: 0, history: [] };
       }
     },
   });
-
-  useEffect(() => {
-     if(filterDateSelected?.to && filterDateSelected.from) {
-      refetchFilteredData();
-    } else {
-      refetchData();
-    }
-  }, [page, refetchFilteredData, refetchData]);
 
   const handlePage = (type: "Next" | "Previous" | "First" | "Last") => {
     switch (type) {
@@ -104,13 +106,13 @@ function HistoryTable() {
         setCurrentPage(1);
         break;
       case "Previous":
-        setCurrentPage((prev) => ((prev >= 0 && prev > 1) ? prev - 1 : 1));
+        setCurrentPage((prev) => (prev >= 0 && prev > 1 ? prev - 1 : 1));
         break;
       case "Next":
         setCurrentPage((prev) => prev + 1);
         break;
       case "Last":
-        setCurrentPage(1);
+        setCurrentPage(filteredData.total_pages);
         break;
       default:
         setCurrentPage(1);
@@ -122,13 +124,14 @@ function HistoryTable() {
     (date: DateRange | undefined) => setFilterDateSelected(date),
     []
   );
+
   const handleSelectedOrder = useCallback(
     (order: HistoryOrder | null) => setSelectedOrder(order),
     []
   );
 
   const handleResetData = () => {
-    queryClient.invalidateQueries({ queryKey: ["history_orders", {page}] });
+    queryClient.invalidateQueries({ queryKey: ["history_orders", { page }] });
     setFilterDateSelected(undefined);
   };
 
@@ -219,7 +222,7 @@ function HistoryTable() {
     getFilteredRowModel: getFilteredRowModel(),
   };
 
-  const table = createTable(filteredData, columns, optionsTable);
+  const table = createTable(filteredData.history, columns, optionsTable);
   return (
     <>
       {!!selectedOrder && (
@@ -239,7 +242,7 @@ function HistoryTable() {
         <div className="flex">
           <h2 className="text-lg font-semibold text=[#333333]">Pedidos</h2>
           <span className="bg-[#CCCCCC33] ml-4 px-2 py-1 rounded-md font-semibold">
-            {filteredData.length ?? 0}
+            {filteredData.history.length ?? 0}
           </span>
         </div>
       </div>
@@ -259,7 +262,11 @@ function HistoryTable() {
           <Table.Header />
           <Table.Body />
         </Table.Container>
-        <Pagination page={page - 1} handlePage={handlePage} />
+        <Pagination
+          totalPage={filteredData.total_pages}
+          page={page}
+          handlePage={handlePage}
+        />
       </Table.Root>
     </>
   );
