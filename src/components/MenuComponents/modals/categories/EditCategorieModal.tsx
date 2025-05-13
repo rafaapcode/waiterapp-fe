@@ -1,5 +1,7 @@
 import Modal from "@/components/Modal";
 import { Categorie } from "@/types/Categorie";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import DeleteCategorieModalSkeleton from "./DeleteCategorieModalSkeleton";
@@ -17,22 +19,46 @@ function EditCategorieModal({
   onClose,
   data,
 }: NewCategorieModalProps) {
+  const queryClient = useQueryClient();
   const [emojiValue, setEmoji] = useState<string>("");
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
   const [categoryName, setCategorieName] = useState<string>("");
-  const handleDeleteModal = useCallback(() => setDeleteModal(prev => !prev), []);
+  const handleDeleteModal = useCallback(
+    () => setDeleteModal((prev) => !prev),
+    []
+  );
+
+  const {} = useMutation({
+    mutationFn: async (id: string) => {
+      // Atualiza a categoria
+      // await apiclient.delete(`/order/history/${id}`);
+    },
+    onSuccess: () => {
+      toast.success("Categoria editada com Sucesso !");
+      queryClient.invalidateQueries({ queryKey: ["all_categories"] });
+      onClose();
+    },
+    onError: (error) => {
+      const err = error as AxiosError;
+      if (err.status === 404) {
+        toast.warning("Id da categoria não encontrada !");
+      } else {
+        toast.error("Erro ao encontrar o ID da categoria");
+      }
+      return;
+    },
+  });
 
   useEffect(() => {
-    if(data && isVisible) {
-      setEmoji(data.emoji);
+    if (data && isVisible) {
+      setEmoji(data.icon);
       setCategorieName(data.name);
     }
   }, [data, isVisible]);
 
-  if(!data) {
+  if (!data) {
     return null;
   }
-
 
   const onSave = () => {
     if (!categoryName) {
@@ -45,11 +71,18 @@ function EditCategorieModal({
 
   return (
     <>
-      {
-        deleteModal && <Suspense fallback={<DeleteCategorieModalSkeleton isVisible={deleteModal} />}>
-          <DeleteCategorieModal closeEditModal={onClose} isVisible={deleteModal} data={data} onClose={handleDeleteModal} />
+      {deleteModal && (
+        <Suspense
+          fallback={<DeleteCategorieModalSkeleton isVisible={deleteModal} />}
+        >
+          <DeleteCategorieModal
+            closeEditModal={onClose}
+            isVisible={deleteModal}
+            data={data}
+            onClose={handleDeleteModal}
+          />
         </Suspense>
-      }
+      )}
       <Modal.Root size="sm" isVisible={isVisible}>
         <Modal.Header onClose={onClose}>
           <p className="text-[#333333] text-2xl font-semibold">

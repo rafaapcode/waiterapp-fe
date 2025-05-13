@@ -1,5 +1,7 @@
 import createTable from "@/hooks/createTable";
 import { Categorie } from "@/types/Categorie";
+import { apiclient } from "@/utils/apiClient";
+import { useQuery } from "@tanstack/react-query";
 import { Cell, ColumnDef } from "@tanstack/react-table";
 import { EditIcon, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
@@ -30,16 +32,35 @@ function CategoriesTable() {
     []
   );
 
+  const { data } = useQuery({
+    queryKey: ["all_categories"],
+    staleTime: Infinity,
+    queryFn: async (): Promise<Categorie[]> => {
+      try {
+        const { data } = await apiclient.get("/category/categories");
+
+        return data as Categorie[];
+      } catch (error: any) {
+        console.log(error.response);
+        return [];
+      }
+    },
+  });
+
   const columns = useMemo(
-    (): ColumnDef<{ id: string; emoji: string; name: string }>[] => [
+    (): ColumnDef<{ _id: string; icon: string; name: string }>[] => [
       {
-        accessorKey: "emoji",
+        accessorKey: "icon",
         header: () => (
           <p className="text-[#333333] font-semibold w-fit">Emoji</p>
         ),
-        cell: ({ cell }: { cell: Cell<any, any> }) => (
-          <p className=" w-fit">{cell.getValue()}</p>
-        ),
+        cell: ({ cell }: { cell: Cell<any, any> }) => {
+          if (cell.getValue() === "") {
+            return <p className="w-fit">🥗</p>;
+          }
+
+          return <p className="w-fit">{cell.getValue()}</p>;
+        },
         size: 10,
       },
       {
@@ -72,7 +93,7 @@ function CategoriesTable() {
     []
   );
 
-  const table = createTable(categories, columns);
+  const table = createTable(data || [], columns);
 
   return (
     <div>

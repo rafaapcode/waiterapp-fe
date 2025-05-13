@@ -1,5 +1,5 @@
 export interface Categorie {
-  id: string;
-  emoji: string;
+  _id: string;
+  icon: string;
   name: string;
 }
