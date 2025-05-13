@@ -5,20 +5,6 @@ import { HistoryModelType } from "./history.type";
 
 function HistoryView({ props }: HistoryModelType) {
 
-  const {
-    data,
-    filterDateSelected,
-    handlePage,
-    handleResetData,
-    handleSelectedDate,
-    handleSelectedOrder,
-    isFetching,
-    isPending,
-    onDeleteOrder,
-    page,
-    selectedOrder
-  } = props;
-
   return (
     <main className="w-full h-full pt-10 overflow-y-auto">
       <Header
@@ -27,19 +13,7 @@ function HistoryView({ props }: HistoryModelType) {
         title="Histórico"
       />
       <div className="flex flex-col gap-2 mt-12">
-        <HistoryTable
-          data={data}
-          filterDateSelected={filterDateSelected}
-          handlePage={handlePage}
-          handleResetData={handleResetData}
-          handleSelectedDate={handleSelectedDate}
-          handleSelectedOrder={handleSelectedOrder}
-          isFetching={isFetching}
-          isPending={isPending}
-          onDeleteOrder={onDeleteOrder}
-          page={page}
-          selectedOrder={selectedOrder}
-        />
+        <HistoryTable props={props}/>
       </div>
     </main>
   );
