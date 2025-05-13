@@ -7,8 +7,8 @@ import { AxiosError } from "axios";
 import { EditIcon, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import Pagination from "../pagination/Pagination";
 import Table from "../Table";
-import { categories } from "./data";
 import MenuHeader from "./MenuHeader";
 import EditCategorieModalSkeleton from "./modals/categories/EditCategorieModalSkeleton";
 import NewCategorieModalSkeleton from "./modals/categories/NewCategorieModalSkeleton";
@@ -22,6 +22,7 @@ const EditCategorieModal = lazy(
 
 function CategoriesTable() {
   const queryClient = useQueryClient();
+  const [page, setCurrentPage] = useState<number>(1);
   const [newCategorieModal, setNewCategorieModal] = useState<boolean>(false);
   const [editCategorieModal, setEditCategorieModal] =
     useState<Categorie | null>(null);
@@ -53,19 +54,39 @@ function CategoriesTable() {
   });
 
   const { data } = useQuery({
-    queryKey: ["all_categories"],
-    staleTime: Infinity,
-    queryFn: async (): Promise<Categorie[]> => {
+    queryKey: ["all_categories", {page}],
+    // staleTime: Infinity,
+    queryFn: async (): Promise<{total_pages: number; categories: Categorie[]}> => {
       try {
-        const { data } = await apiclient.get("/category/categories");
+        const { data } = await apiclient.get(`/category/categories/1`);
 
-        return data as Categorie[];
+        return data as {total_pages: number; categories: Categorie[]};
       } catch (error: any) {
         console.log(error.response);
-        return [];
+        return {total_pages: 0,  categories: []};
       }
     },
   });
+
+  const handlePage = (type: "Next" | "Previous" | "First" | "Last") => {
+    switch (type) {
+      case "First":
+        setCurrentPage(1);
+        break;
+      case "Previous":
+        setCurrentPage((prev) => (prev >= 0 && prev > 1 ? prev - 1 : 1));
+        break;
+      case "Next":
+        setCurrentPage((prev) => prev + 1);
+        break;
+      case "Last":
+        setCurrentPage(data?.total_pages || 1);
+        break;
+      default:
+        setCurrentPage(1);
+        break;
+    }
+  };
 
   const columns = useMemo(
     (): ColumnDef<{ _id: string; icon: string; name: string }>[] => [
@@ -113,8 +134,8 @@ function CategoriesTable() {
     []
   );
 
-  const table = createTable(data || [], columns);
-
+  const table = createTable(data?.categories || [], columns);
+  console.log(page)
   return (
     <div>
       {newCategorieModal && (
@@ -141,7 +162,7 @@ function CategoriesTable() {
         </Suspense>
       )}
       <MenuHeader
-        quantity={categories.length ?? 0}
+        quantity={(data?.categories || []).length ?? 0}
         onClick={handleNewCategorieModal}
         title="Nova Categoria"
       />
@@ -152,6 +173,12 @@ function CategoriesTable() {
             <Table.Body />
           </Table.Container>
         </Table.Root>
+         <Pagination
+          existsOrder={data?.categories.length !== 0}
+          totalPage={data?.total_pages || 1}
+          page={page}
+          handlePage={handlePage}
+        />
       </div>
     </div>
   );
