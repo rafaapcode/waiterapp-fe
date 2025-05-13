@@ -2,7 +2,7 @@ import { HistoryOrder } from "@/types/Order";
 import { apiclient } from "@/utils/apiClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { toast } from "react-toastify";
 import { HistoryModelType } from "./history.type";
@@ -19,6 +19,32 @@ export const useHistoryModel = (): HistoryModelType => {
     history: HistoryOrder[];
   }>({ total_pages: 0, history: [] });
   const [page, setCurrentPage] = useState<number>(1);
+
+  useEffect(() => {
+    if (page < filteredData.total_pages && page > 0) {
+      const nextPage = page + 1;
+      queryClient.prefetchQuery({
+        queryKey: ["history_orders", { page: nextPage }],
+        queryFn: async (): Promise<{
+          total_pages: number;
+          history: HistoryOrder[];
+        }> => {
+          try {
+            const { data: historyOrders } = await apiclient.get(
+              `/order/history/${nextPage}`
+            );
+            setFilteredData(historyOrders);
+            return historyOrders;
+          } catch (error) {
+            console.log(error);
+            setFilteredData({ total_pages: 0, history: [] });
+            toast.error("Nenhum pedido encontrado !");
+            return { total_pages: 0, history: [] };
+          }
+        },
+      });
+    }
+  }, [page]);
 
   const { mutateAsync: deleteOrder, isPending } = useMutation({
     mutationFn: async (id: string) =>
@@ -134,7 +160,7 @@ export const useHistoryModel = (): HistoryModelType => {
       isPending,
       onDeleteOrder: (id: string) => deleteOrder(id),
       page,
-      selectedOrder
-    }
-  }
+      selectedOrder,
+    },
+  };
 };
