@@ -1,7 +1,9 @@
 import Modal from "@/components/Modal";
 import { Categorie } from "@/types/Categorie";
+import { apiclient } from "@/utils/apiClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { LoaderCircle } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import DeleteCategorieModalSkeleton from "./DeleteCategorieModalSkeleton";
@@ -28,10 +30,17 @@ function EditCategorieModal({
     []
   );
 
-  const {} = useMutation({
-    mutationFn: async (id: string) => {
-      // Atualiza a categoria
-      // await apiclient.delete(`/order/history/${id}`);
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: async ({
+      id,
+      icon,
+      name,
+    }: {
+      id: string;
+      icon: string;
+      name: string;
+    }) => {
+      await apiclient.put(`/category/categories/${id}`, { icon, name });
     },
     onSuccess: () => {
       toast.success("Categoria editada com Sucesso !");
@@ -65,8 +74,7 @@ function EditCategorieModal({
       toast.error("O nome da categoria é obrigatório");
       return;
     }
-    console.log(emojiValue);
-    console.log(categoryName);
+    mutateAsync({ id: data._id, icon: emojiValue || "🥗", name: categoryName });
   };
 
   return (
@@ -124,7 +132,6 @@ function EditCategorieModal({
         <Modal.CustomFooter>
           <div className="w-full flex justify-between">
             <button
-              // disabled={}
               onClick={handleDeleteModal}
               type="button"
               className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none"
@@ -133,11 +140,15 @@ function EditCategorieModal({
             </button>
             <button
               onClick={onSave}
-              disabled={categoryName.length < 4 || !emojiValue}
+              disabled={categoryName.length < 4 || !emojiValue || isPending}
               type="button"
               className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
             >
-              Salvar alterações
+              {isPending ? (
+                <LoaderCircle size={22} className="animate-spin" />
+              ) : (
+                "Salvar alterações"
+              )}
             </button>
           </div>
         </Modal.CustomFooter>

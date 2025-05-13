@@ -27,10 +27,16 @@ function NewCategorieModal({ isVisible, onClose }: NewCategorieModalProps) {
     },
     onError: (error) => {
       const err = error as AxiosError;
+      console.log(err.response);
       if (err.status === 404) {
         toast.warning("Id da categoria não encontrada !");
       } else {
-        toast.error("Erro ao encontrar o ID da categoria");
+        if(err.response?.data) {
+          const msg = err.response?.data as {message: string;};
+          toast.error(msg.message);
+        } else {
+          toast.error("Erro ao encontrar o ID da categoria");
+        }
       }
       return;
     },

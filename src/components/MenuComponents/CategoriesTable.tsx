@@ -1,10 +1,12 @@
 import createTable from "@/hooks/createTable";
 import { Categorie } from "@/types/Categorie";
 import { apiclient } from "@/utils/apiClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Cell, ColumnDef } from "@tanstack/react-table";
+import { AxiosError } from "axios";
 import { EditIcon, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import Table from "../Table";
 import { categories } from "./data";
 import MenuHeader from "./MenuHeader";
@@ -19,6 +21,7 @@ const EditCategorieModal = lazy(
 );
 
 function CategoriesTable() {
+  const queryClient = useQueryClient();
   const [newCategorieModal, setNewCategorieModal] = useState<boolean>(false);
   const [editCategorieModal, setEditCategorieModal] =
     useState<Categorie | null>(null);
@@ -31,6 +34,23 @@ function CategoriesTable() {
     (data: Categorie | null) => setEditCategorieModal(data),
     []
   );
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: async (id: string) => await apiclient.delete(`/category/${id}`),
+    onSuccess: () => {
+      toast.success("Categoria deletada com Sucesso !");
+      queryClient.invalidateQueries({ queryKey: ["all_categories"] });
+    },
+    onError: (error) => {
+      const err = error as AxiosError;
+      if (err.status === 404) {
+        toast.warning("Id da categoria não encontrada !");
+      } else {
+        toast.error("Erro ao encontrar o ID da categoria");
+      }
+      return;
+    },
+  });
 
   const { data } = useQuery({
     queryKey: ["all_categories"],
@@ -82,7 +102,7 @@ function CategoriesTable() {
               >
                 <EditIcon size={20} />
               </button>
-              <button className="text-red-600 hover:text-red-800 transition-all duration-200">
+              <button disabled={isPending} onClick={() => mutateAsync(row.original._id)} className="text-red-600 hover:text-red-800 transition-all duration-200">
                 <Trash size={20} />
               </button>
             </div>
