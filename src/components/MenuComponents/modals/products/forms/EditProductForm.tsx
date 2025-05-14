@@ -1,6 +1,5 @@
 import { lazy, Suspense, useCallback, useState } from "react";
 import IngredientModalSkeleton from "../ingredientsModal/IngredientModalSkeleton";
-import Categories from "../productFormComponents/categories";
 import ImageUpload from "../productFormComponents/imageUpload";
 import Ingredients from "../productFormComponents/ingredients";
 
@@ -71,9 +70,6 @@ export default function EditProductForm() {
           />
           <p className="text-xs text-gray-500 mt-1">Máximo 110 caracteres</p>
         </div>
-
-        {/* Category */}
-        <Categories />
       </div>
 
       <Ingredients onClick={handleIngredientModal} />
