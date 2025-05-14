@@ -113,26 +113,6 @@ export const useHistoryModel = (): HistoryModelType => {
     },
   });
 
-  const handlePage = (type: "Next" | "Previous" | "First" | "Last") => {
-    switch (type) {
-      case "First":
-        setCurrentPage(1);
-        break;
-      case "Previous":
-        setCurrentPage((prev) => (prev >= 0 && prev > 1 ? prev - 1 : 1));
-        break;
-      case "Next":
-        setCurrentPage((prev) => prev + 1);
-        break;
-      case "Last":
-        setCurrentPage(filteredData.total_pages);
-        break;
-      default:
-        setCurrentPage(1);
-        break;
-    }
-  };
-
   const handleSelectedDate = useCallback(
     (date: DateRange | undefined) => setFilterDateSelected(date),
     []
@@ -152,7 +132,7 @@ export const useHistoryModel = (): HistoryModelType => {
     props: {
       data: filteredData,
       filterDateSelected,
-      handlePage,
+      setCurrentPage,
       handleResetData,
       handleSelectedDate,
       handleSelectedOrder,

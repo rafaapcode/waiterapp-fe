@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { AxiosResponse } from "axios";
 import { Eye, Trash } from "lucide-react";
-import { lazy, Suspense, useMemo } from "react";
+import { Dispatch, lazy, SetStateAction, Suspense, useMemo } from "react";
 import { type DateRange } from "react-day-picker";
 import Pagination from "../pagination/Pagination";
 import Table from "../Table";
@@ -28,7 +28,7 @@ interface HistoryTableProps {
     handleResetData: () => void;
     filterDateSelected: DateRange | undefined;
     handleSelectedDate: (date: DateRange | undefined) => void;
-    handlePage: (type: "Next" | "Previous" | "First" | "Last") => void;
+    setCurrentPage: Dispatch<SetStateAction<number>>;
     page: number;
   };
 }
@@ -40,7 +40,7 @@ function HistoryTable({ props }: HistoryTableProps) {
     isFetching,
     isPending,
     handleResetData,
-    handlePage,
+    setCurrentPage,
     handleSelectedDate,
     handleSelectedOrder,
     filterDateSelected,
@@ -186,7 +186,7 @@ function HistoryTable({ props }: HistoryTableProps) {
           existsOrder={data.history.length !== 0}
           totalPage={data.total_pages}
           page={page}
-          handlePage={handlePage}
+          setCurrentPage={setCurrentPage}
         />
       </Table.Root>
     </>

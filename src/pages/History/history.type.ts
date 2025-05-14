@@ -1,5 +1,6 @@
 import { HistoryOrder } from "@/types/Order";
 import { AxiosResponse } from "axios";
+import { Dispatch, SetStateAction } from "react";
 import { DateRange } from "react-day-picker";
 
 export interface HistoryModelType {
@@ -13,7 +14,7 @@ export interface HistoryModelType {
     handleResetData: () => void;
     filterDateSelected: DateRange | undefined;
     handleSelectedDate: (date: DateRange | undefined) => void;
-    handlePage: (type: "Next" | "Previous" | "First" | "Last") => void;
     page: number;
+    setCurrentPage: Dispatch<SetStateAction<number>>;
   };
 }
