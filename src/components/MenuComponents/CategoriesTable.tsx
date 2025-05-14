@@ -2,7 +2,12 @@ import createTable from "@/hooks/createTable";
 import { Categorie } from "@/types/Categorie";
 import { apiclient } from "@/utils/apiClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Cell, ColumnDef, getFilteredRowModel, TableOptions } from "@tanstack/react-table";
+import {
+  Cell,
+  ColumnDef,
+  getFilteredRowModel,
+  TableOptions,
+} from "@tanstack/react-table";
 import { AxiosError } from "axios";
 import { EditIcon, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
@@ -101,7 +106,11 @@ function CategoriesTable() {
               >
                 <EditIcon size={20} />
               </button>
-              <button disabled={isPending} onClick={() => mutateAsync(row.original._id)} className="text-red-600 hover:text-red-800 transition-all duration-200">
+              <button
+                disabled={isPending}
+                onClick={() => mutateAsync(row.original._id)}
+                className="text-red-600 hover:text-red-800 transition-all duration-200"
+              >
                 <Trash size={20} />
               </button>
             </div>
@@ -146,18 +155,18 @@ function CategoriesTable() {
           />
         </Suspense>
       )}
-      <MenuHeader
-        quantity={(data || []).length ?? 0}
-        onClick={handleNewCategorieModal}
-        title="Nova Categoria"
-        filters
-      >
-        <div className="flex-1 px-2">
-          <InputFilter table={table}/>
-        </div>
-      </MenuHeader>
       <div className="max-h-full overflow-y-auto">
         <Table.Root table={table}>
+          <MenuHeader
+            quantity={(data || []).length ?? 0}
+            onClick={handleNewCategorieModal}
+            title="Nova Categoria"
+            filters
+          >
+            <div className="w-3/4 mx-auto px-2">
+              <InputFilter />
+            </div>
+          </MenuHeader>
           <Table.Container>
             <Table.Header />
             <Table.Body />

@@ -1,16 +1,14 @@
-import { Table } from "@tanstack/react-table";
+import useTable from "@/hooks/useTable";
 
-interface InputTableFilter<T> {
-  table: Table<T>
-}
 
-function InputFilter<T>({ table }: InputTableFilter<T>) {
+function InputFilter() {
+  const { table } = useTable();
 
   const column = table.getColumn("name");
   const value = column?.getFilterValue() as string | undefined;
 
   return (
-    <input onChange={(e) => column?.setFilterValue(e.target.value)} value={value ?? ''} type="text" className="p-1 border border-gray-300 rounded-sm w-full px-2 outline-none focus:outline-none text-gray-600"/>
+    <input onChange={(e) => column?.setFilterValue(e.target.value)} value={value ?? ''} placeholder="Ex: Doces" type="text" className="p-1 border border-gray-300 rounded-sm w-full px-2 outline-none focus:outline-none text-gray-600"/>
   )
 }
 

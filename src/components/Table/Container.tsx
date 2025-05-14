@@ -7,7 +7,7 @@ interface ContainerProps {
 
 function Container({ children }: ContainerProps) {
   return (
-    <div className="w-full mt-4 rounded-xl border bg-white overflow-y-auto h-[600px]">
+    <div className="w-full mt-4 rounded-xl border bg-white overflow-y-auto max-h-[600px]">
       <Table>{children}</Table>
     </div>
   );
