@@ -91,13 +91,13 @@ function OrdersBoard({
         <span>({orders.length})</span>
       </header>
       {orders.length > 0 ? (
-        <div className="flex flex-col w-full mt-6 gap-6 overflow-y-auto max-h-full">
+        <div className="flex flex-col w-full mt-6 gap-6 overflow-y-auto max-h-[600px]">
           {orders.map((order) => (
             <button
               onClick={() => handleOpenModal(order)}
               key={order._id}
               type="button"
-              className="bg-white flex flex-col justify-center items-center gap-1 w-full border border-[#ccc] h-32 rounded-lg"
+              className="bg-white flex flex-col justify-center items-center gap-1 w-full border border-[#ccc] h-32 min-h-20 rounded-lg"
             >
               <strong className="font-medium">Mesa {order.table}</strong>
               <span className="text-sm text-[#666]">

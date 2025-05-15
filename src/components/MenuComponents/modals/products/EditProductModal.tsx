@@ -8,9 +8,10 @@ const RemoveProductModal = lazy(() => import("./RemoveProductModal"));
 interface EditProductModalProps {
   isVisible: boolean;
   onClose: () => void;
+  productid: string;
 }
 
-function EditProductModal({ isVisible, onClose }: EditProductModalProps) {
+function EditProductModal({ isVisible, onClose, productid }: EditProductModalProps) {
   const [removeProductModal, setRemoveProductModal] = useState<boolean>(false);
 
   const toggleRemoveProductModal = useCallback(
@@ -35,7 +36,7 @@ function EditProductModal({ isVisible, onClose }: EditProductModalProps) {
         </Modal.Header>
 
         <Modal.Body className="my-4">
-          <EditProductForm />
+          <EditProductForm productId={productid} />
         </Modal.Body>
 
         <Modal.CustomFooter>

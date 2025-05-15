@@ -99,6 +99,7 @@ function ProductsTable() {
           fallback={<NewProductModalSkeleton isVisible={!!productIdToEdit} />}
         >
           <EditProductModal
+            productid={productIdToEdit}
             isVisible={!!productIdToEdit}
             onClose={() => handleProductIdToEdit(null)}
           />

@@ -1,3 +1,4 @@
+import { IngredientTypeForFe } from "@/types/Ingredients";
 import { lazy, Suspense, useCallback, useState } from "react";
 import IngredientModalSkeleton from "../ingredientsModal/IngredientModalSkeleton";
 import ImageUpload from "../productFormComponents/imageUpload";
@@ -7,15 +8,22 @@ const IngredientModal = lazy(
   () => import("../ingredientsModal/IngredientModal")
 );
 
-export default function EditProductForm() {
+interface EditProductFormProps {
+  productId: string;
+}
+
+export default function EditProductForm({ productId }: EditProductFormProps) {
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
+  const [ingredients, setIngredients] = useState<IngredientTypeForFe[]>([]);
 
   const handleIngredientModal = useCallback(
     () => setIngredienteModal((prev) => !prev),
     []
   );
+
+  console.log(ingredients);
 
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full">
@@ -72,7 +80,7 @@ export default function EditProductForm() {
         </div>
       </div>
 
-      <Ingredients onClick={handleIngredientModal} />
+      <Ingredients ingredients={ingredients} setIngredients={setIngredients} selectedIngredients={new Set(["6825e3c8bda2179f3cd7e398"])} onClick={handleIngredientModal} />
     </div>
   );
 }

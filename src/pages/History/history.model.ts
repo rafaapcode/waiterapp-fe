@@ -80,7 +80,6 @@ export const useHistoryModel = (): HistoryModelType => {
       } catch (error) {
         console.log(error);
         setFilteredData({ total_pages: 0, history: [] });
-        toast.error("Nenhum pedido encontrado !");
         return { total_pages: 0, history: [] };
       }
     },

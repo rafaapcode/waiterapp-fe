@@ -12,7 +12,6 @@ function ProductInfo({ products }: ProductInfoProps) {
   if(!products) {
     return null;
   }
-
   return (
     <div className="flex" key={_id}>
       <img

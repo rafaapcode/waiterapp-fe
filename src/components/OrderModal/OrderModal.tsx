@@ -40,6 +40,10 @@ function OrderModal({
     return null;
   }
 
+   if (!order.products || order.products.length === 0) {
+    return null;
+  }
+
   const total = order.products.reduce((acc, { product, quantity }) => {
     const productPrice = product.discount
       ? product.priceInDiscount

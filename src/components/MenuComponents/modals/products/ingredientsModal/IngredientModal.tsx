@@ -1,5 +1,10 @@
 import Modal from "@/components/Modal";
+import { apiclient } from "@/utils/apiClient";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 interface IngredientModalProps {
   isVisible: boolean;
@@ -7,8 +12,37 @@ interface IngredientModalProps {
 }
 
 function IngredientModal({ isVisible, onClose }: IngredientModalProps) {
+  const queryClient = useQueryClient();
   const [emojiValue, setEmoji] = useState<string>("🍕");
   const [ingredientName, setIngredientName] = useState<string>("");
+
+  const { mutateAsync: createIngredient, isPending } = useMutation({
+    mutationFn: async (data: {icon: string; name: string;}) =>
+      await apiclient.post("/ingredient", data),
+    onSuccess: () => {
+      toast.success("Ingredient cadastrado com Sucesso");
+      queryClient.invalidateQueries({ queryKey: ["all_ingredients"] });
+      onClose();
+    },
+    onError: (error) => {
+      const err = error as AxiosError;
+      if (err.status === 404) {
+        const message = err.response?.data ? err.response?.data as {message: string} : {message: "O ingrediente já existe ou a informações estão incorretas !"};
+        toast.warning(message.message);
+      } else {
+        toast.error("Erro ao encontrar o ID do registro");
+      }
+      return;
+    },
+  });
+
+  const onSave = () => {
+    if(!emojiValue || !ingredientName) {
+      toast.error("Emoji e o nome do ingrediente são obrigatórios !");
+      return;
+    }
+    createIngredient({icon: emojiValue, name: ingredientName});
+  }
 
   return (
     <Modal.Root size="sm" isVisible={isVisible} priority>
@@ -52,12 +86,12 @@ function IngredientModal({ isVisible, onClose }: IngredientModalProps) {
       <Modal.CustomFooter>
         <div className="w-full flex justify-end">
           <button
-            // onClick={onSave}
-            disabled={ingredientName.length < 4}
+            onClick={onSave}
+            disabled={(ingredientName.length < 4 && !emojiValue) || isPending}
             type="button"
             className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
           >
-            Salvar alterações
+            {isPending ? <LoaderCircle size={22} className="animate-spin"/> :"Salvar alterações"}
           </button>
         </div>
       </Modal.CustomFooter>
