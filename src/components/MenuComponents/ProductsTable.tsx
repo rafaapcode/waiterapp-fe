@@ -2,10 +2,12 @@ import createTable from "@/hooks/createTable";
 import { Products } from "@/types/Products";
 import { apiclient } from "@/utils/apiClient";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Cell, ColumnDef } from "@tanstack/react-table";
+import { AxiosError } from "axios";
 import { EditIcon, LoaderCircle, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import Table from "../Table";
 import MenuHeader from "./MenuHeader";
 import NewProductModalSkeleton from "./modals/products/skeletons/NewProductModalSkeleton";
@@ -24,6 +26,7 @@ interface ProductsForFe {
 }
 
 function ProductsTable() {
+  const queryClient = useQueryClient();
   const [newProductModal, setNewProductModal] = useState<boolean>(false);
   const [productIdToEdit, setProductIdToEdit] = useState<string | null>(null);
 
@@ -35,6 +38,24 @@ function ProductsTable() {
     (id: string | null) => setProductIdToEdit(id),
     []
   );
+
+  const { mutateAsync: DeleteProduct } = useMutation({
+    mutationFn: async (id: string) =>
+      await apiclient.delete(`/product/${id}`),
+    onSuccess: () => {
+      toast.success("Produto deletado com Sucesso");
+      queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
+    },
+    onError: (error) => {
+      const err = error as AxiosError;
+      if (err.status === 404) {
+        toast.warning("Produto não encontrado !");
+      } else {
+        toast.error("Erro ao encontrar o ID do registro");
+      }
+      return;
+    },
+  });
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["list_all_products"],
@@ -101,7 +122,7 @@ function ProductsTable() {
               >
                 <EditIcon size={20} />
               </button>
-              <button className="text-red-600 hover:text-red-800 transition-all duration-200">
+              <button onClick={() => DeleteProduct(row.original.id)} className="text-red-600 hover:text-red-800 transition-all duration-200">
                 <Trash size={20} />
               </button>
             </div>
@@ -137,13 +158,15 @@ function ProductsTable() {
           />
         </Suspense>
       )}
-      <MenuHeader quantity={data?.length} onClick={handleNewProductModal} title="Produtos" btnTitle="Novo Produto" />
+      <MenuHeader
+        quantity={data?.length}
+        onClick={handleNewProductModal}
+        title="Produtos"
+        btnTitle="Novo Produto"
+      />
       <div className="mt-2 max-h-full overflow-y-auto">
         {isLoading || isFetching ? (
-          <LoaderCircle
-            size={26}
-            className="animate-spin"
-          />
+          <LoaderCircle size={26} className="animate-spin" />
         ) : (
           <Table.Root table={table}>
             <Table.Container>

@@ -24,7 +24,7 @@ function EditProductModal({ isVisible, onClose, productid }: EditProductModalPro
       {
         removeProductModal && (
           <Suspense fallback={<RemoveProductModalSkeleton isVisible={removeProductModal}/>}>
-             <RemoveProductModal data={{imageUrl: "", category: "🍕 Pizza",name: "pizza", price: "12.00"}}  isVisible={removeProductModal} onClose={toggleRemoveProductModal} />
+            <RemoveProductModal data={{imageUrl: "", category: "🍕 Pizza",name: "pizza", price: "12.00"}}  isVisible={removeProductModal} onClose={toggleRemoveProductModal} />
           </Suspense>
         )
       }
