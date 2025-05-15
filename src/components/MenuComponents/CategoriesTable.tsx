@@ -160,7 +160,8 @@ function CategoriesTable() {
           <MenuHeader
             quantity={(data || []).length ?? 0}
             onClick={handleNewCategorieModal}
-            title="Nova Categoria"
+            title="Categoria"
+            btnTitle="Nova Categoria"
             filters
           >
             <div className="w-3/4 mx-auto px-2">

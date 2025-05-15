@@ -1,14 +1,14 @@
 import { Image, Upload } from "lucide-react";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useRef } from "react";
 
 interface ImageUploadProps {
   imageurl?: string;
+  selectedImage: File | null;
+  setSelectedImage: Dispatch<SetStateAction<File | null>>;
 }
 
-function ImageUpload({ imageurl }: ImageUploadProps) {
+function ImageUpload({ imageurl, selectedImage, setSelectedImage }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];

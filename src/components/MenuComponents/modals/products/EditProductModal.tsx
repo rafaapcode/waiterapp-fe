@@ -36,7 +36,9 @@ function EditProductModal({ isVisible, onClose, productid }: EditProductModalPro
         </Modal.Header>
 
         <Modal.Body className="my-4">
-          <EditProductForm productId={productid} />
+          <Suspense fallback={<RemoveProductModalSkeleton isVisible={removeProductModal}/>}>
+            <EditProductForm onClose={onClose} productId={productid} />
+          </Suspense>
         </Modal.Body>
 
         <Modal.CustomFooter>

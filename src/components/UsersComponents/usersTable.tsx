@@ -100,7 +100,8 @@ function UsersTable() {
      <MenuHeader
         quantity={users.length ?? 0}
         onClick={toggleNewUserModal}
-        title="Novo usuário"
+        btnTitle="Novo usuário"
+        title="Usuários"
       />
 
       <Table.Root table={table}>
@@ -108,12 +109,7 @@ function UsersTable() {
           <Table.Header />
           <Table.Body />
         </Table.Container>
-        <Pagination
-          toFirstPage={() => {}}
-          toLastPage={() => {}}
-          toNextPage={() => {}}
-          toPreviousPage={() => {}}
-        />
+        <Pagination existsOrder page={1} setCurrentPage={() => {}} totalPage={20}/>
       </Table.Root>
     </>
   );

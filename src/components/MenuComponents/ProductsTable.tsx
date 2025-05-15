@@ -1,15 +1,27 @@
 import createTable from "@/hooks/createTable";
+import { Products } from "@/types/Products";
+import { apiclient } from "@/utils/apiClient";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { useQuery } from "@tanstack/react-query";
 import { Cell, ColumnDef } from "@tanstack/react-table";
-import { EditIcon, Trash } from "lucide-react";
+import { EditIcon, LoaderCircle, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import Table from "../Table";
-import { products } from "./data";
 import MenuHeader from "./MenuHeader";
 import NewProductModalSkeleton from "./modals/products/skeletons/NewProductModalSkeleton";
 
 const NewProductModal = lazy(() => import("./modals/products/NewProductModal"));
-const EditProductModal = lazy(() => import("./modals/products/EditProductModal"));
+const EditProductModal = lazy(
+  () => import("./modals/products/EditProductModal")
+);
+
+interface ProductsForFe {
+  id: string;
+  imageUrl: string;
+  name: string;
+  categoria: string;
+  preco: number;
+}
 
 function ProductsTable() {
   const [newProductModal, setNewProductModal] = useState<boolean>(false);
@@ -24,8 +36,28 @@ function ProductsTable() {
     []
   );
 
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["list_all_products"],
+    queryFn: async (): Promise<ProductsForFe[]> => {
+      try {
+        const { data } = await apiclient.get("/product");
+        const products = data as Products[];
+
+        return products.map((product) => ({
+          id: product._id,
+          categoria: product.category.name,
+          imageUrl: product.imageUrl,
+          name: product.name,
+          preco: product.discount ? product.priceInDiscount : product.price,
+        }));
+      } catch (error) {
+        return [];
+      }
+    },
+  });
+
   const columns = useMemo(
-    (): ColumnDef<(typeof products)[0]>[] => [
+    (): ColumnDef<ProductsForFe>[] => [
       {
         accessorKey: "imageUrl",
         header: () => <p className="text-[#333333] font-semibold">Imagem</p>,
@@ -80,7 +112,7 @@ function ProductsTable() {
     []
   );
 
-  const table = createTable(products, columns);
+  const table = createTable(data || [], columns);
 
   return (
     <div>
@@ -105,14 +137,21 @@ function ProductsTable() {
           />
         </Suspense>
       )}
-      <MenuHeader onClick={handleNewProductModal} title="Novo Produto" />
+      <MenuHeader quantity={data?.length} onClick={handleNewProductModal} title="Produtos" btnTitle="Novo Produto" />
       <div className="mt-2 max-h-full overflow-y-auto">
-        <Table.Root table={table}>
-          <Table.Container>
-            <Table.Header />
-            <Table.Body />
-          </Table.Container>
-        </Table.Root>
+        {isLoading || isFetching ? (
+          <LoaderCircle
+            size={26}
+            className="animate-spin"
+          />
+        ) : (
+          <Table.Root table={table}>
+            <Table.Container>
+              <Table.Header />
+              <Table.Body />
+            </Table.Container>
+          </Table.Root>
+        )}
       </div>
     </div>
   );

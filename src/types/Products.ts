@@ -3,9 +3,13 @@ export interface Products {
 	description: string;
 	imageUrl: string;
 	price: number;
-	ingredients: {name: string; icon: string; _id: string}[];
+	ingredients: string[];
 	discount: boolean;
 	priceInDiscount: number;
-	category: string;
+	category: {
+    _id: string;
+    name: string;
+    icon: string;
+  };
 	_id: string;
 }

@@ -1,5 +1,8 @@
 import { IngredientTypeForFe } from "@/types/Ingredients";
-import { lazy, Suspense, useCallback, useState } from "react";
+import { apiclient } from "@/utils/apiClient";
+import { useQuery } from "@tanstack/react-query";
+import { ChangeEvent, lazy, Suspense, useCallback, useState } from "react";
+import { toast } from "react-toastify";
 import IngredientModalSkeleton from "../ingredientsModal/IngredientModalSkeleton";
 import ImageUpload from "../productFormComponents/imageUpload";
 import Ingredients from "../productFormComponents/ingredients";
@@ -8,22 +11,61 @@ const IngredientModal = lazy(
   () => import("../ingredientsModal/IngredientModal")
 );
 
-interface EditProductFormProps {
-  productId: string;
+interface ProductEditFormStateType {
+  name: string;
+  description: string;
+  imageUrl?: string;
+  discount: boolean;
+  priceInDiscount: number;
 }
 
-export default function EditProductForm({ productId }: EditProductFormProps) {
-  const [productName, setProductName] = useState("");
-  const [description, setDescription] = useState("");
+interface EditProductFormProps {
+  productId: string;
+  onClose: () => void;
+}
+
+export default function EditProductForm({ productId, onClose }: EditProductFormProps) {
+  const [product, setProduct] = useState<ProductEditFormStateType>({description: "", name: "", imageUrl: "", discount: false, priceInDiscount: 0});
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
   const [ingredients, setIngredients] = useState<IngredientTypeForFe[]>([]);
+  const [usedIngredients, setUsedIngredients] = useState<Set<string>>(new Set());
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const handleIngredientModal = useCallback(
     () => setIngredienteModal((prev) => !prev),
     []
   );
 
-  console.log(ingredients);
+  const handleProductInfo = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setProduct(prev => ({
+      ...prev,
+      [name]:value
+    }))
+  }
+
+  useQuery({
+    queryKey: ["get_product_info_edit_form", {productId}],
+    queryFn: async () => {
+      try {
+        const { data } = await apiclient.get(`/product/${productId}`);
+        setProduct({
+          name: data.name,
+          description: data.description,
+          imageUrl: data.imageUrl,
+          discount: false,
+          priceInDiscount: 0
+        })
+        if(data.ingredients && data.ingredients.length > 0) {
+          setUsedIngredients(new Set(data.ingredients.map((i: any) => i._id)));
+        }
+      } catch (error: any) {
+        console.log(error.message);
+        toast.error('Erro ao buscar o Produto');
+        onClose();
+      }
+    }
+  })
 
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full">
@@ -39,7 +81,7 @@ export default function EditProductForm({ productId }: EditProductFormProps) {
       )}
       <div className="space-y-6 pl-2">
         {/* Image Upload */}
-        <ImageUpload />
+        <ImageUpload selectedImage={selectedImage} setSelectedImage={setSelectedImage} imageurl={product.imageUrl}/>
 
         {/* Product Name */}
         <div>
@@ -52,8 +94,9 @@ export default function EditProductForm({ productId }: EditProductFormProps) {
           <input
             id="productName"
             type="text"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
+            name="name"
+            value={product.name}
+            onChange={handleProductInfo}
             className="p-4 w-full border border-gray-200 rounded-md transition-all duration-200 outline-red-500 focus:outline-red-500"
             placeholder="Ex: Pizza de Mussarela"
           />
@@ -71,8 +114,8 @@ export default function EditProductForm({ productId }: EditProductFormProps) {
             rows={3}
             maxLength={110}
             id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={product.description}
+            onChange={handleProductInfo}
             className="w-full resize-none border border-gray-200 rounded-md px-2 py-1 transition-all duration-200 outline-red-500 focus:outline-red-500"
             placeholder="Ex: Pizza de Quatro Queijos com borda tradicional"
           />
@@ -80,7 +123,7 @@ export default function EditProductForm({ productId }: EditProductFormProps) {
         </div>
       </div>
 
-      <Ingredients ingredients={ingredients} setIngredients={setIngredients} selectedIngredients={new Set(["6825e3c8bda2179f3cd7e398"])} onClick={handleIngredientModal} />
+      <Ingredients ingredients={ingredients} setIngredients={setIngredients} ingredientUsed={usedIngredients} onClick={handleIngredientModal} />
     </div>
   );
 }

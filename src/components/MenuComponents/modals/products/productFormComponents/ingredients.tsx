@@ -7,12 +7,12 @@ import { Dispatch, SetStateAction, useState } from "react";
 
 interface IngredientsProps {
   onClick: () => void;
-  selectedIngredients: Set<string>;
+  ingredientUsed: Set<string>;
   ingredients: IngredientTypeForFe[];
   setIngredients: Dispatch<SetStateAction<IngredientTypeForFe[]>>
 }
 
-function Ingredients({ onClick, selectedIngredients, ingredients, setIngredients}: IngredientsProps) {
+function Ingredients({ onClick, ingredientUsed, ingredients, setIngredients}: IngredientsProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { isLoading, isFetching } = useQuery({
@@ -26,7 +26,7 @@ function Ingredients({ onClick, selectedIngredients, ingredients, setIngredients
           id: ingredient._id,
           name: ingredient.name,
           icon: ingredient.icon,
-          selected: selectedIngredients.has(ingredient._id),
+          selected: ingredientUsed.has(ingredient._id),
         }));
         setIngredients(formatIngredient);
       } catch (error: any) {
