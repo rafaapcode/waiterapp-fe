@@ -1,5 +1,9 @@
 import Modal from "@/components/Modal";
+import { Products } from "@/types/Products";
+import { apiclient } from "@/utils/apiClient";
+import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useCallback, useState } from "react";
+import { toast } from "react-toastify";
 import EditProductForm from "./forms/EditProductForm";
 import RemoveProductModalSkeleton from "./skeletons/RemoveProductModalSkeleton";
 
@@ -11,7 +15,11 @@ interface EditProductModalProps {
   productid: string;
 }
 
-function EditProductModal({ isVisible, onClose, productid }: EditProductModalProps) {
+function EditProductModal({
+  isVisible,
+  onClose,
+  productid,
+}: EditProductModalProps) {
   const [removeProductModal, setRemoveProductModal] = useState<boolean>(false);
 
   const toggleRemoveProductModal = useCallback(
@@ -19,15 +27,43 @@ function EditProductModal({ isVisible, onClose, productid }: EditProductModalPro
     []
   );
 
+  const { data } = useQuery({
+    queryKey: ["get_product_info_edit_form", { productid }],
+    queryFn: async () => {
+      try {
+        const { data } = await apiclient.get(`/product/${productid}`);
+
+        return data as Products;
+      } catch (error: any) {
+        console.log(error.message);
+        toast.error("Erro ao buscar o Produto");
+        onClose();
+      }
+    },
+  });
+
   return (
     <>
-      {
-        removeProductModal && (
-          <Suspense fallback={<RemoveProductModalSkeleton isVisible={removeProductModal}/>}>
-            <RemoveProductModal data={{imageUrl: "", category: "🍕 Pizza",name: "pizza", price: "12.00"}}  isVisible={removeProductModal} onClose={toggleRemoveProductModal} />
-          </Suspense>
-        )
-      }
+      {removeProductModal && data && (
+        <Suspense
+          fallback={
+            <RemoveProductModalSkeleton isVisible={removeProductModal} />
+          }
+        >
+          <RemoveProductModal
+            data={{
+              id: data._id,
+              imageUrl: data.imageUrl,
+              category: data.category.name,
+              name: data.name,
+              price: `${data.price}`,
+            }}
+            isVisible={removeProductModal}
+            onClose={toggleRemoveProductModal}
+            editModalClose={onClose}
+          />
+        </Suspense>
+      )}
       <Modal.Root size="lg" isVisible={isVisible}>
         <Modal.Header onClose={onClose}>
           <p className="text-[#333333] text-2xl font-semibold">
@@ -36,9 +72,13 @@ function EditProductModal({ isVisible, onClose, productid }: EditProductModalPro
         </Modal.Header>
 
         <Modal.Body className="my-4">
-          <Suspense fallback={<RemoveProductModalSkeleton isVisible={removeProductModal}/>}>
-            <EditProductForm onClose={onClose} productId={productid} />
-          </Suspense>
+          {!data ? (
+            <div>
+              <p>Nenhum produto encontrado !</p>
+            </div>
+          ) : (
+            <EditProductForm data={data} />
+          )}
         </Modal.Body>
 
         <Modal.CustomFooter>
