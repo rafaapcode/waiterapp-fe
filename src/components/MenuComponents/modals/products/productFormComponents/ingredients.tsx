@@ -23,8 +23,6 @@ function Ingredients({
     IngredientTypeForFe[]
   >([]);
 
-  console.log(ingredientUsed);
-
   const { isLoading, isFetching } = useQuery({
     queryKey: ["all_ingredients"],
     queryFn: async () => {

@@ -1,6 +1,10 @@
 import { useGetToken } from "@/hooks/useToken";
 import axios from "axios";
 
+export const uploadImage = axios.create({
+  baseURL: import.meta.env.VITE_UPLOAD_IMAGE_LAMBDA
+})
+
 export const apiclient = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL
 })
