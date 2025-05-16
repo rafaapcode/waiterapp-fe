@@ -1,4 +1,3 @@
-import { Products } from "@/types/Products";
 import { Dispatch, lazy, Suspense, useCallback, useState } from "react";
 import { ProductFieldsChanged } from "../EditProductModal";
 import IngredientModalSkeleton from "../ingredientsModal/IngredientModalSkeleton";
@@ -9,15 +8,15 @@ const IngredientModal = lazy(
   () => import("../ingredientsModal/IngredientModal")
 );
 
-
 interface EditProductFormProps {
-  data: Products;
-  setProduct: Dispatch<React.SetStateAction<ProductFieldsChanged | undefined
-  >>
-  imageSelected: File | null;
+  product: ProductFieldsChanged;
+  setProduct: Dispatch<React.SetStateAction<ProductFieldsChanged>>;
 }
 
-export default function EditProductForm({ data, setProduct, imageSelected }: EditProductFormProps) {
+export default function EditProductForm({
+  product,
+  setProduct,
+}: EditProductFormProps) {
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
 
   const handleIngredientModal = useCallback(
@@ -40,9 +39,11 @@ export default function EditProductForm({ data, setProduct, imageSelected }: Edi
       <div className="space-y-6 pl-2">
         {/* Image Upload */}
         <ImageUpload
-          selectedImage={imageSelected}
-          setSelectedImage={(file: File | null) => setProduct(prev => (prev && {...prev, image: file}))}
-          imageurl={data.imageUrl}
+          selectedImage={product.image}
+          setSelectedImage={(file: File | null) =>
+            setProduct((prev) => ({ ...prev, image: file }))
+          }
+          imageurl={product.imageUrl}
         />
 
         {/* Product Name */}
@@ -57,8 +58,10 @@ export default function EditProductForm({ data, setProduct, imageSelected }: Edi
             id="productName"
             type="text"
             name="name"
-            value={data.name}
-            onChange={(e) => setProduct(prev => (prev && {...prev, name: e.target.value}))}
+            value={product.name}
+            onChange={(e) =>
+              setProduct((prev) => prev && { ...prev, name: e.target.value })
+            }
             className="p-4 w-full border border-gray-200 rounded-md transition-all duration-200 outline-red-500 focus:outline-red-500"
             placeholder="Ex: Pizza de Mussarela"
           />
@@ -76,8 +79,12 @@ export default function EditProductForm({ data, setProduct, imageSelected }: Edi
             rows={3}
             maxLength={110}
             id="description"
-            value={data.description}
-            onChange={(e) => setProduct(prev => (prev && {...prev, description: e.target.value}))}
+            value={product.description}
+            onChange={(e) =>
+              setProduct(
+                (prev) => prev && { ...prev, description: e.target.value }
+              )
+            }
             className="w-full resize-none border border-gray-200 rounded-md px-2 py-1 transition-all duration-200 outline-red-500 focus:outline-red-500"
             placeholder="Ex: Pizza de Quatro Queijos com borda tradicional"
           />
@@ -86,11 +93,10 @@ export default function EditProductForm({ data, setProduct, imageSelected }: Edi
       </div>
 
       <Ingredients
-        ingredients={data.ingredients.map(ing => ({id: ing._id,icon: ing.icon, name: ing.name, selected: false}))}
-        setIngredients={(ings) => setProduct(prev => (prev && {...prev, ingredients: ings}))}
-        ingredientUsed={new Set(data.ingredients.map(ing => ing._id))}
-        onClick={handleIngredientModal}
-      />
+          setIngredients={(ings) => setProduct((prev) => prev && { ...prev, newIngredients: ings })}
+          ingredientUsed={product.ingredients}
+          onClick={handleIngredientModal}
+        />
     </div>
   );
 }

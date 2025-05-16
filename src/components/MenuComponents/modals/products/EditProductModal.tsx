@@ -1,22 +1,24 @@
 import Modal from "@/components/Modal";
-import { IngredientTypeForFe } from "@/types/Ingredients";
 import { Products } from "@/types/Products";
 import { apiclient } from "@/utils/apiClient";
 import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import EditProductForm from "./forms/EditProductForm";
+import NewProductModalSkeleton from "./skeletons/NewProductModalSkeleton";
 import RemoveProductModalSkeleton from "./skeletons/RemoveProductModalSkeleton";
 
 const RemoveProductModal = lazy(() => import("./RemoveProductModal"));
 
 export interface ProductFieldsChanged {
-  ingredients: IngredientTypeForFe[];
+  ingredients: string[];
+  newIngredients?: string[];
   image: File | null;
   description: string;
   name: string;
   discount: boolean;
   priceInDiscount: number;
+  imageUrl: string;
 }
 
 interface EditProductModalProps {
@@ -32,20 +34,37 @@ function EditProductModal({
   productid,
 }: EditProductModalProps) {
   const [removeProductModal, setRemoveProductModal] = useState<boolean>(false);
-  const [product, setProduct] = useState<ProductFieldsChanged>();
+  const [product, setProduct] = useState<ProductFieldsChanged>({
+    description: "",
+    discount: false,
+    image: null,
+    ingredients: [],
+    name: "",
+    priceInDiscount: 0,
+    imageUrl: ""
+  });
 
   const toggleRemoveProductModal = useCallback(
     () => setRemoveProductModal((prev) => !prev),
     []
   );
 
-  const {data} = useQuery({
+  const {data, isLoading, isFetching} = useQuery({
     queryKey: ["get_product_info_edit_form", { productid }],
     queryFn: async () => {
       try {
         const { data } = await apiclient.get(`/product/${productid}`);
         const product = data as Products;
-        return product;
+        setProduct({
+          description: product.description,
+          discount: product.discount,
+          image: null,
+          imageUrl: product.imageUrl,
+          ingredients: product.ingredients.map(ing => ing._id),
+          name: product.name,
+          priceInDiscount: product.priceInDiscount
+        });
+        return product
       } catch (error: any) {
         console.log(error.message);
         toast.error("Erro ao buscar o Produto");
@@ -54,6 +73,7 @@ function EditProductModal({
     },
   });
 
+  console.log("products", product);
   return (
     <>
       {(removeProductModal && data) && (
@@ -84,12 +104,12 @@ function EditProductModal({
         </Modal.Header>
 
         <Modal.Body className="my-4">
-          {!data ? (
+          {(!data) ? (
             <div>
               <p>Nenhum produto encontrado !</p>
             </div>
           ) : (
-            <EditProductForm data={data} setProduct={setProduct} imageSelected={product?.image || null}/>
+            (isLoading || isFetching) ? <NewProductModalSkeleton isVisible={isLoading || isFetching} /> : <EditProductForm product={product} setProduct={setProduct}/>
           )}
         </Modal.Body>
 

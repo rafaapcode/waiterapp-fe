@@ -1,44 +1,54 @@
 import { Checkbox } from "@/components/ui/checkbox";
-import { IngredientsTypeFromAPI, IngredientTypeForFe } from "@/types/Ingredients";
+import {
+  IngredientsTypeFromAPI,
+  IngredientTypeForFe,
+} from "@/types/Ingredients";
 import { apiclient } from "@/utils/apiClient";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 
 interface IngredientsProps {
   onClick: () => void;
-  ingredientUsed: Set<string>;
-  ingredients: IngredientTypeForFe[];
-  setIngredients: (ing: IngredientTypeForFe[]) => void;
+  ingredientUsed: string[];
+  setIngredients: (ing: string[]) => void;
 }
 
-function Ingredients({ onClick, ingredientUsed, ingredients, setIngredients}: IngredientsProps) {
+function Ingredients({
+  onClick,
+  ingredientUsed,
+  setIngredients,
+}: IngredientsProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [listedIngredients, setListedIngredients] = useState<
+    IngredientTypeForFe[]
+  >([]);
+
+  console.log(ingredientUsed);
 
   const { isLoading, isFetching } = useQuery({
     queryKey: ["all_ingredients"],
-    staleTime: Infinity,
     queryFn: async () => {
       try {
         const { data } = await apiclient.get("/ingredient");
-        const ingredients = data.data as IngredientsTypeFromAPI[];
-        const formatIngredient = ingredients.map((ingredient) => ({
+        const ingredient = data.data as IngredientsTypeFromAPI[];
+        const formatIngredient = ingredient.map((ingredient) => ({
           id: ingredient._id,
           name: ingredient.name,
           icon: ingredient.icon,
-          selected: ingredientUsed.has(ingredient._id),
+          selected: new Set(ingredientUsed).has(ingredient._id),
         }));
-        setIngredients(formatIngredient);
+        setListedIngredients(formatIngredient);
+        return ingredient;
       } catch (error: any) {
         console.log(error.message);
-        setIngredients([]);
+        setListedIngredients([]);
       }
     },
   });
 
   const toggleIngredient = (id: string) => {
-    setIngredients(
-      ingredients.map((ingredient) =>
+    setListedIngredients(
+      listedIngredients.map((ingredient) =>
         ingredient.id === id
           ? { ...ingredient, selected: !ingredient.selected }
           : ingredient
@@ -46,9 +56,18 @@ function Ingredients({ onClick, ingredientUsed, ingredients, setIngredients}: In
     );
   };
 
-  const filteredIngredients = ingredients.filter((ingredient) =>
+  const filteredIngredients = listedIngredients.filter((ingredient) =>
     ingredient.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  useEffect(() => {
+    if (listedIngredients.length > 0) {
+      const selectedIngredientsIds = listedIngredients
+        .filter((ing) => ing.selected)
+        .map((ings) => ings.id);
+      setIngredients(selectedIngredientsIds);
+    }
+  }, [listedIngredients]);
 
   return (
     <div>
@@ -84,7 +103,7 @@ function Ingredients({ onClick, ingredientUsed, ingredients, setIngredients}: In
             <div className="h-10 w-full bg-gray-300 rounded animate-pulse"></div>
           </div>
         )}
-        {ingredients.length > 0 ? (
+        {listedIngredients.length > 0 ? (
           filteredIngredients.map((ingredient) => (
             <div
               key={ingredient.id}
