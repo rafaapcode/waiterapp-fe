@@ -1,4 +1,5 @@
 import Modal from "@/components/Modal";
+import { IngredientTypeForFe } from "@/types/Ingredients";
 import { Products } from "@/types/Products";
 import { apiclient } from "@/utils/apiClient";
 import { useQuery } from "@tanstack/react-query";
@@ -9,11 +10,21 @@ import RemoveProductModalSkeleton from "./skeletons/RemoveProductModalSkeleton";
 
 const RemoveProductModal = lazy(() => import("./RemoveProductModal"));
 
+export interface ProductFieldsChanged {
+  ingredients: IngredientTypeForFe[];
+  image: File | null;
+  description: string;
+  name: string;
+  discount: boolean;
+  priceInDiscount: number;
+}
+
 interface EditProductModalProps {
   isVisible: boolean;
   onClose: () => void;
   productid: string;
 }
+
 
 function EditProductModal({
   isVisible,
@@ -21,19 +32,20 @@ function EditProductModal({
   productid,
 }: EditProductModalProps) {
   const [removeProductModal, setRemoveProductModal] = useState<boolean>(false);
+  const [product, setProduct] = useState<ProductFieldsChanged>();
 
   const toggleRemoveProductModal = useCallback(
     () => setRemoveProductModal((prev) => !prev),
     []
   );
 
-  const { data } = useQuery({
+  const {data} = useQuery({
     queryKey: ["get_product_info_edit_form", { productid }],
     queryFn: async () => {
       try {
         const { data } = await apiclient.get(`/product/${productid}`);
-
-        return data as Products;
+        const product = data as Products;
+        return product;
       } catch (error: any) {
         console.log(error.message);
         toast.error("Erro ao buscar o Produto");
@@ -44,7 +56,7 @@ function EditProductModal({
 
   return (
     <>
-      {removeProductModal && data && (
+      {(removeProductModal && data) && (
         <Suspense
           fallback={
             <RemoveProductModalSkeleton isVisible={removeProductModal} />
@@ -77,7 +89,7 @@ function EditProductModal({
               <p>Nenhum produto encontrado !</p>
             </div>
           ) : (
-            <EditProductForm data={data} />
+            <EditProductForm data={data} setProduct={setProduct} imageSelected={product?.image || null}/>
           )}
         </Modal.Body>
 

@@ -1,10 +1,10 @@
 import { Image, Upload } from "lucide-react";
-import { ChangeEvent, Dispatch, SetStateAction, useRef } from "react";
+import { ChangeEvent, useRef } from "react";
 
 interface ImageUploadProps {
   imageurl?: string;
   selectedImage: File | null;
-  setSelectedImage: Dispatch<SetStateAction<File | null>>;
+  setSelectedImage: (file: File | null) => void;
 }
 
 function ImageUpload({ imageurl, selectedImage, setSelectedImage }: ImageUploadProps) {

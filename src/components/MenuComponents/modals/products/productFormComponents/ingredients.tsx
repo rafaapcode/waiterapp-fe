@@ -2,14 +2,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { IngredientsTypeFromAPI, IngredientTypeForFe } from "@/types/Ingredients";
 import { apiclient } from "@/utils/apiClient";
 import { useQuery } from "@tanstack/react-query";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 
 
 interface IngredientsProps {
   onClick: () => void;
   ingredientUsed: Set<string>;
   ingredients: IngredientTypeForFe[];
-  setIngredients: Dispatch<SetStateAction<IngredientTypeForFe[]>>
+  setIngredients: (ing: IngredientTypeForFe[]) => void;
 }
 
 function Ingredients({ onClick, ingredientUsed, ingredients, setIngredients}: IngredientsProps) {

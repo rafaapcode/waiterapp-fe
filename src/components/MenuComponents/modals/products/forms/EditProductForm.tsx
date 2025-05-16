@@ -1,52 +1,29 @@
-import { IngredientTypeForFe } from "@/types/Ingredients";
 import { Products } from "@/types/Products";
-import { ChangeEvent, lazy, Suspense, useCallback, useState } from "react";
+import { Dispatch, lazy, Suspense, useCallback, useState } from "react";
+import { ProductFieldsChanged } from "../EditProductModal";
 import IngredientModalSkeleton from "../ingredientsModal/IngredientModalSkeleton";
 import ImageUpload from "../productFormComponents/imageUpload";
-import Ingredients from "../productFormComponents/ingredients";
+import { default as Ingredients } from "../productFormComponents/ingredients";
 
 const IngredientModal = lazy(
   () => import("../ingredientsModal/IngredientModal")
 );
 
-interface ProductEditFormStateType {
-  name: string;
-  description: string;
-  imageUrl?: string;
-  discount: boolean;
-  priceInDiscount: number;
-}
 
 interface EditProductFormProps {
   data: Products;
+  setProduct: Dispatch<React.SetStateAction<ProductFieldsChanged | undefined
+  >>
+  imageSelected: File | null;
 }
 
-export default function EditProductForm({ data }: EditProductFormProps) {
-  const [product, setProduct] = useState<ProductEditFormStateType>({
-    description: data.description,
-    name: data.name,
-    imageUrl: data.imageUrl,
-    discount: data.discount,
-    priceInDiscount: data.priceInDiscount,
-  });
+export default function EditProductForm({ data, setProduct, imageSelected }: EditProductFormProps) {
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
-  const [ingredients, setIngredients] = useState<IngredientTypeForFe[]>([]);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   const handleIngredientModal = useCallback(
     () => setIngredienteModal((prev) => !prev),
     []
   );
-
-  const handleProductInfo = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setProduct((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full">
@@ -63,9 +40,9 @@ export default function EditProductForm({ data }: EditProductFormProps) {
       <div className="space-y-6 pl-2">
         {/* Image Upload */}
         <ImageUpload
-          selectedImage={selectedImage}
-          setSelectedImage={setSelectedImage}
-          imageurl={product.imageUrl}
+          selectedImage={imageSelected}
+          setSelectedImage={(file: File | null) => setProduct(prev => (prev && {...prev, image: file}))}
+          imageurl={data.imageUrl}
         />
 
         {/* Product Name */}
@@ -80,8 +57,8 @@ export default function EditProductForm({ data }: EditProductFormProps) {
             id="productName"
             type="text"
             name="name"
-            value={product.name}
-            onChange={handleProductInfo}
+            value={data.name}
+            onChange={(e) => setProduct(prev => (prev && {...prev, name: e.target.value}))}
             className="p-4 w-full border border-gray-200 rounded-md transition-all duration-200 outline-red-500 focus:outline-red-500"
             placeholder="Ex: Pizza de Mussarela"
           />
@@ -99,8 +76,8 @@ export default function EditProductForm({ data }: EditProductFormProps) {
             rows={3}
             maxLength={110}
             id="description"
-            value={product.description}
-            onChange={handleProductInfo}
+            value={data.description}
+            onChange={(e) => setProduct(prev => (prev && {...prev, description: e.target.value}))}
             className="w-full resize-none border border-gray-200 rounded-md px-2 py-1 transition-all duration-200 outline-red-500 focus:outline-red-500"
             placeholder="Ex: Pizza de Quatro Queijos com borda tradicional"
           />
@@ -109,9 +86,9 @@ export default function EditProductForm({ data }: EditProductFormProps) {
       </div>
 
       <Ingredients
-        ingredients={ingredients}
-        setIngredients={setIngredients}
-        ingredientUsed={new Set(data.ingredients)}
+        ingredients={data.ingredients.map(ing => ({id: ing._id,icon: ing.icon, name: ing.name, selected: false}))}
+        setIngredients={(ings) => setProduct(prev => (prev && {...prev, ingredients: ings}))}
+        ingredientUsed={new Set(data.ingredients.map(ing => ing._id))}
         onClick={handleIngredientModal}
       />
     </div>

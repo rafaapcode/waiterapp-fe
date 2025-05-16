@@ -3,7 +3,11 @@ export interface Products {
 	description: string;
 	imageUrl: string;
 	price: number;
-	ingredients: string[];
+	ingredients: {
+    _id: string;
+    name: string;
+    icon: string;
+  }[];
 	discount: boolean;
 	priceInDiscount: number;
 	category: {
