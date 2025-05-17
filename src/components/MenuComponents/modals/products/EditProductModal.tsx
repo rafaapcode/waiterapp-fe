@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import EditProductForm from "./forms/EditProductForm";
 import NewProductModalSkeleton from "./skeletons/NewProductModalSkeleton";
 import RemoveProductModalSkeleton from "./skeletons/RemoveProductModalSkeleton";
+import { updateProductSchema } from "./validations/updateProductSchema";
 
 const RemoveProductModal = lazy(() => import("./RemoveProductModal"));
 
@@ -29,7 +30,6 @@ interface EditProductModalProps {
   onClose: () => void;
   productid: string;
 }
-
 
 function EditProductModal({
   isVisible,
@@ -55,7 +55,7 @@ function EditProductModal({
     []
   );
 
-  const {data, isLoading, isFetching} = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ["get_product_info_edit_form", { productid }],
     queryFn: async () => {
       try {
@@ -66,13 +66,13 @@ function EditProductModal({
           discount: product.discount,
           image: null,
           imageUrl: product.imageUrl,
-          ingredients: product.ingredients.map(ing => ing._id),
+          ingredients: product.ingredients.map((ing) => ing._id),
           name: product.name,
           priceInDiscount: product.priceInDiscount,
           newIngredients: [],
-          price: data.price
+          price: data.price,
         });
-        return product
+        return product;
       } catch (error: any) {
         console.log(error.message);
         toast.error("Erro ao buscar o Produto");
@@ -86,17 +86,28 @@ function EditProductModal({
       const productDataUpdated = {
         description: data.description,
         discount: data.discount,
-        ingredients: data.newIngredients.length > 0 ? data.newIngredients : data.ingredients,
+        ingredients:
+          data.newIngredients.length > 0
+            ? data.newIngredients
+            : data.ingredients,
         name: data.name,
         priceInDiscount: data.priceInDiscount,
-        imageUrl: data.imageUrl
+        imageUrl: data.imageUrl,
+        price: data.price,
       };
 
-      if(data.image) {
+      const isValid = updateProductSchema.safeParse(productDataUpdated);
+
+      if (!isValid.success) {
+        const msgs = isValid.error.issues.map((iss) => iss.message);
+        throw new Error(msgs.join(" , "));
+      }
+
+      if (data.image) {
         try {
           const { data: responseImageUrl } = await uploadImage.postForm("", {
-          image: data.image
-          })
+            image: data.image,
+          });
           productDataUpdated.imageUrl = responseImageUrl.url;
         } catch (error) {
           toast.error("Não foi possível realizar o upload da sua imagem !");
@@ -108,8 +119,10 @@ function EditProductModal({
     },
     onSuccess: () => {
       toast.success("Produto atualizado com sucesso !");
-      queryClient.invalidateQueries({queryKey: ["list_all_products"]});
-      queryClient.invalidateQueries({queryKey: ["history_orders", { page: 1 }]});
+      queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
+      queryClient.invalidateQueries({
+        queryKey: ["history_orders", { page: 1 }],
+      });
       onClose();
     },
     onError: (error) => {
@@ -117,20 +130,21 @@ function EditProductModal({
       if (err.status === 404) {
         toast.warning("Produto não encontrado !");
       } else {
-        toast.error("Erro ao atualizar o produto");
+        toast.error(err.message);
       }
       return;
-    }
+    },
   });
-
 
   const onSave = () => {
     editProductMutation(product);
-  }
+  };
+
+  console.log(product);
 
   return (
     <>
-      {(removeProductModal && data) && (
+      {removeProductModal && data && (
         <Suspense
           fallback={
             <RemoveProductModalSkeleton isVisible={removeProductModal} />
@@ -159,12 +173,14 @@ function EditProductModal({
         </Modal.Header>
 
         <Modal.Body className="my-4">
-          {(!data) ? (
+          {!data ? (
             <div>
               <p>Nenhum produto encontrado !</p>
             </div>
+          ) : isLoading || isFetching ? (
+            <NewProductModalSkeleton isVisible={isLoading || isFetching} />
           ) : (
-            (isLoading || isFetching) ? <NewProductModalSkeleton isVisible={isLoading || isFetching} /> : <EditProductForm product={product} setProduct={setProduct}/>
+            <EditProductForm product={product} setProduct={setProduct} />
           )}
         </Modal.Body>
 
@@ -183,7 +199,11 @@ function EditProductModal({
               type="button"
               className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
             >
-              {isPending ? <LoaderCircle size={26} className="animate-spin" /> :"Salvar alterações"}
+              {isPending ? (
+                <LoaderCircle size={26} className="animate-spin" />
+              ) : (
+                "Salvar alterações"
+              )}
             </button>
           </div>
         </Modal.CustomFooter>
