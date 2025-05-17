@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 
 interface IngredientsProps {
   onClick: () => void;
-  ingredientUsed: string[];
+  ingredientUsed?: string[];
   setIngredients: (ing: string[]) => void;
 }
 

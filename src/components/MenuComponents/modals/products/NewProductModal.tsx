@@ -1,13 +1,32 @@
 import Modal from "@/components/Modal";
+import { useState } from "react";
 import ProductForm from "./forms/ProductForm";
 
 interface NewProductModalProps {
   isVisible: boolean;
   onClose: () => void;
 }
+export interface NewProductData {
+  image: File | null;
+  imageUrl: string;
+  productName: string;
+  description: string;
+  ingredients: string[];
+  category: string;
+}
 
 
 function NewProductModal({isVisible, onClose}: NewProductModalProps) {
+  const [product, setProduct] = useState<NewProductData>({
+    image: null,
+    category: "",
+    description: "",
+    imageUrl: "",
+    ingredients: [],
+    productName: ""
+  });
+
+  console.log("new product", product);
   return (
     <Modal.Root size="lg" isVisible={isVisible}>
       <Modal.Header onClose={onClose}>
@@ -15,7 +34,7 @@ function NewProductModal({isVisible, onClose}: NewProductModalProps) {
       </Modal.Header>
 
       <Modal.Body className="my-2">
-       <ProductForm />
+       <ProductForm product={product} setProduct={setProduct}/>
       </Modal.Body>
 
       <Modal.CustomFooter>
