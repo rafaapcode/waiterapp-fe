@@ -13,6 +13,9 @@ export interface NewProductData {
   description: string;
   ingredients: string[];
   category: string;
+  price: number;
+  discount: boolean;
+  priceInDiscount: number;
 }
 
 
@@ -23,7 +26,10 @@ function NewProductModal({isVisible, onClose}: NewProductModalProps) {
     description: "",
     imageUrl: "",
     ingredients: [],
-    productName: ""
+    productName: "",
+    price: 0,
+    discount: false,
+    priceInDiscount: 0
   });
 
   console.log("new product", product);

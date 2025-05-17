@@ -1,3 +1,5 @@
+import { Switch } from "@/components/ui/switch";
+import { Tag } from "lucide-react";
 import { Dispatch, lazy, Suspense, useCallback, useState } from "react";
 import { ProductFieldsChanged } from "../EditProductModal";
 import IngredientModalSkeleton from "../ingredientsModal/IngredientModalSkeleton";
@@ -25,7 +27,7 @@ export default function EditProductForm({
   );
 
   return (
-    <div className="grid grid-cols-2 gap-6 w-full max-h-full">
+    <div className="grid grid-cols-2 gap-6 w-full max-h-full overflow-y-auto">
       {ingredientModal && (
         <Suspense
           fallback={<IngredientModalSkeleton isVisible={ingredientModal} />}
@@ -90,13 +92,72 @@ export default function EditProductForm({
           />
           <p className="text-xs text-gray-500 mt-1">Máximo 110 caracteres</p>
         </div>
+
+        {/* Preço */}
+        <div>
+          <label htmlFor="price" className="block text-sm font-medium mb-1">
+            Preço (R$)
+          </label>
+          <input
+            id="price"
+            type="number"
+            name="price"
+            value={product.price}
+            onChange={(e) =>
+              setProduct(
+                (prev) => prev && { ...prev, price: Number(e.target.value) }
+              )
+            }
+            className="px-4 py-2 w-full border border-gray-200 rounded-md transition-all duration-200 outline-red-500 focus:outline-red-500"
+            placeholder="Ex: 120"
+          />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Switch
+            id="promotion-mode"
+            checked={product.discount}
+            onCheckedChange={(checked) => setProduct(prev => ({...prev, discount: checked}))}
+          />
+          <label
+            htmlFor="promotion-mode"
+            className="flex items-center cursor-pointer"
+          >
+            <Tag className="h-4 w-4 mr-2 text-red-500" />
+            Produto em promoção
+          </label>
+        </div>
+        {product.discount && (
+          <div className="pl-7 border-l-2 border-red-200">
+            <label
+              htmlFor="salePrice"
+              className="block text-sm font-medium text-red-600"
+            >
+              Preço promocional (R$)
+            </label>
+           <input
+                id="salePrice"
+                value={product.priceInDiscount}
+                onChange={(e) =>
+                  setProduct((prev) => ({
+                    ...prev,
+                    priceInDiscount: Number(e.target.value),
+                  }))
+                }
+                className="px-4 py-2 w-full border border-gray-200 rounded-md transition-all duration-200 outline-red-500 focus:outline-red-500"
+                placeholder="Ex: 0,00"
+              />
+          </div>
+        )}
       </div>
 
       <Ingredients
-          setIngredients={(ings) => setProduct((prev) => prev && { ...prev, newIngredients: ings })}
-          ingredientUsed={product.ingredients}
-          onClick={handleIngredientModal}
-        />
+        setIngredients={(ings) =>
+          setProduct((prev) => prev && { ...prev, newIngredients: ings })
+        }
+        ingredientUsed={product.ingredients}
+        onClick={handleIngredientModal}
+      />
     </div>
   );
 }

@@ -21,6 +21,7 @@ export interface ProductFieldsChanged {
   discount: boolean;
   priceInDiscount: number;
   imageUrl: string;
+  price: number;
 }
 
 interface EditProductModalProps {
@@ -45,7 +46,8 @@ function EditProductModal({
     name: "",
     priceInDiscount: 0,
     imageUrl: "",
-    newIngredients: []
+    newIngredients: [],
+    price: 0,
   });
 
   const toggleRemoveProductModal = useCallback(
@@ -67,7 +69,8 @@ function EditProductModal({
           ingredients: product.ingredients.map(ing => ing._id),
           name: product.name,
           priceInDiscount: product.priceInDiscount,
-          newIngredients: []
+          newIngredients: [],
+          price: data.price
         });
         return product
       } catch (error: any) {
