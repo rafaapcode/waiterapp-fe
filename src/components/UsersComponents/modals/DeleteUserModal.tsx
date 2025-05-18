@@ -1,25 +1,46 @@
 import Modal from "@/components/Modal";
+import { apiclient } from "@/utils/apiClient";
+import { useMutation } from "@tanstack/react-query";
 import { FormEvent } from "react";
+import { toast } from "react-toastify";
 
 interface DeleteUserModalProps {
   isVisible: boolean;
   onClose: () => void;
+  onEditModalClose: () => void;
   userData: {
+    id: string;
     name: string;
     email: string;
   };
 }
 
-function DeleteUserModal({ isVisible, onClose, userData }: DeleteUserModalProps) {
+function DeleteUserModal({ isVisible, onClose, userData, onEditModalClose }: DeleteUserModalProps) {
 
-  const onSave = (e: FormEvent<HTMLFormElement>) => {
+  const {mutateAsync: deleteUser} = useMutation({
+    mutationFn: async (id: string) => {
+      if(!id || id.length !== 24){
+        toast.error("Id do usuário inválido");
+        return
+      }
+      await apiclient.delete(`/user/${id}`);
+    },
+    onSuccess: () => {
+      toast.success("Usuário deletado com sucesso !");
+      onClose();
+      onEditModalClose();
+    },
+    onError: () => toast.error("Erro ao deletar o usuário , tente mais tarde !")
+  })
+
+  const onDelete = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // console.log(data);
+    deleteUser(userData.id);
   };
 
   return (
     <Modal.Root size="sm" isVisible={isVisible} priority>
-      <form action="" onSubmit={onSave}>
+      <form action="" onSubmit={onDelete}>
         <Modal.Header onClose={onClose}>
           <p className="text-[#333333] text-2xl font-semibold">Editar Usuário</p>
         </Modal.Header>
@@ -68,8 +89,6 @@ function DeleteUserModal({ isVisible, onClose, userData }: DeleteUserModalProps)
                 Manter usuário
               </button>
             <button
-              // onClick={onSave}
-              // disabled={categoryName.length < 4}
               type="submit"
               className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
             >
