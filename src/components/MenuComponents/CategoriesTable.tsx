@@ -1,17 +1,15 @@
 import createTable from "@/hooks/createTable";
 import { Categorie } from "@/types/Categorie";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import {
   Cell,
   ColumnDef,
   getFilteredRowModel,
   TableOptions,
 } from "@tanstack/react-table";
-import { AxiosError } from "axios";
+import { AxiosResponse } from "axios";
 import { EditIcon, Trash } from "lucide-react";
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
-import { toast } from "react-toastify";
+import { lazy, Suspense, useMemo } from "react";
 import Table from "../Table";
 import InputFilter from "../Table/InputFilter";
 import MenuHeader from "./MenuHeader";
@@ -25,51 +23,27 @@ const EditCategorieModal = lazy(
   () => import("./modals/categories/EditCategorieModal")
 );
 
-function CategoriesTable() {
-  const queryClient = useQueryClient();
-  const [newCategorieModal, setNewCategorieModal] = useState<boolean>(false);
-  const [editCategorieModal, setEditCategorieModal] =
-    useState<Categorie | null>(null);
+interface CategoriesTableProps {
+  props : {
+    newCategorieModal: boolean;
+    editCategorieModal: Categorie | null;
+    handleNewCategorieModal: () => void;
+    handleEditCategorieModal: (data: Categorie | null) => void;
+    DeleteCategorie: UseMutateAsyncFunction<AxiosResponse<any, any>, Error, string, unknown>;
+    isPending: boolean;
+    data: Categorie[] | undefined;
+  }
+}
 
-  const handleNewCategorieModal = useCallback(
-    () => setNewCategorieModal((prev) => !prev),
-    []
-  );
-  const handleEditCategorieModal = useCallback(
-    (data: Categorie | null) => setEditCategorieModal(data),
-    []
-  );
-
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async (id: string) => await apiclient.delete(`/category/${id}`),
-    onSuccess: () => {
-      toast.success("Categoria deletada com Sucesso !");
-      queryClient.invalidateQueries({ queryKey: ["all_categories"] });
-    },
-    onError: (error) => {
-      const err = error as AxiosError;
-      if (err.status === 404) {
-        toast.warning("Id da categoria não encontrada !");
-      } else {
-        toast.error("Erro ao encontrar o ID da categoria");
-      }
-      return;
-    },
-  });
-
-  const { data } = useQuery({
-    queryKey: ["all_categories"],
-    staleTime: Infinity,
-    queryFn: async (): Promise<Categorie[]> => {
-      try {
-        const { data } = await apiclient.get("/category/categories");
-        return data as Categorie[];
-      } catch (error: any) {
-        console.log(error.response);
-        return [];
-      }
-    },
-  });
+function CategoriesTable({ props }: CategoriesTableProps) {
+  const {
+    data,
+    editCategorieModal,handleEditCategorieModal,
+    handleNewCategorieModal,
+    isPending,
+    DeleteCategorie,
+    newCategorieModal
+  } = props;
 
   const columns = useMemo(
     (): ColumnDef<{ _id: string; icon: string; name: string }>[] => [
@@ -108,7 +82,7 @@ function CategoriesTable() {
               </button>
               <button
                 disabled={isPending}
-                onClick={() => mutateAsync(row.original._id)}
+                onClick={() => DeleteCategorie(row.original._id)}
                 className="text-red-600 hover:text-red-800 transition-all duration-200"
               >
                 <Trash size={20} />

@@ -1,13 +1,10 @@
 import createTable from "@/hooks/createTable";
-import { Products } from "@/types/Products";
-import { apiclient } from "@/utils/apiClient";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import { Cell, ColumnDef } from "@tanstack/react-table";
-import { AxiosError } from "axios";
+import { AxiosResponse } from "axios";
 import { EditIcon, LoaderCircle, Trash } from "lucide-react";
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
-import { toast } from "react-toastify";
+import { lazy, Suspense, useMemo } from "react";
 import Table from "../Table";
 import MenuHeader from "./MenuHeader";
 import NewProductModalSkeleton from "./modals/products/skeletons/NewProductModalSkeleton";
@@ -25,57 +22,30 @@ interface ProductsForFe {
   preco: number;
 }
 
-function ProductsTable() {
-  const queryClient = useQueryClient();
-  const [newProductModal, setNewProductModal] = useState<boolean>(false);
-  const [productIdToEdit, setProductIdToEdit] = useState<string | null>(null);
+interface ProductsTableProps {
+  props: {
+    newProductModal: boolean;
+    productIdToEdit: string | null;
+    handleNewProductModal: () => void;
+    handleProductIdToEdit: (id: string | null) => void;
+    DeleteProduct: UseMutateAsyncFunction<AxiosResponse<any, any>, Error, string, unknown>;
+    data: ProductsForFe[] | undefined;
+    isLoading: boolean;
+    isFetching: boolean;
+  }
+}
 
-  const handleNewProductModal = useCallback(
-    () => setNewProductModal((prev) => !prev),
-    []
-  );
-  const handleProductIdToEdit = useCallback(
-    (id: string | null) => setProductIdToEdit(id),
-    []
-  );
-
-  const { mutateAsync: DeleteProduct } = useMutation({
-    mutationFn: async (id: string) =>
-      await apiclient.delete(`/product/${id}`),
-    onSuccess: () => {
-      toast.success("Produto deletado com Sucesso");
-      queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
-    },
-    onError: (error) => {
-      const err = error as AxiosError;
-      if (err.status === 404) {
-        toast.warning("Produto não encontrado !");
-      } else {
-        toast.error("Erro ao encontrar o ID do registro");
-      }
-      return;
-    },
-  });
-
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["list_all_products"],
-    queryFn: async (): Promise<ProductsForFe[]> => {
-      try {
-        const { data } = await apiclient.get("/product");
-        const products = data as Products[];
-
-        return products.map((product) => ({
-          id: product._id,
-          categoria: product.category.name,
-          imageUrl: product.imageUrl,
-          name: product.name,
-          preco: product.discount ? product.priceInDiscount : product.price,
-        }));
-      } catch (error) {
-        return [];
-      }
-    },
-  });
+function ProductsTable({props}: ProductsTableProps) {
+  const {
+    DeleteProduct,
+    data,
+    handleNewProductModal,
+    handleProductIdToEdit,
+    isFetching,
+    isLoading,
+    newProductModal,
+    productIdToEdit
+  } = props;
 
   const columns = useMemo(
     (): ColumnDef<ProductsForFe>[] => [

@@ -4,10 +4,16 @@ import { VscLoading } from "react-icons/vsc";
 import Header from "../../components/Header/Header";
 import Menutab from "../../components/MenuComponents/Menutab";
 import ProductsTable from "../../components/MenuComponents/ProductsTable";
+import { CategoriesTableProps, ProductsTableProps } from "./menu.type";
 
 const CategoriesTable = lazy(() => import("../../components/MenuComponents/CategoriesTable"));
 
-function Menu() {
+interface MenuViewProps {
+  productsTable: ProductsTableProps['props'];
+  categoriesTable: CategoriesTableProps['props'];
+}
+
+function MenuView({productsTable, categoriesTable}: MenuViewProps) {
   const [tab, setTab] = useState<"products" | "categories">("products");
 
   const handleTabs = useCallback((tab: "products" | "categories") => {
@@ -24,12 +30,12 @@ function Menu() {
       <Menutab handleTab={handleTabs} tabSelected={tab}/>
 
     <section className="w-full mt-8">
-      {tab === "products" && <ProductsTable />}
-      {tab === "categories" && <Suspense fallback={<div className="flex justify-center py-10"><VscLoading size={40} className="animate-spin"/></div>}><CategoriesTable /></Suspense>}
+      {tab === "products" && <ProductsTable props={productsTable}/>}
+      {tab === "categories" && <Suspense fallback={<div className="flex justify-center py-10"><VscLoading size={40} className="animate-spin"/></div>}><CategoriesTable props={categoriesTable}/></Suspense>}
     </section>
 
     </main>
   )
 }
 
-export default Menu
+export default MenuView;

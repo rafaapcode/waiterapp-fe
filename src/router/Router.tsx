@@ -2,7 +2,7 @@ import { Route, Routes } from "react-router";
 import History from "../pages/History/history.page";
 import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login.page";
-import Menu from "../pages/Menu/menu.view";
+import Menu from "../pages/Menu/menu.page";
 import Users from "../pages/Users/users.view";
 import Authentication from "./Authentication";
 import Layout from "./Layout";
