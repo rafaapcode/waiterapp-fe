@@ -60,7 +60,6 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
         const msgs = isValid.error.issues.map((iss) => iss.message);
         throw new Error(msgs.join(" , "));
       }
-
       await apiclient.post("/product", productData);
     },
     onSuccess: () => {
