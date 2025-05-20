@@ -1,7 +1,8 @@
 import Modal from "@/components/Modal";
 import { apiclient } from "@/utils/apiClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { LoaderCircle } from "lucide-react";
 import {
   ChangeEvent,
   FormEvent,
@@ -14,6 +15,7 @@ import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { toast } from "react-toastify";
 import DeleteUserModalSkeleton from "../skeletons/DeleteUserModalSkeleton";
 import EditUserModalSkeleton from "../skeletons/EditUserModalSkeleton";
+import { updateUserSchema } from "../validations/updateUserSchema";
 
 const DeleteUserModal = lazy(() => import("./DeleteUserModal"));
 
@@ -31,6 +33,7 @@ interface UserData {
 }
 
 function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
+  const queryClient = useQueryClient();
   const [deleteUserModal, setDeleteUserModal] = useState<boolean>(false);
   const [passwordVisibility, setPasswordVisibility] = useState<
     "password" | "text"
@@ -45,6 +48,81 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
     name: "",
     password: "",
     role: "ADMIN",
+  });
+
+  const { isLoading, isFetching } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: async () => {
+      try {
+        const { data } = await apiclient.get(`/user/${userId}`);
+        setUserInfo({
+          email: data.email,
+          name: data.name,
+          password: "",
+          role: data.role,
+        });
+        if(data.role === "ADMIN") {
+          setRoleSelected({adm: true, waiter: false})
+        } else {
+          setRoleSelected({adm: false, waiter: true})
+        }
+      } catch (error) {
+        console.log(error);
+        const err = error as AxiosError;
+        if (err.status === 400 || err.status === 404) {
+          const msgs =
+            (err.response?.data as { message: string }) ??
+            "Erro ao buscar os usuários";
+          toast.error(msgs.message);
+          return { total_pages: 0, users: [] };
+        }
+        if (err.status === 401) {
+          toast.error("Sua sessão terminou !");
+        }
+        return { total_pages: 0, users: [] };
+      }
+    },
+  });
+
+  const {mutateAsync: editUserMutate, isPending} = useMutation({
+    mutationFn: async (data: UserData) => {
+      if (!userId || userId.length !== 24) {
+        toast.error("Id do usuário inválido");
+        return;
+      }
+      const newUserdata = {
+        ...(data.password && { password: data.password }),
+        ...(data.email && { email: data.email }),
+        ...(data.name && { name: data.name }),
+        ...(data.role && { role: data.role }),
+      }
+
+      const isValid = updateUserSchema.safeParse(newUserdata);
+
+      if (!isValid.success) {
+        console.log(isValid.error.errors);
+        const msgs = isValid.error.issues.map((iss) => iss.message);
+        toast.error(msgs.join(", "));
+        throw new Error("Dados inválidos");
+      }
+
+      await apiclient.put(`/user/${userId}`, newUserdata);
+    },
+    onSuccess: () => {
+      toast.success("Usuário atualizado com sucesso !");
+      queryClient.invalidateQueries({queryKey: ["all_users"]})
+      onClose();
+    },
+    onError: (error) => {
+      const err = error as AxiosError;
+      if (err.status === 400 || err.status === 404) {
+        const msgs =
+          (err.response?.data as { message: string }) ??
+          "Erro ao atualizar o usuário";
+        toast.error(msgs.message);
+        return;
+      }
+    },
   });
 
   const toggleDeleteUserModel = useCallback(
@@ -63,42 +141,14 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
 
   const onSave = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = {
+    const data: UserData = {
       ...userInfo,
       role: roleSelected.adm ? "ADMIN" : "WAITER",
     };
-
-    console.log(data);
+    console.log(roleSelected.adm)
+    console.log('Novo dado a ser editado',data);
+    editUserMutate(data);
   };
-
-  const { isLoading, isFetching } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: async () => {
-      try {
-        const { data } = await apiclient.get(`/user/${userId}`);
-        setUserInfo({
-          email: data.email,
-          name: data.name,
-          password: "",
-          role: data.role,
-        });
-      } catch (error) {
-        console.log(error);
-        const err = error as AxiosError;
-        if (err.status === 400 || err.status === 404) {
-          const msgs =
-            (err.response?.data as { message: string }) ??
-            "Erro ao buscar os usuários";
-          toast.error(msgs.message);
-          return { total_pages: 0, users: [] };
-        }
-        if (err.status === 401) {
-          toast.error("Sua sessão terminou !");
-        }
-        return { total_pages: 0, users: [] };
-      }
-    },
-  });
 
   return (
     <>
@@ -235,12 +285,11 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
                   Excluir usuário
                 </button>
                 <button
-                  // onClick={onSave}
-                  // disabled={categoryName.length < 4}
+                  disabled={isPending}
                   type="submit"
                   className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
                 >
-                  Salvar alterações
+                  {isPending ? <LoaderCircle size={24} className="animate-spin"/> :"Salvar alterações"}
                 </button>
               </div>
             </Modal.CustomFooter>

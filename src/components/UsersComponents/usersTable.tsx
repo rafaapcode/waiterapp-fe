@@ -1,13 +1,11 @@
-import { CONSTANTS } from "@/constants";
 import createTable from "@/hooks/createTable";
 import { Users } from "@/types/Users";
 import { apiclient } from "@/utils/apiClient";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { AxiosError } from "axios";
 import { Edit, LoaderCircle, Trash } from "lucide-react";
 import { lazy, Suspense, useCallback, useMemo, useState } from "react";
-import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import MenuHeader from "../MenuComponents/MenuHeader";
 import Pagination from "../pagination/Pagination";
@@ -19,22 +17,41 @@ const NewUserModal = lazy(() => import("./modals/NewUserModal"));
 const EditUserModal = lazy(() => import("./modals/EditUserModal"));
 
 function UsersTable() {
+  const queryClient = useQueryClient();
   const [newUserModal, setNewUserModal] = useState<boolean>(false);
   const [page, SetCurrentPage] = useState<number>(1);
   const [userToEdit, setUserToEditModal] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const toggleNewUserModal = useCallback(
     () => setNewUserModal((prev) => !prev),
     []
   );
 
+  const { mutateAsync: deleteUser } = useMutation({
+    mutationFn: async (id: string) => {
+      if (!id || id.length !== 24) {
+        toast.error("Id do usuário inválido");
+        return;
+      }
+      await apiclient.delete(`/user/${id}`);
+    },
+    onSuccess: () => {
+      toast.success("Usuário deletado com sucesso !");
+      queryClient.invalidateQueries({ queryKey: ["all_users", { page: 1 }] });
+    },
+    onError: () =>
+      toast.error("Erro ao deletar o usuário , tente mais tarde !"),
+  });
+
   const { data: AllUsers, isPending } = useQuery({
-    queryKey: ["all_users", {page}],
+    queryKey: ["all_users", { page }],
     queryFn: async () => {
       try {
         const { data } = await apiclient.get(`/user/all/${page}`);
-        return { total_pages: data.total_pages, users: data.users.map((u: any) => ({...u, id: u._id})) } as {total_pages: number; users: Users[]};
+        return {
+          total_pages: data.total_pages,
+          users: data.users.map((u: any) => ({ ...u, id: u._id })),
+        } as { total_pages: number; users: Users[] };
       } catch (error) {
         console.log(error);
         const err = error as AxiosError;
@@ -43,16 +60,9 @@ function UsersTable() {
             (err.response?.data as { message: string }) ??
             "Erro ao buscar os usuários";
           toast.error(msgs.message);
-          return {total_pages: 0, users: []};
+          return { total_pages: 0, users: [] };
         }
-        if (err.status === 401) {
-          toast.error(
-            "Sua sessão terminou !"
-          );
-          localStorage.removeItem(CONSTANTS.TOKEN);
-          return navigate("/");
-        }
-        return {total_pages: 0, users: []};
+        return { total_pages: 0, users: [] };
       }
     },
   });
@@ -96,7 +106,10 @@ function UsersTable() {
               >
                 <Edit size={20} />
               </button>
-              <button className="text-red-600 hover:text-red-800 transition-all duration-200">
+              <button
+                onClick={() => deleteUser(row.original.id)}
+                className="text-red-600 hover:text-red-800 transition-all duration-200"
+              >
                 <Trash size={20} />
               </button>
             </div>

@@ -32,6 +32,12 @@ export const useLoginModel = (): LoginModelType => {
           toast.error(data.message || "Erro ao realizar o login");
           return;
         }
+
+        if(!data.role || data.role !== "ADMIN") {
+          toast.error("Você não tem permissão para acessar o sistema");
+          return;
+        }
+
         const tokenResponse = setToken(data.access_token);
 
         if (!tokenResponse) {
@@ -78,9 +84,9 @@ export const useLoginModel = (): LoginModelType => {
     setIsValid(isValidCredentials);
   }, [userCredentials]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await loginUser(userCredentials);
+    loginUser(userCredentials);
   };
 
   return {

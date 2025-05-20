@@ -16,6 +16,10 @@ export const updateUserSchema = z
       .string({ message: 'Senha é obrigatório' })
       .min(8, { message: 'Senha deve ter no mínimo 8 caracteres' })
       .optional(),
-    role: z.enum(['WAITER', 'ADMIN'], {message: "O Usuário deve ser um GARÇOM ou ADMIN"}).optional(),
+    role: z
+      .enum(['WAITER', 'ADMIN'], {
+        errorMap: () => ({ message: 'Role inválida' }),
+      })
+      .optional(),
   })
-
+  .optional();

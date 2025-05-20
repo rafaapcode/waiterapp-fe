@@ -1,6 +1,6 @@
 import Modal from "@/components/Modal";
 import { apiclient } from "@/utils/apiClient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import { FormEvent, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -18,15 +18,20 @@ interface NewUserData {
 }
 
 function NewUserModal({ isVisible, onClose }: NewUserModalProps) {
-  const [userData, setUserData] = useState<NewUserData>({email: "", name: "", password: ""});
+  const queryClient = useQueryClient();
+  const [userData, setUserData] = useState<NewUserData>({
+    email: "",
+    name: "",
+    password: "",
+  });
   const admRadio = useRef<HTMLInputElement>(null);
 
   const { mutateAsync: creteUser, isPending } = useMutation({
-    mutationFn: async (data: NewUserData & {role: "WAITER" | "ADMIN"}) => {
-      const isValid = createUserSchema.safeParse({...data });
+    mutationFn: async (data: NewUserData & { role: "WAITER" | "ADMIN" }) => {
+      const isValid = createUserSchema.safeParse({ ...data });
 
-      if(!isValid.success) {
-        const msgs = isValid.error.issues.map(err => err.message).join(" , ");
+      if (!isValid.success) {
+        const msgs = isValid.error.issues.map((err) => err.message).join(" , ");
         toast.error(msgs);
         return;
       }
@@ -35,18 +40,19 @@ function NewUserModal({ isVisible, onClose }: NewUserModalProps) {
     },
     onSuccess: () => {
       toast.success("Usuário criado com sucesso !");
+      queryClient.invalidateQueries({ queryKey: ["all_users", { page: 1 }] });
       onClose();
     },
     onError: () => {
       toast.error("Erro ao criar o usuário");
-    }
+    },
   });
 
   const onSave = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const admChecked = admRadio.current?.checked;
 
-    creteUser({...userData, role: admChecked ? "ADMIN" : 'WAITER'});
+    creteUser({ ...userData, role: admChecked ? "ADMIN" : "WAITER" });
   };
 
   return (
@@ -63,7 +69,9 @@ function NewUserModal({ isVisible, onClose }: NewUserModalProps) {
                 Nome
               </label>
               <input
-                onChange={(e) => setUserData(prev => ({...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setUserData((prev) => ({ ...prev, name: e.target.value }))
+                }
                 required
                 minLength={4}
                 type="text"
@@ -76,7 +84,9 @@ function NewUserModal({ isVisible, onClose }: NewUserModalProps) {
                 Email
               </label>
               <input
-                onChange={(e) => setUserData(prev => ({...prev, email: e.target.value }))}
+                onChange={(e) =>
+                  setUserData((prev) => ({ ...prev, email: e.target.value }))
+                }
                 required
                 type="email"
                 id="email"
@@ -88,7 +98,9 @@ function NewUserModal({ isVisible, onClose }: NewUserModalProps) {
                 Senha
               </label>
               <input
-                onChange={(e) => setUserData(prev => ({...prev, password: e.target.value }))}
+                onChange={(e) =>
+                  setUserData((prev) => ({ ...prev, password: e.target.value }))
+                }
                 minLength={8}
                 required
                 type="password"
@@ -130,7 +142,13 @@ function NewUserModal({ isVisible, onClose }: NewUserModalProps) {
               type="submit"
               className="bg-[#D73035] w-full disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
             >
-              {isPending ? <LoaderCircle size={24} className="animate-spin"/> :"Cadastrar usuário"}
+              {isPending ? (
+                <div className="flex justify-center items-center">
+                  <LoaderCircle size={24} className="animate-spin text-center" />
+                </div>
+              ) : (
+                "Cadastrar usuário"
+              )}
             </button>
           </div>
         </Modal.CustomFooter>

@@ -1,6 +1,6 @@
 import Modal from "@/components/Modal";
 import { apiclient } from "@/utils/apiClient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FormEvent } from "react";
 import { toast } from "react-toastify";
 
@@ -16,6 +16,7 @@ interface DeleteUserModalProps {
 }
 
 function DeleteUserModal({ isVisible, onClose, userData, onEditModalClose }: DeleteUserModalProps) {
+  const queryClient = useQueryClient();
 
   const {mutateAsync: deleteUser} = useMutation({
     mutationFn: async (id: string) => {
@@ -27,6 +28,7 @@ function DeleteUserModal({ isVisible, onClose, userData, onEditModalClose }: Del
     },
     onSuccess: () => {
       toast.success("Usuário deletado com sucesso !");
+      queryClient.invalidateQueries({queryKey: ["all_users", {page: 1}]});
       onClose();
       onEditModalClose();
     },
