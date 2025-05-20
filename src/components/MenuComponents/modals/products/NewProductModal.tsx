@@ -1,6 +1,6 @@
 import Modal from "@/components/Modal";
-import { apiclient, uploadImage } from "@/utils/apiClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { analyseImage, apiclient, uploadImage } from "@/utils/apiClient";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
@@ -32,6 +32,19 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
     ingredients: [],
     name: "",
     price: 0,
+  });
+
+  const {} = useQuery({
+    enabled: !product.image ? false : true,
+    queryKey: ["analyse_product_image"],
+    queryFn: async () => {
+      if (product.image) {
+        const { data } = await analyseImage.postForm("/", {
+          image: product.image,
+        });
+        return data;
+      }
+    },
   });
 
   const { mutateAsync: createProductAsync, isPending } = useMutation({
