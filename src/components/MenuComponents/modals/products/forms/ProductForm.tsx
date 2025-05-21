@@ -1,3 +1,5 @@
+import { analyseImage } from "@/utils/apiClient";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Dispatch,
   lazy,
@@ -11,10 +13,20 @@ import { NewProductData } from "../NewProductModal";
 import Categories from "../productFormComponents/categories";
 import ImageUpload from "../productFormComponents/imageUpload";
 import Ingredients from "../productFormComponents/ingredients";
+import AnalyseModalLoading from "./analyseModalLoading";
 
 const IngredientModal = lazy(
   () => import("../ingredientsModal/IngredientModal")
 );
+
+interface AnalyseImageResponse {
+  message: string;
+  analyse: {
+    category: string;
+    new_ingredients: boolean;
+    ingredients: { id: string; name: string }[];
+  };
+}
 
 interface ProductFormProp {
   product: NewProductData;
@@ -22,12 +34,54 @@ interface ProductFormProp {
 }
 
 export default function ProductForm({ product, setProduct }: ProductFormProp) {
+  const queryClient = useQueryClient();
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
+
+  const { data: ImageAnalyseResult, isLoading } = useQuery({
+    enabled: !product.image ? false : true,
+    queryKey: ["analyse_product_image"],
+    queryFn: async (): Promise<AnalyseImageResponse> => {
+      if (product.image) {
+        try {
+          const { data } = await analyseImage.postForm("/analyse_image", {
+            image: product.image,
+          });
+          const response = data as AnalyseImageResponse;
+
+          if (response.analyse.new_ingredients) {
+            queryClient.invalidateQueries({ queryKey: ["all_ingredients"] });
+          }
+          console.log(response);
+          return response;
+        } catch (error: any) {
+          console.log(error.message);
+          return {
+          message: "Nenhuma imagem foi enviada",
+          analyse: {
+            category: "",
+            new_ingredients: false,
+            ingredients: [],
+          },
+        };
+        }
+      } else {
+        return {
+          message: "Nenhuma imagem foi enviada",
+          analyse: {
+            category: "",
+            new_ingredients: false,
+            ingredients: [],
+          },
+        }
+      }
+    },
+  });
 
   const handleIngredientModal = useCallback(
     () => setIngredienteModal((prev) => !prev),
     []
   );
+
 
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full">
@@ -41,6 +95,8 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
           />
         </Suspense>
       )}
+
+      {isLoading && <AnalyseModalLoading isVisible={isLoading}/>}
       <div className="space-y-4 pl-2">
         {/* Image Upload */}
         <ImageUpload
@@ -120,6 +176,11 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
         />
       </div>
       <Ingredients
+        ingredientUsed={
+          ImageAnalyseResult
+            ? ImageAnalyseResult.analyse.ingredients.map((ing) => ing.id)
+            : []
+        }
         onClick={handleIngredientModal}
         setIngredients={(ings) =>
           setProduct((prev) => ({ ...prev, ingredients: ings }))
