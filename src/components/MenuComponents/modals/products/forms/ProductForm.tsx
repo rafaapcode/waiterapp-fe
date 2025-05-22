@@ -22,7 +22,8 @@ const IngredientModal = lazy(
 interface AnalyseImageResponse {
   message: string;
   analyse: {
-    category: string;
+    name: string;
+    description: string;
     new_ingredients: boolean;
     ingredients: { id: string; name: string }[];
   };
@@ -52,6 +53,11 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
           if (response.analyse.new_ingredients) {
             queryClient.invalidateQueries({ queryKey: ["all_ingredients"] });
           }
+          setProduct((prev) => ({
+            ...prev,
+            name: response.analyse.name,
+            description: response.analyse.description
+          }))
           setIdentifiedIngredients(response.analyse.ingredients.map((ing) => ing.id));
           return [];
         } catch (error: any) {
