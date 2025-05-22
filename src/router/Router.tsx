@@ -1,9 +1,10 @@
+import Profile from "@/pages/Profile/profile.view";
 import { Route, Routes } from "react-router";
 import History from "../pages/History/history.page";
 import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login.page";
 import Menu from "../pages/Menu/menu.page";
-import Users from "../pages/Users/users.view";
+import Users from "../pages/Users/users.page";
 import Authentication from "./Authentication";
 import Layout from "./Layout";
 
@@ -19,6 +20,7 @@ function Router() {
           <Route path="history" element={<History />} />
           <Route path="menu" element={<Menu />} />
           <Route path="users" element={<Users />} />
+           <Route path="profile" element={<Profile />} />
         </Route>
       </Route>
     </Routes>

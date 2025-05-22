@@ -1,8 +1,9 @@
 import UsersTable from "@/components/UsersComponents/usersTable";
 import { FiUsers } from "react-icons/fi";
 import Header from "../../components/Header/Header";
+import { UsersPageProps } from "./users.type";
 
-function Users() {
+function UsersView({ props }: UsersPageProps) {
   return (
     <main className="w-full h-full pt-10 overflow-y-auto">
       <Header
@@ -11,10 +12,10 @@ function Users() {
         title="Usuários"
       />
       <section className="w-full mt-8">
-        <UsersTable />
+        <UsersTable props={props}/>
       </section>
     </main>
   );
 }
 
-export default Users;
+export default UsersView;

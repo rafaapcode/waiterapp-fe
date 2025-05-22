@@ -1,12 +1,15 @@
 import createTable from "@/hooks/createTable";
 import { Users } from "@/types/Users";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { AxiosError } from "axios";
 import { Edit, LoaderCircle, Trash } from "lucide-react";
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
-import { toast } from "react-toastify";
+import {
+  Dispatch,
+  lazy,
+  SetStateAction,
+  Suspense,
+  useMemo
+} from "react";
 import MenuHeader from "../MenuComponents/MenuHeader";
 import Pagination from "../pagination/Pagination";
 import Table from "../Table";
@@ -16,56 +19,22 @@ import NewUserModalSkeleton from "./skeletons/NewUserModalSkeleton";
 const NewUserModal = lazy(() => import("./modals/NewUserModal"));
 const EditUserModal = lazy(() => import("./modals/EditUserModal"));
 
-function UsersTable() {
-  const queryClient = useQueryClient();
-  const [newUserModal, setNewUserModal] = useState<boolean>(false);
-  const [page, SetCurrentPage] = useState<number>(1);
-  const [userToEdit, setUserToEditModal] = useState<string | null>(null);
+interface UsersTableProps {
+  props: {
+    newUserModal: boolean;
+    toggleNewUserModal: () => void;
+    userToEdit: string | null;
+    setUserToEditModal: Dispatch<SetStateAction<string | null>>;
+    page: number;
+    setCurrentPage: Dispatch<SetStateAction<number>>;
+    AllUsers: {total_pages: number; users: Users[];} | undefined;
+    isPending: boolean;
+    deleteUser: UseMutateAsyncFunction<void, Error, string, unknown>;
+  };
+}
 
-  const toggleNewUserModal = useCallback(
-    () => setNewUserModal((prev) => !prev),
-    []
-  );
-
-  const { mutateAsync: deleteUser } = useMutation({
-    mutationFn: async (id: string) => {
-      if (!id || id.length !== 24) {
-        toast.error("Id do usuário inválido");
-        return;
-      }
-      await apiclient.delete(`/user/${id}`);
-    },
-    onSuccess: () => {
-      toast.success("Usuário deletado com sucesso !");
-      queryClient.invalidateQueries({ queryKey: ["all_users", { page: 1 }] });
-    },
-    onError: () =>
-      toast.error("Erro ao deletar o usuário , tente mais tarde !"),
-  });
-
-  const { data: AllUsers, isPending } = useQuery({
-    queryKey: ["all_users", { page }],
-    queryFn: async () => {
-      try {
-        const { data } = await apiclient.get(`/user/all/${page}`);
-        return {
-          total_pages: data.total_pages,
-          users: data.users.map((u: any) => ({ ...u, id: u._id })),
-        } as { total_pages: number; users: Users[] };
-      } catch (error) {
-        console.log(error);
-        const err = error as AxiosError;
-        if (err.status === 400 || err.status === 404) {
-          const msgs =
-            (err.response?.data as { message: string }) ??
-            "Erro ao buscar os usuários";
-          toast.error(msgs.message);
-          return { total_pages: 0, users: [] };
-        }
-        return { total_pages: 0, users: [] };
-      }
-    },
-  });
+function UsersTable({props}: UsersTableProps) {
+  const { AllUsers, deleteUser, isPending, newUserModal, page, setCurrentPage, setUserToEditModal, toggleNewUserModal, userToEdit } = props;
 
   const columns = useMemo(
     (): ColumnDef<Users>[] => [
@@ -158,7 +127,7 @@ function UsersTable() {
           <Pagination
             existsOrder={AllUsers?.users.length !== 0}
             page={page}
-            setCurrentPage={SetCurrentPage}
+            setCurrentPage={setCurrentPage}
             totalPage={AllUsers?.total_pages || 0}
           />
         </Table.Root>
