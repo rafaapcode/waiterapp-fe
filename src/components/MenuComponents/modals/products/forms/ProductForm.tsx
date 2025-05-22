@@ -36,11 +36,12 @@ interface ProductFormProp {
 export default function ProductForm({ product, setProduct }: ProductFormProp) {
   const queryClient = useQueryClient();
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
+  const [indetifiedIngredients, setIdentifiedIngredients] = useState<string[]>([]);
 
-  const { data: ImageAnalyseResult, isLoading } = useQuery({
+  const { isLoading, isFetching } = useQuery({
     enabled: !product.image ? false : true,
-    queryKey: ["analyse_product_image"],
-    queryFn: async (): Promise<AnalyseImageResponse> => {
+    queryKey: ["analyse_product_image", product.image?.name],
+    queryFn: async () => {
       if (product.image) {
         try {
           const { data } = await analyseImage.postForm("/analyse_image", {
@@ -51,28 +52,16 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
           if (response.analyse.new_ingredients) {
             queryClient.invalidateQueries({ queryKey: ["all_ingredients"] });
           }
-          console.log(response);
-          return response;
+          setIdentifiedIngredients(response.analyse.ingredients.map((ing) => ing.id));
+          return [];
         } catch (error: any) {
           console.log(error.message);
-          return {
-          message: "Nenhuma imagem foi enviada",
-          analyse: {
-            category: "",
-            new_ingredients: false,
-            ingredients: [],
-          },
-        };
+         setIdentifiedIngredients([]);
+          return [];
         }
       } else {
-        return {
-          message: "Nenhuma imagem foi enviada",
-          analyse: {
-            category: "",
-            new_ingredients: false,
-            ingredients: [],
-          },
-        }
+        setIdentifiedIngredients([]);
+        return [];
       }
     },
   });
@@ -81,7 +70,6 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
     () => setIngredienteModal((prev) => !prev),
     []
   );
-
 
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full">
@@ -96,7 +84,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
         </Suspense>
       )}
 
-      {isLoading && <AnalyseModalLoading isVisible={isLoading}/>}
+      {(isLoading || isFetching) && <AnalyseModalLoading isVisible={isLoading || isFetching} />}
       <div className="space-y-4 pl-2">
         {/* Image Upload */}
         <ImageUpload
@@ -176,11 +164,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
         />
       </div>
       <Ingredients
-        ingredientUsed={
-          ImageAnalyseResult
-            ? ImageAnalyseResult.analyse.ingredients.map((ing) => ing.id)
-            : []
-        }
+        ingredientUsed={indetifiedIngredients}
         onClick={handleIngredientModal}
         setIngredients={(ings) =>
           setProduct((prev) => ({ ...prev, ingredients: ings }))

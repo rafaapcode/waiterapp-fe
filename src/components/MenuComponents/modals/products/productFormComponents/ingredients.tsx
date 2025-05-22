@@ -67,6 +67,16 @@ function Ingredients({
     }
   }, [listedIngredients]);
 
+  useEffect(() => {
+    if (ingredientUsed && ingredientUsed.length > 0) {
+      const updatedIngredients = listedIngredients.map((ingredient) => ({
+        ...ingredient,
+        selected: ingredientUsed.includes(ingredient.id),
+      }));
+      setListedIngredients(updatedIngredients);
+    }
+  }, [ingredientUsed]);
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -93,7 +103,7 @@ function Ingredients({
         </div>
       </div>
 
-      <div className="max-h-[400px] overflow-y-auto flex flex-col gap-1">
+      <div className="max-h-[350px] overflow-y-auto flex flex-col gap-1">
         {(isLoading || isFetching) && (
           <div className="w-full h-full p-4 flex flex-col gap-2">
             <div className="h-10 w-full bg-gray-300 rounded animate-pulse"></div>
@@ -125,6 +135,20 @@ function Ingredients({
             <p>Nenhum ingrediente encontrado !</p>
           </div>
         )}
+      </div>
+      <div className="mt-6 grid grid-cols-4 gap-y-2 gap-x-2 max-w-full max-h-[150px] overflow-y-auto pb-1">
+        {listedIngredients.filter(ing => ing.selected).map((ingredient) => (
+          <button
+            key={ingredient.id}
+            disabled
+            className="px-4 py-1 rounded-xl flex gap-2 items-center justify-center text-xs bg-gray-100 transition-all duration-200"
+          >
+            <span className="text-xs">{ingredient.icon}</span>
+            <span className="truncate w-full text-xs text-center">
+              {ingredient.name}
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );
