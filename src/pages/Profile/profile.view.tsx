@@ -9,6 +9,9 @@ function Profile() {
         subtitle="Gerencie a sua conta e suas informações"
         title="Perfil"
       />
+      <div className="bg-red-300 mt-8">
+        <h1>teste</h1>
+      </div>
     </main>
   );
 }

@@ -76,8 +76,9 @@ function UsersTable({props}: UsersTableProps) {
                 <Edit size={20} />
               </button>
               <button
+                disabled={row.original.role === "ADMIN"}
                 onClick={() => deleteUser(row.original.id)}
-                className="text-red-600 hover:text-red-800 transition-all duration-200"
+                className="text-red-600 hover:text-red-800 disabled:text-red-300 transition-all duration-200"
               >
                 <Trash size={20} />
               </button>
