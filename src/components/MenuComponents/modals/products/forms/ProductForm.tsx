@@ -1,4 +1,5 @@
 import { analyseImage } from "@/utils/apiClient";
+import { verifyImageIntegrity } from "@/utils/verifyImage";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Dispatch,
@@ -45,6 +46,13 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
     queryFn: async () => {
       if (product.image) {
         try {
+          // Verify if the image is a virus
+          const isInfected = await verifyImageIntegrity(product.image);
+
+          if(isInfected) {
+            throw new Error("Imagem infectada !");
+          }
+          // Analyse the image
           const { data } = await analyseImage.postForm("/analyse_image", {
             image: product.image,
           });
@@ -62,7 +70,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
           return [];
         } catch (error: any) {
           console.log(error.message);
-         setIdentifiedIngredients([]);
+          setIdentifiedIngredients([]);
           return [];
         }
       } else {

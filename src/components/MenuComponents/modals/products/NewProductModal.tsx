@@ -1,5 +1,6 @@
 import Modal from "@/components/Modal";
 import { apiclient, uploadImage } from "@/utils/apiClient";
+import { verifyImageIntegrity } from "@/utils/verifyImage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
@@ -43,6 +44,14 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
           "https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg";
       } else {
         try {
+          // Verfify if the image is a virus
+          const isInfected = await verifyImageIntegrity(data.image);
+
+          if(isInfected) {
+            throw new Error("Imagem infectada !");
+          }
+
+          // Upload image
           const { data: responseImageUrl } = await uploadImage.postForm("", {
             image: data.image,
           });

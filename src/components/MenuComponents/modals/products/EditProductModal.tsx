@@ -1,6 +1,7 @@
 import Modal from "@/components/Modal";
 import { Products } from "@/types/Products";
 import { apiclient, uploadImage } from "@/utils/apiClient";
+import { verifyImageIntegrity } from "@/utils/verifyImage";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
@@ -105,13 +106,26 @@ function EditProductModal({
 
       if (data.image) {
         try {
+          // Verfify if the image is a virus
+          const isInfected = await verifyImageIntegrity(data.image);
+
+          if(isInfected) {
+            throw new Error("Imagem infectada !");
+          }
+
+          // Upload  image
           const { data: responseImageUrl } = await uploadImage.postForm("", {
             image: data.image,
           });
           productDataUpdated.imageUrl = responseImageUrl.url;
-        } catch (error) {
-          toast.error("Não foi possível realizar o upload da sua imagem !");
-          productDataUpdated.imageUrl = data.imageUrl;
+        } catch (error: any) {
+          if(error.message === "Imagem infectada !") {
+            toast.error("Sua imagem pode estar infectada !");
+            productDataUpdated.imageUrl = data.imageUrl;
+          } else {
+            toast.error("Não foi possível realizar o upload da sua imagem !");
+            productDataUpdated.imageUrl = data.imageUrl;
+          }
         }
       }
 
@@ -139,8 +153,6 @@ function EditProductModal({
   const onSave = () => {
     editProductMutation(product);
   };
-
-  console.log(product);
 
   return (
     <>
