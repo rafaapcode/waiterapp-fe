@@ -1,16 +1,21 @@
 import { Profile } from "@/types/Profile";
+import { ErrorMessage } from "@hookform/error-message";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  ChevronLeft,
-  EyeOff,
   Lock,
   Mail,
   Save,
   User
 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { updateProfileDataSchema } from "./schema/updateProfileSchema";
 
 function ProfileEditForm() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, formState: {errors, isValid, isDirty} } = useForm({
+    defaultValues: async () => ({email: "afa@gmail.com", name: "rraafaf", currentPassword: "", newPassword: "", confirmPassword: ""}),
+    mode: 'onBlur',
+    resolver: zodResolver(updateProfileDataSchema)
+  });
 
   const onSubmit = async (data: Profile) => {
     console.log("Form Data", data);
@@ -43,6 +48,7 @@ function ProfileEditForm() {
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                   placeholder="Seu nome completo"
                 />
+                <ErrorMessage name="name" errors={errors} render={({message}) => <p className="text-xs text-red-500">{message}</p>}/>
               </div>
             </div>
 
@@ -62,6 +68,7 @@ function ProfileEditForm() {
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                   placeholder="seu.email@exemplo.com"
                 />
+                <ErrorMessage name="email" errors={errors} render={({message}) => <p className="text-xs text-red-500">{message}</p>}/>
               </div>
             </div>
           </div>
@@ -88,7 +95,7 @@ function ProfileEditForm() {
               >
                 Senha Atual
               </label>
-              <div className="mt-1 relative">
+              <div className="mt-1">
                 <input
                   id="current-password"
                   type="password"
@@ -96,14 +103,6 @@ function ProfileEditForm() {
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm pr-10"
                   placeholder="Digite sua senha atual"
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  onClick={() => {}}
-                >
-                  {/* {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} */}
-                  <EyeOff className="h-4 w-4" />
-                </button>
               </div>
             </div>
 
@@ -114,7 +113,7 @@ function ProfileEditForm() {
               >
                 Nova Senha
               </label>
-              <div className="mt-1 relative">
+              <div className="mt-1">
                 <input
                   id="new-password"
                   type="password"
@@ -122,15 +121,8 @@ function ProfileEditForm() {
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm pr-10"
                   placeholder="Digite sua nova senha"
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  onClick={() => {}}
-                >
-                  {/* {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} */}
-                  <EyeOff className="h-4 w-4" />
-                </button>
               </div>
+              <ErrorMessage name="newPassword" errors={errors} render={({message}) => <p className="text-xs text-red-500">{message}</p>}/>
             </div>
 
             <div>
@@ -140,23 +132,16 @@ function ProfileEditForm() {
               >
                 Confirmar Nova Senha
               </label>
-              <div className="mt-1 relative">
+              <div className="mt-1">
                 <input
                   id="confirm-password"
-                  type="text"
+                  type="password"
                   {...register("confirmPassword")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm pr-10"
                   placeholder="Confirme sua nova senha"
                 />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  onClick={() => {}}
-                >
-                  {/* {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />} */}
-                  <EyeOff className="h-4 w-4" />
-                </button>
               </div>
+              <ErrorMessage name="confirmPassword" errors={errors} render={({message}) => <p className="text-xs text-red-500">{message}</p>}/>
             </div>
           </div>
         </div>
@@ -164,15 +149,9 @@ function ProfileEditForm() {
         {/* Botões de Ação */}
         <div className="flex justify-end gap-3 pt-4">
           <button
-            type="button"
-            className="px-4 py-2 h-10 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center gap-1"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Cancelar
-          </button>
-          <button
+            disabled={!isValid || !isDirty}
             type="submit"
-            className="px-4 py-2 h-10 rounded-md border border-transparent bg-red-500 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center gap-1"
+            className="px-4 py-2 h-10 rounded-md border border-transparent bg-red-500 disabled:bg-red-400 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center gap-1"
           >
             <Save className="h-4 w-4" />
             Salvar Alterações
