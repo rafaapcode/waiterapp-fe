@@ -1,89 +1,27 @@
+import { Profile } from "@/types/Profile";
 import {
   ChevronLeft,
   EyeOff,
-  ImagePlus,
   Lock,
   Mail,
   Save,
-  Upload,
-  User,
+  User
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 
 function ProfileEditForm() {
   const { register, handleSubmit } = useForm();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: Profile) => {
     console.log("Form Data", data);
     try {
+
     } catch (e) {}
   };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6 max-h-[750px] overflow-y-auto">
-      {/* Modal de carregamento */}
-      {/* <LoadingModal isOpen={isAnalyzing} message="Processando imagem..." /> */}
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Seção de Imagem de Perfil */}
-        <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4">
-          <div className="relative">
-            <div
-              className="h-32 w-32 rounded-full overflow-hidden border-4 border-white shadow-md cursor-pointer relative"
-              onClick={() => {}}
-            >
-              {true && (
-                <>
-                  <img
-                    src="https://www.g20.rj.gov.br/painel/app/imagens_salvas/default_image.jpg"
-                    alt="Foto de perfil"
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center">
-                    <div className="opacity-0 hover:opacity-100 transition-opacity flex gap-2">
-                      <button
-                        type="button"
-                        onClick={(e) => {}}
-                        className="bg-white p-1.5 rounded-full shadow-md"
-                      >
-                        <ImagePlus className="h-4 w-4 text-gray-700" />
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-            <input
-              id="profile-image"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              {...register("profile_image")}
-            />
-          </div>
-
-          <div className="flex-1 space-y-2">
-            <h2 className="text-lg font-medium">Foto de Perfil</h2>
-            <p className="text-sm text-gray-500">
-              Esta foto será exibida no seu perfil e em outros lugares onde você
-              interage na plataforma.
-            </p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                className="px-3 h-9 rounded-md border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center gap-1"
-                onClick={() => {}}
-              >
-                <Upload className="h-4 w-4" />
-                Alterar foto
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Separador */}
-        <div className="h-px w-full bg-gray-200 my-6"></div>
-
         {/* Informações Pessoais */}
         <div className="space-y-2">
           <h2 className="text-lg font-medium">Informações Pessoais</h2>
@@ -154,7 +92,7 @@ function ProfileEditForm() {
                 <input
                   id="current-password"
                   type="password"
-                  {...register("current_password")}
+                  {...register("currentPassword")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm pr-10"
                   placeholder="Digite sua senha atual"
                 />
@@ -180,7 +118,7 @@ function ProfileEditForm() {
                 <input
                   id="new-password"
                   type="password"
-                  {...register("new_password")}
+                  {...register("newPassword")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm pr-10"
                   placeholder="Digite sua nova senha"
                 />
@@ -206,7 +144,7 @@ function ProfileEditForm() {
                 <input
                   id="confirm-password"
                   type="text"
-                  {...register("confirm_password")}
+                  {...register("confirmPassword")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm pr-10"
                   placeholder="Confirme sua nova senha"
                 />

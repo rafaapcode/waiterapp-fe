@@ -1,3 +1,4 @@
+import { useUser } from "@/context/user";
 import { useSetToken } from "@/hooks/useToken";
 import { apiclient } from "@/utils/apiClient";
 import { useMutation } from "@tanstack/react-query";
@@ -8,6 +9,7 @@ import { toast } from "react-toastify";
 import { LoginModelType } from "./login.type";
 
 export const useLoginModel = (): LoginModelType => {
+  const setUser = useUser((state: any) => state.setUser);
   const setToken = useSetToken();
   const navigate = useNavigate();
   const [splashTimeout, setSplashTimeout] = useState<boolean>(true);
@@ -45,6 +47,7 @@ export const useLoginModel = (): LoginModelType => {
           return;
         }
 
+        setUser({id: data.id});
         return navigate("/app/home");
       } else {
         toast.error("Credenciais inválidas");
