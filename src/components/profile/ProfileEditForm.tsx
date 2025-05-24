@@ -8,14 +8,23 @@ import {
   Upload,
   User,
 } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 function ProfileEditForm() {
+  const { register, handleSubmit } = useForm();
+
+  const onSubmit = async (data: any) => {
+    console.log("Form Data", data);
+    try {
+    } catch (e) {}
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6 max-h-[750px] overflow-y-auto">
       {/* Modal de carregamento */}
       {/* <LoadingModal isOpen={isAnalyzing} message="Processando imagem..." /> */}
 
-      <form onSubmit={() => {}} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Seção de Imagem de Perfil */}
         <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4">
           <div className="relative">
@@ -49,7 +58,7 @@ function ProfileEditForm() {
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={() => {}}
+              {...register("profile_image")}
             />
           </div>
 
@@ -92,8 +101,7 @@ function ProfileEditForm() {
                 <input
                   id="name"
                   type="text"
-                  value={""}
-                  onChange={() => {}}
+                  {...register("name")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                   placeholder="Seu nome completo"
                 />
@@ -103,7 +111,7 @@ function ProfileEditForm() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 flex items-center gap-1.5"
+                className="text-sm font-medium text-gray-700 flex items-center gap-1.5"
               >
                 <Mail className="h-4 w-4 text-gray-500" />
                 Email
@@ -112,8 +120,7 @@ function ProfileEditForm() {
                 <input
                   id="email"
                   type="email"
-                  value={""}
-                  onChange={() => {}}
+                  {...register("email")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                   placeholder="seu.email@exemplo.com"
                 />
@@ -146,9 +153,8 @@ function ProfileEditForm() {
               <div className="mt-1 relative">
                 <input
                   id="current-password"
-                  type="text"
-                  value={""}
-                  onChange={() => {}}
+                  type="password"
+                  {...register("current_password")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm pr-10"
                   placeholder="Digite sua senha atual"
                 />
@@ -173,9 +179,8 @@ function ProfileEditForm() {
               <div className="mt-1 relative">
                 <input
                   id="new-password"
-                  type="text"
-                  value={"newPassword"}
-                  onChange={() => {}}
+                  type="password"
+                  {...register("new_password")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm pr-10"
                   placeholder="Digite sua nova senha"
                 />
@@ -201,8 +206,7 @@ function ProfileEditForm() {
                 <input
                   id="confirm-password"
                   type="text"
-                  value={"confirmPassword"}
-                  onChange={() => {}}
+                  {...register("confirm_password")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm pr-10"
                   placeholder="Confirme sua nova senha"
                 />
