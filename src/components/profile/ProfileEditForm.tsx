@@ -1,26 +1,67 @@
 import { Profile } from "@/types/Profile";
-import { ErrorMessage } from "@hookform/error-message";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Lock,
-  Mail,
-  Save,
-  User
-} from "lucide-react";
+import { apiclient } from "@/utils/apiClient";
+import { Lock, Mail, Save, User } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { isValid } from "zod";
+import { fromError } from 'zod-validation-error';
 import { updateProfileDataSchema } from "./schema/updateProfileSchema";
 
+const getDefaultValues = async () => {
+  try {
+    const { data } = await apiclient.get("/user/current");
+    const userData = data as { email: string; name: string };
+
+    return {
+      name: userData.name,
+      email: userData.email,
+      confirmPassword: "",
+      currentPassword: "",
+      newPassword: "",
+    };
+  } catch (error) {
+    return {
+      name: "",
+      email: "",
+      confirmPassword: "",
+      currentPassword: "",
+      newPassword: "",
+    };
+  }
+};
+
 function ProfileEditForm() {
-  const { register, handleSubmit, formState: {errors, isValid, isDirty} } = useForm({
-    defaultValues: async () => ({email: "afa@gmail.com", name: "rraafaf", currentPassword: "", newPassword: "", confirmPassword: ""}),
-    mode: 'onBlur',
-    resolver: zodResolver(updateProfileDataSchema)
+  const {
+    register,
+    handleSubmit,
+    formState: { isDirty, isLoading },
+  } = useForm({
+    defaultValues: getDefaultValues,
   });
 
   const onSubmit = async (data: Profile) => {
+    if(!data) {
+      return;
+    }
+
+
+
+    const isValid = updateProfileDataSchema.safeParse({
+      ...(data.name && { name: data.name }),
+      ...(data.email && { email: data.email }),
+      ...(data.currentPassword && { currentPassword: data.currentPassword }),
+      ...(data.newPassword && { newPassword: data.newPassword }),
+      ...(data.confirmPassword && { confirmPassword: data.confirmPassword }),
+    });
+
+    if(!isValid.success){
+      const errorMessage = fromError(isValid.error)
+      console.log(errorMessage.toString());
+      toast.error(errorMessage.toString());
+    }
+
     console.log("Form Data", data);
     try {
-
     } catch (e) {}
   };
 
@@ -42,13 +83,13 @@ function ProfileEditForm() {
               </label>
               <div className="mt-1">
                 <input
+                  disabled={isLoading}
                   id="name"
                   type="text"
                   {...register("name")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                   placeholder="Seu nome completo"
                 />
-                <ErrorMessage name="name" errors={errors} render={({message}) => <p className="text-xs text-red-500">{message}</p>}/>
               </div>
             </div>
 
@@ -62,13 +103,13 @@ function ProfileEditForm() {
               </label>
               <div className="mt-1">
                 <input
+                  disabled={isLoading}
                   id="email"
                   type="email"
                   {...register("email")}
                   className="px-3 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                   placeholder="seu.email@exemplo.com"
                 />
-                <ErrorMessage name="email" errors={errors} render={({message}) => <p className="text-xs text-red-500">{message}</p>}/>
               </div>
             </div>
           </div>
@@ -97,6 +138,7 @@ function ProfileEditForm() {
               </label>
               <div className="mt-1">
                 <input
+                  disabled={isLoading}
                   id="current-password"
                   type="password"
                   {...register("currentPassword")}
@@ -115,6 +157,7 @@ function ProfileEditForm() {
               </label>
               <div className="mt-1">
                 <input
+                  disabled={isLoading}
                   id="new-password"
                   type="password"
                   {...register("newPassword")}
@@ -122,7 +165,6 @@ function ProfileEditForm() {
                   placeholder="Digite sua nova senha"
                 />
               </div>
-              <ErrorMessage name="newPassword" errors={errors} render={({message}) => <p className="text-xs text-red-500">{message}</p>}/>
             </div>
 
             <div>
@@ -134,6 +176,7 @@ function ProfileEditForm() {
               </label>
               <div className="mt-1">
                 <input
+                  disabled={isLoading}
                   id="confirm-password"
                   type="password"
                   {...register("confirmPassword")}
@@ -141,7 +184,6 @@ function ProfileEditForm() {
                   placeholder="Confirme sua nova senha"
                 />
               </div>
-              <ErrorMessage name="confirmPassword" errors={errors} render={({message}) => <p className="text-xs text-red-500">{message}</p>}/>
             </div>
           </div>
         </div>
@@ -149,7 +191,7 @@ function ProfileEditForm() {
         {/* Botões de Ação */}
         <div className="flex justify-end gap-3 pt-4">
           <button
-            disabled={!isValid || !isDirty}
+            disabled={!isValid || !isDirty || isLoading}
             type="submit"
             className="px-4 py-2 h-10 rounded-md border border-transparent bg-red-500 disabled:bg-red-400 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center gap-1"
           >

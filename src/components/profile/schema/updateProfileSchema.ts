@@ -29,3 +29,4 @@ export const updateProfileDataSchema = z
     message: 'As senhas não coincidem',
     path: ['confirmPassword'],
   })
+  .optional()
