@@ -45,7 +45,7 @@ function HistoryModal({ isVisible, onClose, onDelete, order, isLoading }: Histor
         <div className="w-full flex flex-col gap-6 mt-8">
           <p className="text-sm text-[#333333]">Itens</p>
           <div className="flex flex-col gap-2 max-h-[500px] overflow-y-auto">
-            {order.itens.map((iten, i) => (
+            {order.itens.map((iten) => (
               <ProductInfo
                 key={iten.id}
                 products={{
