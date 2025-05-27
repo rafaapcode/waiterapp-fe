@@ -1,6 +1,7 @@
+import { HistoryService } from "@/services/api/history";
 import { HistoryOrder } from "@/types/Order";
 import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -46,68 +47,27 @@ export const useHistoryModel = (): HistoryModelType => {
     }
   }, [page]);
 
-  const { mutateAsync: deleteOrder, isPending } = useMutation({
-    mutationFn: async (id: string) =>
-      await apiclient.delete(`/order/history/${id}`),
-    onSuccess: () => {
+  const { deleteOrder, isPending } = HistoryService.deleteOrder(
+    () => {
       toast.success("Registro deletado com Sucesso !");
       queryClient.invalidateQueries({ queryKey: ["history_orders"] });
       setSelectedOrder(null);
     },
-    onError: (error) => {
+    (error) => {
       console.log(error);
-      const err = error as AxiosError<{message: string}>;
-      toast.error(err.response?.data?.message)
+      const err = error as AxiosError<{ message: string }>;
+      toast.error(err.response?.data?.message);
       return;
-    },
-  });
+    }
+  );
 
-  useQuery({
-    queryKey: ["history_orders", { page }],
-    queryFn: async (): Promise<{
-      total_pages: number;
-      history: HistoryOrder[];
-    }> => {
-      try {
-        const { data: historyOrders } = await apiclient.get(
-          `/order/history/${page}`
-        );
-        setFilteredData(historyOrders);
-        return historyOrders;
-      } catch (error) {
-        console.log(error);
-        setFilteredData({ total_pages: 0, history: [] });
-        return { total_pages: 0, history: [] };
-      }
-    },
-  });
+  HistoryService.getHistoryOrders(page, (data) => {
+    setFilteredData(data);
+  })
 
-  const { isFetching } = useQuery({
-    enabled: !!(filterDateSelected?.to && filterDateSelected.from),
-    queryKey: ["history_orders", { page }, filterDateSelected],
-    queryFn: async (): Promise<{
-      total_pages: number;
-      history: HistoryOrder[];
-    }> => {
-      try {
-        const { data: historyOrdersFiltered } = await apiclient.get(
-          `/order/history/filter/${page}`,
-          {
-            params: {
-              to: filterDateSelected?.to,
-              from: filterDateSelected?.from,
-            },
-          }
-        );
-        setFilteredData(historyOrdersFiltered);
-
-        return historyOrdersFiltered;
-      } catch (error) {
-        setFilteredData({ total_pages: 0, history: [] });
-        return { total_pages: 0, history: [] };
-      }
-    },
-  });
+  const { isFetching } = HistoryService.getFilteredHistoryOrders(page, filterDateSelected, (data) => {
+    setFilteredData(data);
+  })
 
   const handleSelectedDate = useCallback(
     (date: DateRange | undefined) => setFilterDateSelected(date),

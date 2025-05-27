@@ -1,7 +1,6 @@
 import { useUser } from "@/context/user";
 import { useSetToken } from "@/hooks/useToken";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation } from "@tanstack/react-query";
+import { LoginService } from "@/services/api/login";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -25,17 +24,15 @@ export const useLoginModel = (): LoginModelType => {
     password: "",
   });
 
-  const { mutateAsync: loginUser, isPending } = useMutation({
-    mutationFn: async (data: typeof userCredentials) =>
-      await apiclient.post("/user/login", data),
-    onSuccess: ({ data, status }) => {
+  const { loginUser, isPending } = LoginService.loginUser(
+    ({ data, status }) => {
       if (isValid) {
         if (status !== 200) {
           toast.error(data.message || "Erro ao realizar o login");
           return;
         }
 
-        if(!data.role || data.role !== "ADMIN") {
+        if (!data.role || data.role !== "ADMIN") {
           toast.error("Você não tem permissão para acessar o sistema");
           return;
         }
@@ -47,19 +44,19 @@ export const useLoginModel = (): LoginModelType => {
           return;
         }
 
-        setUser({id: data.id});
+        setUser({ id: data.id });
         return navigate("/app/home");
       } else {
         toast.error("Credenciais inválidas");
         return;
       }
     },
-    onError: (error) => {
-      const err = error as AxiosError<{message: string}>;
-      toast.error(err.response?.data?.message)
+    (error) => {
+      const err = error as AxiosError<{ message: string }>;
+      toast.error(err.response?.data?.message);
       return;
-    },
-  });
+    }
+  );
 
   const handleChangeCredentials = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserCredentials((prev) => ({
