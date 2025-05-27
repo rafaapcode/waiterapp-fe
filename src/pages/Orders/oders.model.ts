@@ -1,5 +1,5 @@
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { OrderService } from "@/services/api/order";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -10,40 +10,27 @@ import { OrdersViewType } from "./orders.type";
 export const useOrdersModel = (): OrdersViewType => {
   const queryClient = useQueryClient();
 
-  const { data: orders } = useQuery({
-    queryKey: ["orders"],
-    queryFn: async (): Promise<Order[]> => {
-      try {
-        const { data: orders } = await apiclient.get("/order");
-        return orders;
-      } catch (error) {
-        return [];
-      }
-    },
-  });
+  const { data: orders } = OrderService.getOrders();
 
-  const { mutateAsync: cancelOrderMutation } = useMutation({
-    mutationFn: async (orderId: string) =>
-      await apiclient.delete(`/order/${orderId}`),
-    onSuccess: () => {
+  const { cancelOrder } = OrderService.cancelOrder(
+    () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-    onError: (error) =>{
+    (error) =>{
       const err = error as AxiosError<{message: string}>;
       toast.error(err.response?.data?.message);
     }
-  });
-  const { mutateAsync: updateOrderMutation } = useMutation({
-    mutationFn: async (data: { orderId: string; status: Order["status"] }) =>
-      await apiclient.patch(`/order/${data.orderId}`, { status: data.status }),
-    onSuccess: () => {
+  );
+
+  const { updateOrder } = OrderService.updateOrder(
+    () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
-    onError: (error) => {
+    (error) => {
       const err = error as AxiosError<{message: string}>;
       toast.error(err.response?.data?.message);
     }
-  });
+  );
 
   useEffect(() => {
     const socket = socketIo(import.meta.env.VITE_BACKEND_URL, {
@@ -82,14 +69,14 @@ export const useOrdersModel = (): OrdersViewType => {
   const done = orders ? orders.filter((order) => order.status === "DONE") : [];
 
   const handleCancelOrder = async (orderId: string) => {
-    await cancelOrderMutation(orderId);
+    await cancelOrder(orderId);
   };
 
   const handleStatusChange = async (
     orderId: string,
     status: Order["status"]
   ) => {
-    await updateOrderMutation({ orderId, status });
+    await updateOrder({ orderId, status });
   };
 
   return {
