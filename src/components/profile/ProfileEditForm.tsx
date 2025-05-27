@@ -91,7 +91,13 @@ const extractChangedFields = (
   return changedFields;
 };
 
-function ProfileEditForm() {
+interface ProfileEditFormProps {
+  props :{
+    onSubmit: (data: Profile) => Promise<void>;
+  }
+}
+
+function ProfileEditForm({}: ProfileEditFormProps) {
   const setToken = useSetToken();
   const {
     register,
