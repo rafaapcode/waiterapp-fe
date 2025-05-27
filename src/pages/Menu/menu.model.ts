@@ -1,11 +1,10 @@
+import { MenuService } from "@/services/api/menu";
 import { Categorie } from "@/types/Categorie";
-import { Products } from "@/types/Products";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
-import { CategoriesTableProps, ProductsForFe, ProductsTableProps } from "./menu.type";
+import { CategoriesTableProps, ProductsTableProps } from "./menu.type";
 
 export const useProductsMenu = (): ProductsTableProps => {
   const queryClient = useQueryClient();
@@ -21,13 +20,12 @@ export const useProductsMenu = (): ProductsTableProps => {
     []
   );
 
-  const { mutateAsync: DeleteProduct } = useMutation({
-    mutationFn: async (id: string) => await apiclient.delete(`/product/${id}`),
-    onSuccess: () => {
+  const { deleteProduct } = MenuService.deleteProduct(
+    () => {
       toast.success("Produto deletado com Sucesso");
       queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
     },
-    onError: (error) => {
+    (error) => {
       const err = error as AxiosError;
       if (err.status === 404) {
         toast.warning("Produto não encontrado !");
@@ -35,33 +33,15 @@ export const useProductsMenu = (): ProductsTableProps => {
         toast.error("Erro ao encontrar o ID do registro");
       }
       return;
-    },
-  });
+    }
+  );
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["list_all_products"],
-    queryFn: async (): Promise<ProductsForFe[]> => {
-      try {
-        const { data } = await apiclient.get("/product");
-        const products = data as Products[];
-
-        return products.map((product) => ({
-          id: product._id,
-          categoria: product.category.name,
-          imageUrl: product.imageUrl,
-          name: product.name,
-          preco: product.discount ? product.priceInDiscount : product.price,
-        }));
-      } catch (error) {
-        return [];
-      }
-    },
-  });
+  const { data, isLoading, isFetching } = MenuService.listAllProducts();
 
   return {
     props: {
       data,
-      DeleteProduct,
+      DeleteProduct: deleteProduct,
       handleNewProductModal,
       handleProductIdToEdit,
       isFetching,
@@ -87,32 +67,19 @@ export const useCategorieMenu = (): CategoriesTableProps => {
     []
   );
 
-  const { mutateAsync: DeleteCategorie, isPending } = useMutation({
-    mutationFn: async (id: string) => await apiclient.delete(`/category/${id}`),
-    onSuccess: () => {
+  const { deleteCategorie, isPending } = MenuService.deleteCategorie(
+    () => {
       toast.success("Categoria deletada com Sucesso !");
       queryClient.invalidateQueries({ queryKey: ["all_categories"] });
     },
-    onError: (error) => {
-      const err = error as AxiosError<{message: string}>;
-      toast.error(err.response?.data?.message)
+    (error) => {
+      const err = error as AxiosError<{ message: string }>;
+      toast.error(err.response?.data?.message);
       return;
-    },
-  });
+    }
+  );
 
-  const { data } = useQuery({
-    queryKey: ["all_categories"],
-    staleTime: Infinity,
-    queryFn: async (): Promise<Categorie[]> => {
-      try {
-        const { data } = await apiclient.get("/category/categories");
-        return data as Categorie[];
-      } catch (error: any) {
-        console.log(error.response);
-        return [];
-      }
-    },
-  });
+  const { data } = MenuService.listAllCategories();
 
   return {
     props: {
@@ -122,7 +89,7 @@ export const useCategorieMenu = (): CategoriesTableProps => {
       handleNewCategorieModal,
       isPending,
       newCategorieModal,
-      DeleteCategorie
-    }
-  }
+      DeleteCategorie: deleteCategorie,
+    },
+  };
 };
