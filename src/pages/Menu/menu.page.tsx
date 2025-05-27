@@ -1,4 +1,4 @@
-import { useCategorieMenu, useProductsMenu } from "./menu.data";
+import { useCategorieMenu, useProductsMenu } from "./menu.model";
 import MenuView from "./menu.view";
 
 function MenuPage() {

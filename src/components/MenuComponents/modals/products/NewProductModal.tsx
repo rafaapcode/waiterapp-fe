@@ -77,18 +77,11 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
       onClose();
     },
     onError: (error: any) => {
-      console.log(error);
-      const err = error as AxiosError;
-      if (err.status === 404 || err.status === 400) {
-        const message = err.response?.data
-          ? (err.response?.data as { message: string })
-          : {
-              message:
-                "O nome do produto já existe ou alguma informação está faltando !",
-            };
-        toast.warning(message.message);
+      if(error instanceof Error) {
+        toast.error(error.message);
       } else {
-        toast.error("Erro ao criar o produto");
+        const err = error as AxiosError<{message: string}>;
+        toast.error(err.response?.data?.message);
       }
       return;
     },

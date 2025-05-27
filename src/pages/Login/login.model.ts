@@ -51,15 +51,12 @@ export const useLoginModel = (): LoginModelType => {
         return navigate("/app/home");
       } else {
         toast.error("Credenciais inválidas");
+        return;
       }
     },
     onError: (error) => {
-      const err = error as AxiosError;
-      if(err.status === 404) {
-        toast.warning("Usuário ou senha incorretos");
-      } else {
-        toast.error("Erro ao realizar o login , contate o suporte");
-      }
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message)
       return;
     },
   });

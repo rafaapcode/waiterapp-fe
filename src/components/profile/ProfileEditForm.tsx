@@ -127,13 +127,9 @@ function ProfileEditForm() {
         toast.error("Erro ao atualizar o perfil");
       }
     },
-    onError: (err) => {
-      console.log(err);
-      if (err instanceof AxiosError) {
-        toast.error(err.response?.data.message, { style: { width: "400px" } });
-      } else {
-        toast.error("Erro desconhecido");
-      }
+    onError: (error) => {
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message);
     },
   });
 

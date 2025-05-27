@@ -29,8 +29,10 @@ export const useUsersModel = (): UsersPageProps => {
       toast.success("Usuário deletado com sucesso !");
       queryClient.invalidateQueries({ queryKey: ["all_users", { page: 1 }] });
     },
-    onError: () =>
-      toast.error("Erro ao deletar o usuário , tente mais tarde !"),
+    onError: (error) => {
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message);
+    }
   });
 
   const { data: AllUsers, isPending } = useQuery({
@@ -44,14 +46,8 @@ export const useUsersModel = (): UsersPageProps => {
         } as { total_pages: number; users: Users[] };
       } catch (error) {
         console.log(error);
-        const err = error as AxiosError;
-        if (err.status === 400 || err.status === 404) {
-          const msgs =
-            (err.response?.data as { message: string }) ??
-            "Erro ao buscar os usuários";
-          toast.error(msgs.message);
-          return { total_pages: 0, users: [] };
-        }
+        const err = error as AxiosError<{message: string}>;
+        toast.error(err.response?.data?.message);
         return { total_pages: 0, users: [] };
       }
     },

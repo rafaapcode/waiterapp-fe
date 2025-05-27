@@ -1,6 +1,7 @@
 import Modal from "@/components/Modal";
 import { apiclient } from "@/utils/apiClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { FormEvent } from "react";
 import { toast } from "react-toastify";
 
@@ -32,7 +33,11 @@ function DeleteUserModal({ isVisible, onClose, userData, onEditModalClose }: Del
       onClose();
       onEditModalClose();
     },
-    onError: () => toast.error("Erro ao deletar o usuário , tente mais tarde !")
+    onError: (error) => {
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message);
+      return;
+    }
   })
 
   const onDelete = (e: FormEvent<HTMLFormElement>) => {

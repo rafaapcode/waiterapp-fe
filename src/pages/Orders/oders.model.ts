@@ -1,6 +1,8 @@
 import { apiclient } from "@/utils/apiClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 import socketIo from "socket.io-client";
 import { Order } from "../../types/Order";
 import { OrdersViewType } from "./orders.type";
@@ -26,6 +28,10 @@ export const useOrdersModel = (): OrdersViewType => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
+    onError: (error) =>{
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message);
+    }
   });
   const { mutateAsync: updateOrderMutation } = useMutation({
     mutationFn: async (data: { orderId: string; status: Order["status"] }) =>
@@ -33,10 +39,14 @@ export const useOrdersModel = (): OrdersViewType => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
     },
+    onError: (error) => {
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message);
+    }
   });
 
   useEffect(() => {
-    const socket = socketIo("http://localhost:3001", {
+    const socket = socketIo(import.meta.env.VITE_BACKEND_URL, {
       transports: ["websocket"],
     });
 

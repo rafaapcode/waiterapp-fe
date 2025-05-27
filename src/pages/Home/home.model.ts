@@ -1,4 +1,5 @@
 import { apiclient } from "@/utils/apiClient";
+import { AxiosError } from "axios";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import HomePageProps from "./home.type";
@@ -21,12 +22,9 @@ export const useHomeModel = (): HomePageProps => {
         toogleRestartModal();
       }
     } catch (error: any) {
-      console.log("Error Catch", error);
-      if (error.response && error.response.data) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Erro ao reinicializar o dia !");
-      }
+      console.log(error);
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message)
     }
   };
 

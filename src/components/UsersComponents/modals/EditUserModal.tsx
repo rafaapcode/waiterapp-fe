@@ -68,17 +68,8 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
         }
       } catch (error) {
         console.log(error);
-        const err = error as AxiosError;
-        if (err.status === 400 || err.status === 404) {
-          const msgs =
-            (err.response?.data as { message: string }) ??
-            "Erro ao buscar os usuários";
-          toast.error(msgs.message);
-          return { total_pages: 0, users: [] };
-        }
-        if (err.status === 401) {
-          toast.error("Sua sessão terminou !");
-        }
+        const err = error as AxiosError<{message: string}>;
+        toast.error(err.response?.data?.message);
         return { total_pages: 0, users: [] };
       }
     },
@@ -114,14 +105,9 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
       onClose();
     },
     onError: (error) => {
-      const err = error as AxiosError;
-      if (err.status === 400 || err.status === 404) {
-        const msgs =
-          (err.response?.data as { message: string }) ??
-          "Erro ao atualizar o usuário";
-        toast.error(msgs.message);
-        return;
-      }
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message);
+      return;
     },
   });
 

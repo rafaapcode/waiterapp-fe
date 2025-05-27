@@ -140,11 +140,11 @@ function EditProductModal({
       onClose();
     },
     onError: (error) => {
-      const err = error as AxiosError;
-      if (err.status === 404) {
-        toast.warning("Produto não encontrado !");
+      if(error instanceof Error) {
+        toast.error(error.message);
       } else {
-        toast.error(err.message);
+        const err = error as AxiosError<{message: string}>;
+        toast.error(err.response?.data?.message);
       }
       return;
     },

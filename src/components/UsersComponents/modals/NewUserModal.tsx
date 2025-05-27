@@ -1,6 +1,7 @@
 import Modal from "@/components/Modal";
 import { apiclient } from "@/utils/apiClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 import { FormEvent, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -43,8 +44,10 @@ function NewUserModal({ isVisible, onClose }: NewUserModalProps) {
       queryClient.invalidateQueries({ queryKey: ["all_users", { page: 1 }] });
       onClose();
     },
-    onError: () => {
-      toast.error("Erro ao criar o usuário");
+    onError: (error) => {
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message);
+      return;
     },
   });
 

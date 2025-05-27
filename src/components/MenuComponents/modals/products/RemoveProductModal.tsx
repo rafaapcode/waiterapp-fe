@@ -36,12 +36,8 @@ function RemoveProductModal({
       editModalClose();
     },
     onError: (error) => {
-      const err = error as AxiosError;
-      if (err.status === 404) {
-        toast.warning("Produto não encontrado !");
-      } else {
-        toast.error("Erro ao encontrar o ID do registro");
-      }
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message);
       return;
     },
   });

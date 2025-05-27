@@ -25,13 +25,8 @@ function IngredientModal({ isVisible, onClose }: IngredientModalProps) {
       onClose();
     },
     onError: (error) => {
-      const err = error as AxiosError;
-      if (err.status === 404) {
-        const message = err.response?.data ? err.response?.data as {message: string} : {message: "O ingrediente já existe ou a informações estão incorretas !"};
-        toast.warning(message.message);
-      } else {
-        toast.error("Erro ao encontrar o ID do registro");
-      }
+      const err = error as AxiosError<{message: string}>;
+      toast.error(err.response?.data?.message);
       return;
     },
   });
