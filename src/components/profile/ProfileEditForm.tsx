@@ -1,13 +1,8 @@
-import { useSetToken } from "@/hooks/useToken";
 import { Profile } from "@/types/Profile";
 import { apiclient } from "@/utils/apiClient";
-import { useMutation } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { LoaderCircle, Lock, Mail, Save, User } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
+import { UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
 import { isValid } from "zod";
-import { updateProfileDataSchema } from "./schema/updateProfileSchema";
 
 export type DirtedFields = Partial<
   Readonly<{
@@ -92,82 +87,46 @@ const extractChangedFields = (
 };
 
 interface ProfileEditFormProps {
-  props :{
+  props: {
     onSubmit: (data: Profile) => Promise<void>;
-  }
+    register: UseFormRegister<{
+      name: string;
+      email: string;
+      confirmPassword: string;
+      currentPassword: string;
+      newPassword: string;
+    }>;
+    handleSubmit: UseFormHandleSubmit<
+      {
+        name: string;
+        email: string;
+        confirmPassword: string;
+        currentPassword: string;
+        newPassword: string;
+      },
+      {
+        name: string;
+        email: string;
+        confirmPassword: string;
+        currentPassword: string;
+        newPassword: string;
+      }
+    >;
+    isDirty: boolean;
+    isLoading: boolean;
+    isPending: boolean;
+  };
 }
 
-function ProfileEditForm({}: ProfileEditFormProps) {
-  const setToken = useSetToken();
+function ProfileEditForm({props}: ProfileEditFormProps) {
   const {
-    register,
     handleSubmit,
-    formState: { isDirty, isLoading, dirtyFields },
-  } = useForm({
-    defaultValues: getDefaultValues,
-  });
-
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async (
-      data: Partial<{
-        name?: string;
-        email?: string;
-        confirm_password?: string;
-        current_password?: string;
-        new_password?: string;
-      }>
-    ) => {
-      const { data: response } = await apiclient.put("/user/current", data);
-
-      return response;
-    },
-    onSuccess: (data) => {
-      if (data) {
-        if (data.access_token) {
-          setToken(data.access_token);
-          toast.success("Perfil atualizado com sucesso!");
-        } else {
-          toast.success("Perfil atualizado com sucesso!");
-        }
-      } else {
-        toast.error("Erro ao atualizar o perfil");
-      }
-    },
-    onError: (error) => {
-      const err = error as AxiosError<{message: string}>;
-      toast.error(err.response?.data?.message);
-    },
-  });
-
-  const onSubmit = async (data: Profile) => {
-    if (!data) {
-      return;
-    }
-
-    const isValid = updateProfileDataSchema.safeParse({
-      ...(data.name && { name: data.name }),
-      ...(data.email && { email: data.email }),
-      ...(data.currentPassword && { currentPassword: data.currentPassword }),
-      ...(data.newPassword && { newPassword: data.newPassword }),
-      ...(data.confirmPassword && { confirmPassword: data.confirmPassword }),
-    });
-
-    if (!isValid.success) {
-      const errorMessage = isValid.error.errors
-        .map((err) => err.message)
-        .join("\n");
-      toast.error(errorMessage, { style: { width: "400px" } });
-      return;
-    }
-    const extractedFields = extractChangedFields(data, dirtyFields);
-
-    if (!extractedFields) {
-      toast.error("Nenhum campo foi alterado");
-      return;
-    }
-
-    await mutateAsync(extractedFields);
-  };
+    isDirty,
+    isLoading,
+    isPending,
+    onSubmit,
+    register
+  } = props;
 
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6 max-h-[750px] overflow-y-auto">
@@ -300,7 +259,7 @@ function ProfileEditForm({}: ProfileEditFormProps) {
             className="px-4 py-2 h-10 rounded-md border border-transparent bg-red-500 disabled:bg-red-400 text-sm font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex items-center gap-1"
           >
             {isPending ? (
-              <LoaderCircle size={24} className="animate-spin"/>
+              <LoaderCircle size={24} className="animate-spin" />
             ) : (
               <div className="flex gap-2">
                 <Save className="h-4 w-4" />

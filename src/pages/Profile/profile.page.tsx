@@ -1,8 +1,9 @@
+import { useProfileModel } from "./profile.model";
+import ProfileView from "./profile.view";
 
 function ProfilePage() {
-  return (
-    <div>ProfilePage</div>
-  )
+  const { props } = useProfileModel();
+  return <ProfileView props={props} />;
 }
 
-export default ProfilePage
+export default ProfilePage;

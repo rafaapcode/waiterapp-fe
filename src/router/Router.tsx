@@ -1,4 +1,4 @@
-import Profile from "@/pages/Profile/profile.view";
+import Profile from "@/pages/Profile/profile.page";
 import { Route, Routes } from "react-router";
 import History from "../pages/History/history.page";
 import Home from "../pages/Home/Home";

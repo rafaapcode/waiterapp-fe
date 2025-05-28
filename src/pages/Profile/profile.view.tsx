@@ -1,8 +1,9 @@
 import ProfileEditForm from "@/components/profile/ProfileEditForm";
 import { CgProfile } from "react-icons/cg";
 import Header from "../../components/Header/Header";
+import { ProfilePageProps } from "./profile.type";
 
-function Profile() {
+function ProfileView({ props }: ProfilePageProps) {
   return (
     <main className="w-full h-full pt-10 overflow-y-auto">
       <Header
@@ -11,10 +12,10 @@ function Profile() {
         title="Perfil"
       />
       <div className="mt-8">
-        <ProfileEditForm />
+        <ProfileEditForm props={props}/>
       </div>
     </main>
   );
 }
 
-export default Profile;
+export default ProfileView;
