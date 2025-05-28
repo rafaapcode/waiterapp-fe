@@ -1,8 +1,8 @@
 import { updateProfileDataSchema } from "@/components/profile/schema/updateProfileSchema";
 import { useSetToken } from "@/hooks/useToken";
+import { ProfileService } from "@/services/api/profile";
 import { Profile } from "@/types/Profile";
 import { apiclient } from "@/utils/apiClient";
-import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -100,21 +100,8 @@ export const useProfileModel = (): ProfilePageProps => {
     defaultValues: getDefaultValues,
   });
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async (
-      data: Partial<{
-        name?: string;
-        email?: string;
-        confirm_password?: string;
-        current_password?: string;
-        new_password?: string;
-      }>
-    ) => {
-      const { data: response } = await apiclient.put("/user/current", data);
-
-      return response;
-    },
-    onSuccess: (data) => {
+  const { updateProfile, isPending } = ProfileService.updateProfile(
+    (data: any) => {
       if (data) {
         if (data.access_token) {
           setToken(data.access_token);
@@ -126,11 +113,11 @@ export const useProfileModel = (): ProfilePageProps => {
         toast.error("Erro ao atualizar o perfil");
       }
     },
-    onError: (error) => {
-      const err = error as AxiosError<{message: string}>;
+    (error) => {
+      const err = error as AxiosError<{ message: string }>;
       toast.error(err.response?.data?.message);
-    },
-  });
+    }
+  );
 
   const onSubmit = async (data: Profile) => {
     if (!data) {
@@ -159,7 +146,7 @@ export const useProfileModel = (): ProfilePageProps => {
       return;
     }
 
-    await mutateAsync(extractedFields);
+    await updateProfile(extractedFields);
   };
 
   return {
@@ -169,7 +156,7 @@ export const useProfileModel = (): ProfilePageProps => {
       isLoading,
       onSubmit,
       register,
-      isPending
-    }
-  }
-}
+      isPending,
+    },
+  };
+};
