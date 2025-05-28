@@ -1,7 +1,7 @@
 import Modal from "@/components/Modal";
+import { MenuService } from "@/services/api/menu";
 import { Categorie } from "@/types/Categorie";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 
@@ -20,27 +20,26 @@ function DeleteCategorieModal({
 }: DeleteCategorieModalProps) {
   const queryClient = useQueryClient();
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async (id: string) => await apiclient.delete(`/category/${id}`),
-    onSuccess: () => {
+  const { deleteCategorie, isPending } = MenuService.deleteCategorie(
+    () => {
       toast.success("Categoria deletada com Sucesso !");
       queryClient.invalidateQueries({ queryKey: ["all_categories"] });
       onClose();
       closeEditModal();
     },
-    onError: (error) => {
-      const err = error as AxiosError<{message: string}>;
+    (error) => {
+      const err = error as AxiosError<{ message: string }>;
       toast.error(err.response?.data?.message);
       return;
-    },
-  });
+    }
+  );
 
   if (!data) {
     return null;
   }
 
   const onDelete = async () => {
-    mutateAsync(data._id)
+    deleteCategorie(data._id);
   };
 
   return (

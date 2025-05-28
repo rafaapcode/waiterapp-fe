@@ -1,6 +1,6 @@
 import Modal from "@/components/Modal";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { MenuService } from "@/services/api/menu";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
@@ -16,28 +16,26 @@ function IngredientModal({ isVisible, onClose }: IngredientModalProps) {
   const [emojiValue, setEmoji] = useState<string>("🍕");
   const [ingredientName, setIngredientName] = useState<string>("");
 
-  const { mutateAsync: createIngredient, isPending } = useMutation({
-    mutationFn: async (data: {icon: string; name: string;}) =>
-      await apiclient.post("/ingredient", data),
-    onSuccess: () => {
+  const { createIngredient, isPending } = MenuService.createIngredient(
+    () => {
       toast.success("Ingredient cadastrado com Sucesso");
       queryClient.invalidateQueries({ queryKey: ["all_ingredients"] });
       onClose();
     },
-    onError: (error) => {
-      const err = error as AxiosError<{message: string}>;
+    (error) => {
+      const err = error as AxiosError<{ message: string }>;
       toast.error(err.response?.data?.message);
       return;
-    },
-  });
+    }
+  );
 
   const onSave = () => {
-    if(!emojiValue || !ingredientName) {
+    if (!emojiValue || !ingredientName) {
       toast.error("Emoji e o nome do ingrediente são obrigatórios !");
       return;
     }
-    createIngredient({icon: emojiValue, name: ingredientName});
-  }
+    createIngredient({ icon: emojiValue, name: ingredientName });
+  };
 
   return (
     <Modal.Root size="sm" isVisible={isVisible} priority>
@@ -86,7 +84,11 @@ function IngredientModal({ isVisible, onClose }: IngredientModalProps) {
             type="button"
             className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
           >
-            {isPending ? <LoaderCircle size={22} className="animate-spin"/> :"Salvar alterações"}
+            {isPending ? (
+              <LoaderCircle size={22} className="animate-spin" />
+            ) : (
+              "Salvar alterações"
+            )}
           </button>
         </div>
       </Modal.CustomFooter>

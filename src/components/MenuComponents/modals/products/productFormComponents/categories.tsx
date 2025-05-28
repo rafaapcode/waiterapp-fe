@@ -1,6 +1,4 @@
-import { Categorie } from "@/types/Categorie";
-import { apiclient } from "@/utils/apiClient";
-import { useQuery } from "@tanstack/react-query";
+import { MenuService } from "@/services/api/menu";
 
 interface CategoriesProps {
   selectedCategory: string;
@@ -8,18 +6,8 @@ interface CategoriesProps {
 }
 
 function Categories({ selectedCategory,setSelectedCategory }: CategoriesProps) {
-  const { data } = useQuery({
-    queryKey: ["all_categories"],
-    queryFn: async (): Promise<Categorie[]> => {
-      try {
-        const {data} = await apiclient.get("/category/categories");
-        return data as Categorie[]
-      } catch (error: any) {
-        console.log(error.message);
-        return [];
-      }
-    }
-  })
+
+  const { data } = MenuService.getAllCategories();
 
   const toggleCategory = (id: string) => {
     setSelectedCategory(id);

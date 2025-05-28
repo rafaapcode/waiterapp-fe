@@ -1,7 +1,15 @@
+import { ProductFieldsChanged } from "@/components/MenuComponents/modals/products/EditProductModal";
+import { NewProductData } from "@/components/MenuComponents/modals/products/NewProductModal";
+import { createProductSchema } from "@/components/MenuComponents/modals/products/validations/createProductSchema";
 import { ProductsForFe } from "@/pages/Menu/menu.type";
 import { Categorie } from "@/types/Categorie";
+import {
+  IngredientsTypeFromAPI,
+  IngredientTypeForFe,
+} from "@/types/Ingredients";
 import { Products } from "@/types/Products";
-import { apiclient } from "@/utils/apiClient";
+import { analyseImage, apiclient, uploadImage } from "@/utils/apiClient";
+import { verifyImageIntegrity } from "@/utils/verifyImage";
 import {
   UseMutateAsyncFunction,
   useMutation,
@@ -9,6 +17,8 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
+import { SetStateAction } from "react";
+import { AnalyseImageResponse } from "../types/analyseImageRes";
 import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 
 export class MenuService {
@@ -44,15 +54,16 @@ export class MenuService {
       string,
       unknown
     >;
+    isPending: boolean;
   } {
-    const { mutateAsync: deleteProduct } = useMutation({
+    const { mutateAsync: deleteProduct, isPending } = useMutation({
       mutationFn: async (id: string) =>
         await apiclient.delete(`/product/${id}`),
       onSuccess,
       onError,
     });
 
-    return { deleteProduct };
+    return { deleteProduct, isPending };
   }
 
   static listAllCategories(): UseQueryResult<Categorie[], Error> {
@@ -71,7 +82,7 @@ export class MenuService {
     });
   }
 
-   static deleteCategorie(
+  static deleteCategorie(
     onSuccess: OnSuccessCBType,
     onError: OnErrorCBType
   ): {
@@ -84,11 +95,274 @@ export class MenuService {
     isPending: boolean;
   } {
     const { mutateAsync: deleteCategorie, isPending } = useMutation({
-        mutationFn: async (id: string) => await apiclient.delete(`/category/${id}`),
-        onSuccess,
-        onError,
-      });
+      mutationFn: async (id: string) =>
+        await apiclient.delete(`/category/${id}`),
+      onSuccess,
+      onError,
+    });
 
     return { deleteCategorie, isPending };
+  }
+
+  static createProduct(
+    onSuccess: OnSuccessCBType,
+    onError: OnErrorCBType
+  ): {
+    createProduct: UseMutateAsyncFunction<
+      AxiosResponse<any, any>,
+      any,
+      NewProductData,
+      unknown
+    >;
+    isPending: boolean;
+  } {
+    const { mutateAsync, isPending } = useMutation({
+      mutationFn: async (data: NewProductData) => {
+        const { image, ...productData } = { ...data };
+
+        if (!data.image) {
+          productData.imageUrl =
+            "https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg";
+        } else {
+          try {
+            // Verfify if the image is a virus
+            const isInfected = await verifyImageIntegrity(data.image);
+
+            if (isInfected) {
+              throw new Error("Imagem infectada !");
+            }
+
+            // Upload image
+            const { data: responseImageUrl } = await uploadImage.postForm("", {
+              image: data.image,
+            });
+            productData.imageUrl = responseImageUrl.url;
+          } catch (error) {
+            productData.imageUrl =
+              "https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg";
+          }
+        }
+        const isValid = createProductSchema.safeParse(productData);
+
+        if (!isValid.success) {
+          console.log(isValid.error.errors);
+          const msgs = isValid.error.issues.map((iss) => iss.message);
+          throw new Error(msgs.join(" , "));
+        }
+        return await apiclient.post("/product", productData);
+      },
+      onSuccess,
+      onError,
+    });
+
+    return { createProduct: mutateAsync, isPending };
+  }
+
+  static getInfoProduct(
+    productId: string,
+    onClose: () => void,
+    cb: (data: ProductFieldsChanged) => void
+  ): UseQueryResult<Products | undefined, Error> {
+    return useQuery({
+      queryKey: ["get_product_info_edit_form", { productId }],
+      queryFn: async () => {
+        try {
+          const { data } = await apiclient.get(`/product/${productId}`);
+          const product = data as Products;
+          cb({
+            description: product.description,
+            discount: product.discount,
+            image: null,
+            imageUrl: product.imageUrl,
+            ingredients: product.ingredients.map((ing) => ing._id),
+            name: product.name,
+            priceInDiscount: product.priceInDiscount,
+            newIngredients: [],
+            price: data.price,
+          });
+          return product;
+        } catch (error: any) {
+          console.log(error.message);
+          onClose();
+        }
+      },
+    });
+  }
+
+  static getAllIngredients(
+    ingredientUsed: string[] | undefined,
+    cb: (data: IngredientTypeForFe[]) => void
+  ): UseQueryResult<IngredientsTypeFromAPI[] | undefined, Error> {
+    return useQuery({
+      queryKey: ["all_ingredients"],
+      queryFn: async () => {
+        try {
+          const { data } = await apiclient.get("/ingredient");
+          const ingredient = data.data as IngredientsTypeFromAPI[];
+          const formatIngredient = ingredient.map((ingredient) => ({
+            id: ingredient._id,
+            name: ingredient.name,
+            icon: ingredient.icon,
+            selected: new Set(ingredientUsed).has(ingredient._id),
+          }));
+          cb(formatIngredient);
+          return ingredient;
+        } catch (error: any) {
+          console.log(error.message);
+          cb([]);
+        }
+      },
+    });
+  }
+
+  static getAllCategories(): UseQueryResult<Categorie[], Error> {
+    return useQuery({
+      queryKey: ["all_categories"],
+      queryFn: async (): Promise<Categorie[]> => {
+        try {
+          const { data } = await apiclient.get("/category/categories");
+          return data as Categorie[];
+        } catch (error: any) {
+          console.log(error.message);
+          return [];
+        }
+      },
+    });
+  }
+
+  static createCategorie(
+    onSuccess: OnSuccessCBType,
+    onError: OnErrorCBType
+  ): {
+    createCategorie: UseMutateAsyncFunction<
+      AxiosResponse<any, any>,
+      Error,
+      {
+        icon: string;
+        name: string;
+      },
+      unknown
+    >;
+    isPending: boolean;
+  } {
+    const { mutateAsync, isPending } = useMutation({
+      mutationFn: async ({ name, icon }: { icon: string; name: string }) => {
+        return await apiclient.post("/category/categories", { icon, name });
+      },
+      onSuccess,
+      onError,
+    });
+
+    return { createCategorie: mutateAsync, isPending };
+  }
+
+  static editCategorie(
+    onSuccess: OnSuccessCBType,
+    onError: OnErrorCBType
+  ): {
+    editCategorie: UseMutateAsyncFunction<
+      AxiosResponse<any, any>,
+      Error,
+      {
+        id: string;
+        icon: string;
+        name: string;
+      },
+      unknown
+    >;
+    isPending: boolean;
+  } {
+    const { mutateAsync, isPending } = useMutation({
+      mutationFn: async ({
+        id,
+        icon,
+        name,
+      }: {
+        id: string;
+        icon: string;
+        name: string;
+      }) => {
+        return await apiclient.put(`/category/categories/${id}`, {
+          icon,
+          name,
+        });
+      },
+      onSuccess,
+      onError,
+    });
+
+    return { editCategorie: mutateAsync, isPending };
+  }
+
+  static createIngredient(
+    onSuccess: OnSuccessCBType,
+    onError: OnErrorCBType
+  ): {
+    createIngredient: UseMutateAsyncFunction<
+      AxiosResponse<any, any>,
+      Error,
+      {
+        icon: string;
+        name: string;
+      },
+      unknown
+    >;
+    isPending: boolean;
+  } {
+    const { mutateAsync, isPending } = useMutation({
+      mutationFn: async (data: { icon: string; name: string }) =>
+        await apiclient.post("/ingredient", data),
+      onSuccess,
+      onError,
+    });
+
+    return { createIngredient: mutateAsync, isPending };
+  }
+
+  static analyseProductImage(
+    image: File | null,
+    setProduct: (value: SetStateAction<NewProductData>) => void,
+    setIngredients: (value: SetStateAction<string[]>) => void,
+    invalidateQueries: () => void
+  ): UseQueryResult<never[], Error> {
+    return useQuery({
+      enabled: !image ? false : true,
+      queryKey: ["analyse_product_image", image?.name],
+      queryFn: async () => {
+        if (image) {
+          try {
+            // Verify if the image is a virus
+            const isInfected = await verifyImageIntegrity(image);
+
+            if (isInfected) {
+              throw new Error("Imagem infectada !");
+            }
+            // Analyse the image
+            const { data } = await analyseImage.postForm("/analyse_image", {
+              image: image,
+            });
+            const response = data as AnalyseImageResponse;
+
+            if (response.analyse.new_ingredients) {
+              invalidateQueries();
+            }
+            setProduct((prev) => ({
+              ...prev,
+              name: response.analyse.name,
+              description: response.analyse.description,
+            }));
+            setIngredients(response.analyse.ingredients.map((ing) => ing.id));
+            return [];
+          } catch (error: any) {
+            console.log(error.message);
+            setIngredients([]);
+            return [];
+          }
+        } else {
+          setIngredients([]);
+          return [];
+        }
+      },
+    });
   }
 }

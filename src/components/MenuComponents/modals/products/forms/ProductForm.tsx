@@ -1,6 +1,5 @@
-import { analyseImage } from "@/utils/apiClient";
-import { verifyImageIntegrity } from "@/utils/verifyImage";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { MenuService } from "@/services/api/menu";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Dispatch,
   lazy,
@@ -40,45 +39,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
   const [indetifiedIngredients, setIdentifiedIngredients] = useState<string[]>([]);
 
-  const { isLoading, isFetching } = useQuery({
-    enabled: !product.image ? false : true,
-    queryKey: ["analyse_product_image", product.image?.name],
-    queryFn: async () => {
-      if (product.image) {
-        try {
-          // Verify if the image is a virus
-          const isInfected = await verifyImageIntegrity(product.image);
-
-          if(isInfected) {
-            throw new Error("Imagem infectada !");
-          }
-          // Analyse the image
-          const { data } = await analyseImage.postForm("/analyse_image", {
-            image: product.image,
-          });
-          const response = data as AnalyseImageResponse;
-
-          if (response.analyse.new_ingredients) {
-            queryClient.invalidateQueries({ queryKey: ["all_ingredients"] });
-          }
-          setProduct((prev) => ({
-            ...prev,
-            name: response.analyse.name,
-            description: response.analyse.description
-          }))
-          setIdentifiedIngredients(response.analyse.ingredients.map((ing) => ing.id));
-          return [];
-        } catch (error: any) {
-          console.log(error.message);
-          setIdentifiedIngredients([]);
-          return [];
-        }
-      } else {
-        setIdentifiedIngredients([]);
-        return [];
-      }
-    },
-  });
+  const { isLoading, isFetching } = MenuService.analyseProductImage(product.image, setProduct, setIdentifiedIngredients, () => queryClient.invalidateQueries({ queryKey: ["all_ingredients"] }));
 
   const handleIngredientModal = useCallback(
     () => setIngredienteModal((prev) => !prev),

@@ -1,10 +1,8 @@
 import { Checkbox } from "@/components/ui/checkbox";
+import { MenuService } from "@/services/api/menu";
 import {
-  IngredientsTypeFromAPI,
-  IngredientTypeForFe,
+  IngredientTypeForFe
 } from "@/types/Ingredients";
-import { apiclient } from "@/utils/apiClient";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 interface IngredientsProps {
@@ -23,26 +21,7 @@ function Ingredients({
     IngredientTypeForFe[]
   >([]);
 
-  const { isLoading, isFetching } = useQuery({
-    queryKey: ["all_ingredients"],
-    queryFn: async () => {
-      try {
-        const { data } = await apiclient.get("/ingredient");
-        const ingredient = data.data as IngredientsTypeFromAPI[];
-        const formatIngredient = ingredient.map((ingredient) => ({
-          id: ingredient._id,
-          name: ingredient.name,
-          icon: ingredient.icon,
-          selected: new Set(ingredientUsed).has(ingredient._id),
-        }));
-        setListedIngredients(formatIngredient);
-        return ingredient;
-      } catch (error: any) {
-        console.log(error.message);
-        setListedIngredients([]);
-      }
-    },
-  });
+  const { isLoading, isFetching } = MenuService.getAllIngredients(ingredientUsed, (data) => setListedIngredients(data));
 
   const toggleIngredient = (id: string) => {
     setListedIngredients(

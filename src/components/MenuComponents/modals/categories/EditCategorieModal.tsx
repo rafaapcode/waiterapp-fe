@@ -1,7 +1,7 @@
 import Modal from "@/components/Modal";
+import { MenuService } from "@/services/api/menu";
 import { Categorie } from "@/types/Categorie";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
@@ -30,29 +30,18 @@ function EditCategorieModal({
     []
   );
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async ({
-      id,
-      icon,
-      name,
-    }: {
-      id: string;
-      icon: string;
-      name: string;
-    }) => {
-      await apiclient.put(`/category/categories/${id}`, { icon, name });
-    },
-    onSuccess: () => {
+  const { editCategorie, isPending } = MenuService.editCategorie(
+    () => {
       toast.success("Categoria editada com Sucesso !");
       queryClient.invalidateQueries({ queryKey: ["all_categories"] });
       onClose();
     },
-    onError: (error) => {
+    (error) => {
       const err = error as AxiosError<{message: string}>;
       toast.error(err.response?.data?.message);
       return;
-    },
-  });
+    }
+  );
 
   useEffect(() => {
     if (data && isVisible) {
@@ -70,7 +59,7 @@ function EditCategorieModal({
       toast.error("O nome da categoria é obrigatório");
       return;
     }
-    mutateAsync({ id: data._id, icon: emojiValue || "🥗", name: categoryName });
+    editCategorie({ id: data._id, icon: emojiValue || "🥗", name: categoryName });
   };
 
   return (

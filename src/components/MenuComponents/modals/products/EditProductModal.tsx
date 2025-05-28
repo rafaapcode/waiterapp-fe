@@ -1,8 +1,8 @@
 import Modal from "@/components/Modal";
-import { Products } from "@/types/Products";
+import { MenuService } from "@/services/api/menu";
 import { apiclient, uploadImage } from "@/utils/apiClient";
 import { verifyImageIntegrity } from "@/utils/verifyImage";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 import { lazy, Suspense, useCallback, useState } from "react";
@@ -56,31 +56,7 @@ function EditProductModal({
     []
   );
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["get_product_info_edit_form", { productid }],
-    queryFn: async () => {
-      try {
-        const { data } = await apiclient.get(`/product/${productid}`);
-        const product = data as Products;
-        setProduct({
-          description: product.description,
-          discount: product.discount,
-          image: null,
-          imageUrl: product.imageUrl,
-          ingredients: product.ingredients.map((ing) => ing._id),
-          name: product.name,
-          priceInDiscount: product.priceInDiscount,
-          newIngredients: [],
-          price: data.price,
-        });
-        return product;
-      } catch (error: any) {
-        console.log(error.message);
-        toast.error("Erro ao buscar o Produto");
-        onClose();
-      }
-    },
-  });
+  const { data, isLoading, isFetching } = MenuService.getInfoProduct(productid, onClose, (data) => setProduct(data));
 
   const { mutateAsync: editProductMutation, isPending } = useMutation({
     mutationFn: async (data: ProductFieldsChanged) => {

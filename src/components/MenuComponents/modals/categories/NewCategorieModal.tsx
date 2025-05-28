@@ -1,6 +1,6 @@
 import Modal from "@/components/Modal";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { MenuService } from "@/services/api/menu";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 import { useRef, useState } from "react";
@@ -16,21 +16,18 @@ function NewCategorieModal({ isVisible, onClose }: NewCategorieModalProps) {
   const [categoryName, setCategorieName] = useState<string>("");
   const queryClient = useQueryClient();
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async ({ name, icon }: { icon: string; name: string }) => {
-      await apiclient.post("/category/categories", { icon, name });
-    },
-    onSuccess: () => {
+  const { createCategorie, isPending } = MenuService.createCategorie(
+    () => {
       toast.success("Categoria criada com Sucesso !");
       queryClient.invalidateQueries({ queryKey: ["all_categories"] });
       onClose();
     },
-    onError: (error) => {
+    (error) => {
       const err = error as AxiosError<{message: string}>;
       toast.error(err.response?.data?.message);
       return;
-    },
-  });
+    }
+  );
 
   const onSave = () => {
     const emojivalue = emojiRef.current?.value.toString();
@@ -38,7 +35,7 @@ function NewCategorieModal({ isVisible, onClose }: NewCategorieModalProps) {
       toast.error("O nome da categoria é obrigatório");
       return;
     }
-    mutateAsync({icon: emojivalue ?? "🥗", name: categoryName});
+    createCategorie({icon: emojivalue ?? "🥗", name: categoryName});
   };
 
   return (
