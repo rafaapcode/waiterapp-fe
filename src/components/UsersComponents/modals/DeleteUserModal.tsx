@@ -1,6 +1,6 @@
 import Modal from "@/components/Modal";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UsersService } from "@/services/api/users";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { FormEvent } from "react";
 import { toast } from "react-toastify";
@@ -19,26 +19,19 @@ interface DeleteUserModalProps {
 function DeleteUserModal({ isVisible, onClose, userData, onEditModalClose }: DeleteUserModalProps) {
   const queryClient = useQueryClient();
 
-  const {mutateAsync: deleteUser} = useMutation({
-    mutationFn: async (id: string) => {
-      if(!id || id.length !== 24){
-        toast.error("Id do usuário inválido");
-        return
-      }
-      await apiclient.delete(`/user/${id}`);
-    },
-    onSuccess: () => {
+  const { deleteUser } = UsersService.deleteUser(
+    () => {
       toast.success("Usuário deletado com sucesso !");
       queryClient.invalidateQueries({queryKey: ["all_users", {page: 1}]});
       onClose();
       onEditModalClose();
     },
-    onError: (error) => {
+    (error) => {
       const err = error as AxiosError<{message: string}>;
       toast.error(err.response?.data?.message);
       return;
     }
-  })
+  );
 
   const onDelete = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

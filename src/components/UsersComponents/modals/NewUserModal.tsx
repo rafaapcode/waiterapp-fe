@@ -1,11 +1,10 @@
 import Modal from "@/components/Modal";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { UsersService } from "@/services/api/users";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 import { FormEvent, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { createUserSchema } from "../validations/createUserValidation";
 
 interface NewUserModalProps {
   isVisible: boolean;
@@ -27,35 +26,24 @@ function NewUserModal({ isVisible, onClose }: NewUserModalProps) {
   });
   const admRadio = useRef<HTMLInputElement>(null);
 
-  const { mutateAsync: creteUser, isPending } = useMutation({
-    mutationFn: async (data: NewUserData & { role: "WAITER" | "ADMIN" }) => {
-      const isValid = createUserSchema.safeParse({ ...data });
-
-      if (!isValid.success) {
-        const msgs = isValid.error.issues.map((err) => err.message).join(" , ");
-        toast.error(msgs);
-        return;
-      }
-
-      await apiclient.post(`/user`, data);
-    },
-    onSuccess: () => {
+  const { createUser, isPending } = UsersService.createUser(
+    () => {
       toast.success("Usuário criado com sucesso !");
       queryClient.invalidateQueries({ queryKey: ["all_users", { page: 1 }] });
       onClose();
     },
-    onError: (error) => {
+    (error) => {
       const err = error as AxiosError<{message: string}>;
       toast.error(err.response?.data?.message);
       return;
-    },
-  });
+    }
+  );
 
   const onSave = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const admChecked = admRadio.current?.checked;
 
-    creteUser({ ...userData, role: admChecked ? "ADMIN" : "WAITER" });
+    createUser({ ...userData, role: admChecked ? "ADMIN" : "WAITER" });
   };
 
   return (

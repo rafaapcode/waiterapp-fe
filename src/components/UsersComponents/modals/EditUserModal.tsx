@@ -1,6 +1,6 @@
 import Modal from "@/components/Modal";
-import { apiclient } from "@/utils/apiClient";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UsersService } from "@/services/api/users";
+import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 import {
@@ -15,7 +15,6 @@ import { BsEye, BsEyeSlash } from "react-icons/bs";
 import { toast } from "react-toastify";
 import DeleteUserModalSkeleton from "../skeletons/DeleteUserModalSkeleton";
 import EditUserModalSkeleton from "../skeletons/EditUserModalSkeleton";
-import { updateUserSchema } from "../validations/updateUserSchema";
 
 const DeleteUserModal = lazy(() => import("./DeleteUserModal"));
 
@@ -50,66 +49,21 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
     role: "ADMIN",
   });
 
-  const { isLoading, isFetching } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: async () => {
-      try {
-        const { data } = await apiclient.get(`/user/${userId}`);
-        setUserInfo({
-          email: data.email,
-          name: data.name,
-          password: "",
-          role: data.role,
-        });
-        if(data.role === "ADMIN") {
-          setRoleSelected({adm: true, waiter: false})
-        } else {
-          setRoleSelected({adm: false, waiter: true})
-        }
-      } catch (error) {
-        console.log(error);
-        const err = error as AxiosError<{message: string}>;
-        toast.error(err.response?.data?.message);
-        return { total_pages: 0, users: [] };
-      }
-    },
-  });
+  const { isLoading, isFetching } = UsersService.getUserById(userId, setUserInfo, setRoleSelected);
 
-  const {mutateAsync: editUserMutate, isPending} = useMutation({
-    mutationFn: async (data: UserData) => {
-      if (!userId || userId.length !== 24) {
-        toast.error("Id do usuário inválido");
-        return;
-      }
-      const newUserdata = {
-        ...(data.password && { password: data.password }),
-        ...(data.email && { email: data.email }),
-        ...(data.name && { name: data.name }),
-        ...(data.role && { role: data.role }),
-      }
-
-      const isValid = updateUserSchema.safeParse(newUserdata);
-
-      if (!isValid.success) {
-        console.log(isValid.error.errors);
-        const msgs = isValid.error.issues.map((iss) => iss.message);
-        toast.error(msgs.join(", "));
-        throw new Error("Dados inválidos");
-      }
-
-      await apiclient.put(`/user/${userId}`, newUserdata);
-    },
-    onSuccess: () => {
+  const {editUser, isPending} = UsersService.editUser(
+    userId,
+    () => {
       toast.success("Usuário atualizado com sucesso !");
-      queryClient.invalidateQueries({queryKey: ["all_users"]})
+      queryClient.invalidateQueries({ queryKey: ["all_users"] });
       onClose();
     },
-    onError: (error) => {
-      const err = error as AxiosError<{message: string}>;
+    (error) => {
+      const err = error as AxiosError<{ message: string }>;
       toast.error(err.response?.data?.message);
       return;
-    },
-  });
+    }
+  );
 
   const toggleDeleteUserModel = useCallback(
     () => setDeleteUserModal((prev) => !prev),
@@ -131,9 +85,7 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
       ...userInfo,
       role: roleSelected.adm ? "ADMIN" : "WAITER",
     };
-    console.log(roleSelected.adm)
-    console.log('Novo dado a ser editado',data);
-    editUserMutate(data);
+    editUser(data);
   };
 
   return (
@@ -146,7 +98,11 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
             onEditModalClose={onClose}
             isVisible={deleteUserModal}
             onClose={toggleDeleteUserModel}
-            userData={{ id: userId, name: userInfo.name, email: userInfo.email }}
+            userData={{
+              id: userId,
+              name: userInfo.name,
+              email: userInfo.email,
+            }}
           />
         </Suspense>
       )}
@@ -275,7 +231,11 @@ function EditUserModal({ isVisible, onClose, userId }: EditUserModalProps) {
                   type="submit"
                   className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
                 >
-                  {isPending ? <LoaderCircle size={24} className="animate-spin"/> :"Salvar alterações"}
+                  {isPending ? (
+                    <LoaderCircle size={24} className="animate-spin" />
+                  ) : (
+                    "Salvar alterações"
+                  )}
                 </button>
               </div>
             </Modal.CustomFooter>

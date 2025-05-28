@@ -21,7 +21,6 @@ export class ProfileService {
     >;
     isPending: boolean;
   } {
-
     const { mutateAsync, isPending } = useMutation({
       mutationFn: async (
         data: Partial<{
@@ -41,5 +40,34 @@ export class ProfileService {
     });
 
     return { updateProfile: mutateAsync, isPending };
+  }
+
+  static async getDefaultValuesOfProfile(): Promise<{
+    name: string;
+    email: string;
+    confirmPassword: string;
+    currentPassword: string;
+    newPassword: string;
+  }> {
+    try {
+      const { data } = await apiclient.get("/user/current");
+      const userData = data as { email: string; name: string };
+
+      return {
+        name: userData.name,
+        email: userData.email,
+        confirmPassword: "",
+        currentPassword: "",
+        newPassword: "",
+      };
+    } catch (error) {
+      return {
+        name: "",
+        email: "",
+        confirmPassword: "",
+        currentPassword: "",
+        newPassword: "",
+      };
+    }
   }
 }

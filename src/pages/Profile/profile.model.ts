@@ -2,7 +2,6 @@ import { updateProfileDataSchema } from "@/components/profile/schema/updateProfi
 import { useSetToken } from "@/hooks/useToken";
 import { ProfileService } from "@/services/api/profile";
 import { Profile } from "@/types/Profile";
-import { apiclient } from "@/utils/apiClient";
 import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -17,29 +16,6 @@ export type DirtedFields = Partial<
     newPassword?: boolean | undefined;
   }>
 >;
-
-const getDefaultValues = async () => {
-  try {
-    const { data } = await apiclient.get("/user/current");
-    const userData = data as { email: string; name: string };
-
-    return {
-      name: userData.name,
-      email: userData.email,
-      confirmPassword: "",
-      currentPassword: "",
-      newPassword: "",
-    };
-  } catch (error) {
-    return {
-      name: "",
-      email: "",
-      confirmPassword: "",
-      currentPassword: "",
-      newPassword: "",
-    };
-  }
-};
 
 const extractChangedFields = (
   data: Profile,
@@ -85,8 +61,6 @@ const extractChangedFields = (
       data[fieldChanged as keyof Profile];
   }
 
-  console.log(changedFields);
-
   return changedFields;
 };
 
@@ -97,7 +71,7 @@ export const useProfileModel = (): ProfilePageProps => {
     handleSubmit,
     formState: { isDirty, isLoading, dirtyFields },
   } = useForm({
-    defaultValues: getDefaultValues,
+    defaultValues: ProfileService.getDefaultValuesOfProfile,
   });
 
   const { updateProfile, isPending } = ProfileService.updateProfile(
