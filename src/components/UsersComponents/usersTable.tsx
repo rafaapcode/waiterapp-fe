@@ -2,6 +2,7 @@ import createTable from "@/hooks/createTable";
 import { Users } from "@/types/Users";
 import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
+import { AxiosResponse } from "axios";
 import { Edit, LoaderCircle, Trash } from "lucide-react";
 import {
   Dispatch,
@@ -29,7 +30,7 @@ interface UsersTableProps {
     setCurrentPage: Dispatch<SetStateAction<number>>;
     AllUsers: {total_pages: number; users: Users[];} | undefined;
     isPending: boolean;
-    deleteUser: UseMutateAsyncFunction<void, Error, string, unknown>;
+    deleteUser: UseMutateAsyncFunction<void | AxiosResponse<any, any>, Error, string, unknown>;
   };
 }
 

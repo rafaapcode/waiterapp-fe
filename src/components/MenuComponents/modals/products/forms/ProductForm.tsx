@@ -19,16 +19,6 @@ const IngredientModal = lazy(
   () => import("../ingredientsModal/IngredientModal")
 );
 
-interface AnalyseImageResponse {
-  message: string;
-  analyse: {
-    name: string;
-    description: string;
-    new_ingredients: boolean;
-    ingredients: { id: string; name: string }[];
-  };
-}
-
 interface ProductFormProp {
   product: NewProductData;
   setProduct: Dispatch<SetStateAction<NewProductData>>;

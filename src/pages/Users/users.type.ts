@@ -15,5 +15,4 @@ export interface UsersPageProps {
     isPending: boolean;
     deleteUser: UseMutateAsyncFunction<void | AxiosResponse<any, any>, Error, string, unknown>;
   };
-
 }

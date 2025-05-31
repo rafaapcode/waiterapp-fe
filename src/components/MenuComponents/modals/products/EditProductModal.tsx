@@ -1,7 +1,6 @@
 import Modal from "@/components/Modal";
 import { MenuService } from "@/services/api/menu";
 import { apiclient, uploadImage } from "@/utils/apiClient";
-import { verifyImageIntegrity } from "@/utils/verifyImage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
@@ -82,13 +81,6 @@ function EditProductModal({
 
       if (data.image) {
         try {
-          // Verfify if the image is a virus
-          const isInfected = await verifyImageIntegrity(data.image);
-
-          if(isInfected) {
-            throw new Error("Imagem infectada !");
-          }
-
           // Upload  image
           const { data: responseImageUrl } = await uploadImage.postForm("", {
             image: data.image,
