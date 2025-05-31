@@ -9,10 +9,6 @@ export const analyseImage = axios.create({
   baseURL: import.meta.env.VITE_ANALYSE_IMAGE_LAMBDA
 })
 
-export const verifyImage = axios.create({
-  baseURL: import.meta.env.VITE_VERIFY_IMAGE_API_URL
-})
-
 export const apiclient = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL
 })
@@ -23,15 +19,6 @@ apiclient.interceptors.request.use(
     if(token) {
       config.headers.set("Authorization", `Bearer ${token}`);
     };
-
-    return config;
-  },
-);
-
-
-verifyImage.interceptors.request.use(
-  (config) => {
-    config.headers.set("x-apikey", import.meta.env.VITE_VERIFY_IMAGE_API_KEY);
 
     return config;
   },

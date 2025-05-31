@@ -9,7 +9,6 @@ import {
 } from "@/types/Ingredients";
 import { Products } from "@/types/Products";
 import { analyseImage, apiclient, uploadImage } from "@/utils/apiClient";
-import { verifyImageIntegrity } from "@/utils/verifyImage";
 import {
   UseMutateAsyncFunction,
   useMutation,
@@ -125,13 +124,6 @@ export class MenuService {
             "https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg";
         } else {
           try {
-            // Verfify if the image is a virus
-            const isInfected = await verifyImageIntegrity(data.image);
-
-            if (isInfected) {
-              throw new Error("Imagem infectada !");
-            }
-
             // Upload image
             const { data: responseImageUrl } = await uploadImage.postForm("", {
               image: data.image,
@@ -331,12 +323,6 @@ export class MenuService {
       queryFn: async () => {
         if (image) {
           try {
-            // Verify if the image is a virus
-            const isInfected = await verifyImageIntegrity(image);
-
-            if (isInfected) {
-              throw new Error("Imagem infectada !");
-            }
             // Analyse the image
             const { data } = await analyseImage.postForm("/analyse_image", {
               image: image,
