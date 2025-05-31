@@ -1,5 +1,3 @@
-import { MenuService } from "@/services/api/menu";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Dispatch,
   lazy,
@@ -13,7 +11,6 @@ import { NewProductData } from "../NewProductModal";
 import Categories from "../productFormComponents/categories";
 import ImageUpload from "../productFormComponents/imageUpload";
 import Ingredients from "../productFormComponents/ingredients";
-import AnalyseModalLoading from "./analyseModalLoading";
 
 const IngredientModal = lazy(
   () => import("../ingredientsModal/IngredientModal")
@@ -25,17 +22,12 @@ interface ProductFormProp {
 }
 
 export default function ProductForm({ product, setProduct }: ProductFormProp) {
-  const queryClient = useQueryClient();
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
-  const [indetifiedIngredients, setIdentifiedIngredients] = useState<string[]>([]);
-
-  const { isLoading, isFetching } = MenuService.analyseProductImage(product.image, setProduct, setIdentifiedIngredients, () => queryClient.invalidateQueries({ queryKey: ["all_ingredients"] }));
 
   const handleIngredientModal = useCallback(
     () => setIngredienteModal((prev) => !prev),
     []
   );
-
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full">
       {ingredientModal && (
@@ -48,8 +40,6 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
           />
         </Suspense>
       )}
-
-      {(isLoading || isFetching) && <AnalyseModalLoading isVisible={isLoading || isFetching} />}
       <div className="space-y-4 pl-2">
         {/* Image Upload */}
         <ImageUpload
@@ -129,7 +119,6 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
         />
       </div>
       <Ingredients
-        ingredientUsed={indetifiedIngredients}
         onClick={handleIngredientModal}
         setIngredients={(ings) =>
           setProduct((prev) => ({ ...prev, ingredients: ings }))

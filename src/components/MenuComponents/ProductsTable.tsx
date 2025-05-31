@@ -136,7 +136,9 @@ function ProductsTable({props}: ProductsTableProps) {
       />
       <div className="mt-2 max-h-full overflow-y-auto">
         {isLoading || isFetching ? (
-          <LoaderCircle size={26} className="animate-spin" />
+          <div className="w-full mt-4 p-4 flex justify-center items-center">
+            <LoaderCircle size={26} className="animate-spin" />
+          </div>
         ) : (
           <Table.Root table={table}>
             <Table.Container>

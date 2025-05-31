@@ -8,7 +8,7 @@ import {
   IngredientTypeForFe,
 } from "@/types/Ingredients";
 import { Products } from "@/types/Products";
-import { analyseImage, apiclient, uploadImage } from "@/utils/apiClient";
+import { apiclient, uploadImage } from "@/utils/apiClient";
 import {
   UseMutateAsyncFunction,
   useMutation,
@@ -16,8 +16,6 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
-import { SetStateAction } from "react";
-import { AnalyseImageResponse } from "../types/analyseImageRes";
 import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 
 export class MenuService {
@@ -309,47 +307,5 @@ export class MenuService {
     });
 
     return { createIngredient: mutateAsync, isPending };
-  }
-
-  static analyseProductImage(
-    image: File | null,
-    setProduct: (value: SetStateAction<NewProductData>) => void,
-    setIngredients: (value: SetStateAction<string[]>) => void,
-    invalidateQueries: () => void
-  ): UseQueryResult<never[], Error> {
-    return useQuery({
-      enabled: !image ? false : true,
-      queryKey: ["analyse_product_image", image?.name],
-      queryFn: async () => {
-        if (image) {
-          try {
-            // Analyse the image
-            const { data } = await analyseImage.postForm("/analyse_image", {
-              image: image,
-            });
-            const response = data as AnalyseImageResponse;
-
-            if (response.analyse.new_ingredients) {
-              invalidateQueries();
-            }
-            console.log('Response', response);
-            setProduct((prev) => ({
-              ...prev,
-              name: response.analyse.name,
-              description: response.analyse.description,
-            }));
-            setIngredients(response.analyse.ingredients.map((ing) => ing.id));
-            return [];
-          } catch (error: any) {
-            console.log(error.message);
-            setIngredients([]);
-            return [];
-          }
-        } else {
-          setIngredients([]);
-          return [];
-        }
-      },
-    });
   }
 }
