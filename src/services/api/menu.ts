@@ -332,6 +332,7 @@ export class MenuService {
             if (response.analyse.new_ingredients) {
               invalidateQueries();
             }
+            console.log('Response', response);
             setProduct((prev) => ({
               ...prev,
               name: response.analyse.name,
