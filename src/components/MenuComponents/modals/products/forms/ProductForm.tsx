@@ -28,6 +28,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
     () => setIngredienteModal((prev) => !prev),
     []
   );
+
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full">
       {ingredientModal && (
