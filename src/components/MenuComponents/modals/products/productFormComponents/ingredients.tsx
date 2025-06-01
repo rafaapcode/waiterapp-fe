@@ -117,16 +117,18 @@ function Ingredients({
       </div>
       <div className="mt-6 grid grid-cols-4 gap-y-2 gap-x-2 max-w-full max-h-[150px] overflow-y-auto pb-1">
         {listedIngredients.filter(ing => ing.selected).map((ingredient) => (
-          <button
+          <div
             key={ingredient.id}
-            disabled
-            className="px-4 py-1 rounded-xl flex gap-2 items-center justify-center text-xs bg-gray-100 transition-all duration-200"
+            className="group px-4 py-1 rounded-xl flex gap-2 items-center justify-center text-xs bg-gray-100 transition-all duration-200 relative"
           >
+            <button  onClick={() => toggleIngredient(ingredient.id)} className="hidden text-white text-sm group-hover:flex group-hover:items-center group-hover:justify-center w-full h-full absolute bg-black/70 rounded-xl transition-all duration-200">
+              <p>Excluir</p>
+            </button>
             <span className="text-xs">{ingredient.icon}</span>
             <span className="truncate w-full text-xs text-center">
               {ingredient.name}
             </span>
-          </button>
+          </div>
         ))}
       </div>
     </div>
