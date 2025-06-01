@@ -57,7 +57,6 @@ function HistoryModal({ isVisible, onClose, onDelete, order, isLoading }: Histor
                     imageUrl: iten.imageUrl,
                     name: iten.name,
                     price: iten.price,
-                    priceInDiscount: iten.priceInDiscount,
                   },
                 }}
               />

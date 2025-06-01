@@ -23,15 +23,8 @@ function ProductInfo({ products }: ProductInfoProps) {
       <div className="ml-1">
         <strong className="block mb-1">{product.name}</strong>
         <div className="flex gap-2">
-          {product.discount && (
-            <span className="text-sm text-[#666] line-through">
-              {formatCurrency(product.price * quantity)}
-            </span>
-          )}
-          <span className="text-sm text-[#666]">
-            {product.discount
-              ? formatCurrency(product.priceInDiscount * quantity)
-              : formatCurrency(product.price * quantity)}
+          <span className={`text-sm ${product.discount ? "text-green-600" : "text-[#666]"}`}>
+            {formatCurrency(product.price * quantity)}
           </span>
         </div>
       </div>

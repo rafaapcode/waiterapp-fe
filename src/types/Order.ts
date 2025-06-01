@@ -5,13 +5,13 @@ export interface Order {
   products: {
     _id: string;
     quantity: number;
+    price: number;
+    discount: boolean;
     product: {
       _id: string;
       name: string;
-      price: number;
       imageUrl: string;
-      discount: boolean;
-      priceInDiscount: number;
+      description: string;
     };
   }[];
 }
@@ -29,7 +29,6 @@ export type HistoryOrder = {
     name: string;
     price: number;
     discount: boolean;
-    priceInDiscount: number;
     id: string;
   }[];
 }
@@ -45,7 +44,6 @@ export interface Products {
     price: number;
     imageUrl: string;
     discount: boolean;
-    priceInDiscount: number;
   };
 }
 

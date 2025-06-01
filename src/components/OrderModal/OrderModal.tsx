@@ -40,16 +40,12 @@ function OrderModal({
     return null;
   }
 
-   if (!order.products || order.products.length === 0) {
+  if (!order.products || order.products.length === 0) {
     return null;
   }
 
-  const total = order.products.reduce((acc, { product, quantity }) => {
-    const productPrice = product.discount
-      ? product.priceInDiscount
-      : product.price;
-
-    return (acc += productPrice * quantity);
+  const total = order.products.reduce((acc, { quantity, price }) => {
+    return (acc += price * quantity);
   }, 0);
 
   useEffect(() => {
@@ -84,7 +80,19 @@ function OrderModal({
           <strong className="font-normal text-base opacity-80">Itens</strong>
           <div className="mt-4 flex flex-col gap-4 max-h-full overflow-y-auto">
             {order.products.map((product) => (
-              <ProductInfo products={product} />
+              <ProductInfo
+                products={{
+                  _id: product._id,
+                  product: {
+                    _id: product.product._id,
+                    name: product.product.name,
+                    discount: product.discount,
+                    imageUrl: product.product.imageUrl,
+                    price: product.price,
+                  },
+                  quantity: product.quantity,
+                }}
+              />
             ))}
           </div>
         </div>
@@ -100,7 +108,7 @@ function OrderModal({
         onCancel={handleCancelOrder}
         orientation="vertical"
       >
-        {order.status !== "DONE" && (
+        {order.status !== "DONE" ? (
           <button
             onClick={onChangeOrderStatus}
             disabled={isLoading}
@@ -116,7 +124,7 @@ function OrderModal({
               {order.status === "IN_PRODUCTION" && "Concluir Pedido"}
             </strong>
           </button>
-        )}
+        ) : <></>}
       </Modal.Footer>
     </Modal.Root>
   );
