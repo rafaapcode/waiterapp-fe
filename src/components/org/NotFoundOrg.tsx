@@ -14,6 +14,7 @@ function NotFoundOrg() {
   const [selectedOrganization, setSelectedOrganization] = useState<string>("");
 
   const { isLoading, isFetching, data } = useQuery({
+    enabled: !!stateUser.id,
     queryKey: ["orgs-user", stateUser.id],
     queryFn: async () => {
       try {
@@ -34,8 +35,6 @@ function NotFoundOrg() {
   };
   const continueWithOrg = () => {
     setOrgId(selectedOrganization);
-    console.log(stateUser);
-    // navigate("/app/home");
   };
 
   return (

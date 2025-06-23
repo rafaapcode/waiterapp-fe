@@ -5,8 +5,7 @@ import { ToastContainer } from "react-toastify";
 import Sidebar from "../components/Sidebar/Sidebar";
 
 function Layout() {
-  const state = useUser((state: any) => state);
-  console.log(state);
+  const state = useUser((state) => state.user);
   return (
     <main className="bg-[#FAFAFA] flex h-screen">
       <ToastContainer position="top-center" />
