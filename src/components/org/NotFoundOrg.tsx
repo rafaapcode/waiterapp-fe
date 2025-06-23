@@ -8,12 +8,13 @@ import { useNavigate } from "react-router";
 import SelectSkeleton from "./SelectSkeleton";
 
 function NotFoundOrg() {
-  const state = useUser((state: any) => state);
+  const stateUser = useUser((state) => state.user);
+  const setOrgId = useUser((state) => state.setOrgId);
   const navigate = useNavigate();
   const [selectedOrganization, setSelectedOrganization] = useState<string>("");
 
   const { isLoading, isFetching, data } = useQuery({
-    queryKey: ["orgs-user", state.id],
+    queryKey: ["orgs-user", stateUser.id],
     queryFn: async () => {
       try {
         return await OrgService.listOrgsOfUser();
@@ -32,8 +33,8 @@ function NotFoundOrg() {
     setSelectedOrganization(e.target.value);
   };
   const continueWithOrg = () => {
-    state.setOrgId(selectedOrganization);
-    console.log(state);
+    setOrgId(selectedOrganization);
+    console.log(stateUser);
     // navigate("/app/home");
   };
 
