@@ -1,3 +1,4 @@
+import OrgRegister from "@/pages/Org";
 import Profile from "@/pages/Profile/profile.page";
 import { Route, Routes } from "react-router";
 import History from "../pages/History/history.page";
@@ -20,8 +21,9 @@ function Router() {
           <Route path="history" element={<History />} />
           <Route path="menu" element={<Menu />} />
           <Route path="users" element={<Users />} />
-           <Route path="profile" element={<Profile />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
+        <Route path="/org/register" element={<OrgRegister />} />
       </Route>
     </Routes>
   );
