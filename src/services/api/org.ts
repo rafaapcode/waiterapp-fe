@@ -18,5 +18,5 @@ export namespace OrgService {
   // export type NewOrgOutPut {
 
   // }
-  export type ListOrgsOutPut = {_id: string; name: string}[];
+  export type ListOrgsOutPut = {_id: string; name: string; imageUrl?: string}[];
 }

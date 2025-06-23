@@ -6,7 +6,7 @@ import { FiUsers } from "react-icons/fi";
 import { IoNewspaperOutline } from "react-icons/io5";
 import { RiHomeLine } from "react-icons/ri";
 import { NavLink, useNavigate } from "react-router";
-import LogoSidebar from "../../assets/images/icon-sidebar.svg";
+import OrgDropdown from "./OrgDropdown";
 
 function Sidebar() {
   const logout = useUser(state => state.logout);
@@ -25,9 +25,7 @@ function Sidebar() {
 
   return (
     <section className="bg-white w-[108px] flex flex-col shadow-md">
-      <div className="flex items-center justify-center h-[108px] w-[108px]">
-        <img src={LogoSidebar} alt="Logo" className="w-11 h-7" />
-      </div>
+      <OrgDropdown />
       <nav className="flex flex-col">
         <NavLink to={"/app/home"} className={styleStyleConditional}>
           <RiHomeLine size={28} />

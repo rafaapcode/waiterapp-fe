@@ -10,6 +10,7 @@ import SelectSkeleton from "./SelectSkeleton";
 function NotFoundOrg() {
   const stateUser = useUser((state) => state.user);
   const setOrgId = useUser((state) => state.setOrgId);
+  const setOrgImage = useUser((state) => state.setOrgImageUrl);
   const navigate = useNavigate();
   const [selectedOrganization, setSelectedOrganization] = useState<string>("");
 
@@ -34,7 +35,9 @@ function NotFoundOrg() {
     setSelectedOrganization(e.target.value);
   };
   const continueWithOrg = () => {
+    const orgSelected = data?.find(d => d._id === selectedOrganization);
     setOrgId(selectedOrganization);
+    setOrgImage(orgSelected?.imageUrl || '');
   };
 
   return (
