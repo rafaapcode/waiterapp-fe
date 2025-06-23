@@ -1,5 +1,5 @@
 import { useUser } from "@/context/user";
-import { cn } from "@/lib/utils";
+import { cn, formatNameOfOrg } from "@/lib/utils";
 import { OrgService } from "@/services/api/org";
 import { useQuery } from "@tanstack/react-query";
 import { CirclePlus } from "lucide-react";
@@ -10,8 +10,7 @@ import IconSidebar from "../../assets/images/icon-sidebar.svg";
 
 function OrgDropdown() {
   const stateUser = useUser((state) => state.user);
-  const setOrgId = useUser((state) => state.setOrgId);
-  const setImageUrl = useUser((state) => state.setOrgImageUrl);
+  const setOrgInfo = useUser((state) => state.setOrgInfo);
   const navigate = useNavigate();
   const [showOrgs, setShowOrgs] = useState<boolean>(false);
 
@@ -65,7 +64,7 @@ function OrgDropdown() {
           stateUser.orgImageUrl && <img src={stateUser.orgImageUrl} alt="Logo" className="w-11 h-7" />
         }
         {
-          !stateUser.orgImageUrl && <p>NO</p>
+          (!stateUser.orgImageUrl && stateUser.orgName) && <p className="text-3xl text-gray-700 font-semibold">{formatNameOfOrg(stateUser.orgName)}</p>
         }
       </button>
       <div
@@ -84,7 +83,11 @@ function OrgDropdown() {
               <button
                 key={org._id}
                 onClick={() => {
-                  setOrgId(org._id);
+                  setOrgInfo({
+                    orgId: org._id,
+                    imgUrl: org.imageUrl || '',
+                    name: org.name
+                  })
                   setShowOrgs((prev) => !prev)
                 }}
                 className="text-sm hover:bg-gray-300 px-4 py-1 rounded-lg max-w-56 truncate text-ellipsis transition-all duration-150"
