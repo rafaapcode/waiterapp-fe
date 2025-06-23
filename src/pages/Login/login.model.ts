@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { LoginModelType } from "./login.type";
 
 export const useLoginModel = (): LoginModelType => {
-  const setUser = useUser((state: any) => state.setUser);
+  const setUser = useUser(state => state.setUser);
   const setToken = useSetToken();
   const navigate = useNavigate();
   const [splashTimeout, setSplashTimeout] = useState<boolean>(true);
@@ -44,7 +44,10 @@ export const useLoginModel = (): LoginModelType => {
           return;
         }
 
-        setUser({ id: data.id, orgId: '' });
+        setUser({
+          id: data.id,
+          orgId: ''
+        })
         return navigate("/app/home");
       } else {
         toast.error("Credenciais inválidas");

@@ -21,7 +21,7 @@ import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 export class MenuService {
   static listAllProducts(orgId: string): UseQueryResult<ProductsForFe[], Error> {
     return useQuery({
-      queryKey: ["list_all_products"],
+      queryKey: ["list_all_products", orgId],
       queryFn: async (): Promise<ProductsForFe[]> => {
         try {
           const { data } = await apiclient.get(`/product/${orgId}`);
@@ -65,7 +65,7 @@ export class MenuService {
 
   static listAllCategories(orgId: string): UseQueryResult<Categorie[], Error> {
     return useQuery({
-      queryKey: ["all_categories"],
+      queryKey: ["all_categories", orgId],
       staleTime: Infinity,
       queryFn: async (): Promise<Categorie[]> => {
         try {
@@ -154,7 +154,7 @@ export class MenuService {
     cb: (data: ProductFieldsChanged) => void
   ): UseQueryResult<Products | undefined, Error> {
     return useQuery({
-      queryKey: ["get_product_info_edit_form", { productId }],
+      queryKey: ["get_product_info_edit_form", { productId, orgId }],
       queryFn: async () => {
         try {
           const { data } = await apiclient.get(`/product/${orgId}/${productId}`);
@@ -207,7 +207,7 @@ export class MenuService {
 
   static getAllCategories(orgId: string): UseQueryResult<Categorie[], Error> {
     return useQuery({
-      queryKey: ["all_categories"],
+      queryKey: ["all_categories", orgId],
       queryFn: async (): Promise<Categorie[]> => {
         try {
           const { data } = await apiclient.get(`/category/categories/${orgId}`);

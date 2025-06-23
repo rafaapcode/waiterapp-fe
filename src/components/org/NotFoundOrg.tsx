@@ -1,20 +1,31 @@
 import { useUser } from "@/context/user";
+import { OrgService } from "@/services/api/org";
+import { useQuery } from "@tanstack/react-query";
 import { Building2, CirclePlus } from "lucide-react";
 import { ChangeEvent, useState } from "react";
+import { VscLoading } from "react-icons/vsc";
 import { useNavigate } from "react-router";
+import SelectSkeleton from "./SelectSkeleton";
 
 function NotFoundOrg() {
   const state = useUser((state: any) => state);
   const navigate = useNavigate();
   const [selectedOrganization, setSelectedOrganization] = useState<string>("");
-  const organizations = [
-    { id: "1", name: "Empresa ABC Ltda" },
-    { id: "2", name: "Tech Solutions Inc" },
-    { id: "3", name: "Inovação Digital" },
-    { id: "4", name: "Consultoria Estratégica" },
-  ];
+
+  const { isLoading, isFetching, data } = useQuery({
+    queryKey: ["orgs-user", state.id],
+    queryFn: async () => {
+      try {
+        return await OrgService.listOrgsOfUser();
+      } catch (error) {
+        console.log(error);
+        return undefined;
+      }
+    },
+  });
+
   const handleCreateNew = () => {
-    navigate('/org/register');
+    navigate("/org/register");
   };
 
   const handleSelectOrganization = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -22,7 +33,8 @@ function NotFoundOrg() {
   };
   const continueWithOrg = () => {
     state.setOrgId(selectedOrganization);
-    navigate('/app/home');
+    console.log(state);
+    // navigate("/app/home");
   };
 
   return (
@@ -49,19 +61,31 @@ function NotFoundOrg() {
             >
               Organizações Disponíveis
             </label>
-            <select
-              id="organization-select"
-              value={selectedOrganization}
-              onChange={handleSelectOrganization}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none bg-white text-gray-900"
-            >
-              <option value="">Selecione uma organização</option>
-              {organizations.map((org) => (
-                <option key={org.id} value={org.id}>
-                  {org.name}
-                </option>
-              ))}
-            </select>
+            {isLoading ? (
+              <SelectSkeleton />
+            ) : (
+              <div className="relative">
+                <select
+                  disabled={!data}
+                  id="organization-select"
+                  value={selectedOrganization}
+                  onChange={handleSelectOrganization}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none bg-white text-gray-900"
+                >
+                  <option value="">Selecione uma organização</option>
+                  {data?.map((org) => (
+                    <option key={org._id} value={org._id}>
+                      {org.name}
+                    </option>
+                  ))}
+                </select>
+                {isFetching && (
+                  <div className="absolute inset-y-0 right-2 flex items-center pr-3 pointer-events-none">
+                    <VscLoading size={16} className="animate-spin" />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="relative">

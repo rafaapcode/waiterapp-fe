@@ -10,17 +10,19 @@ import DeleteCategorieModalSkeleton from "./DeleteCategorieModalSkeleton";
 
 const DeleteCategorieModal = lazy(() => import("./DeleteCategorieModal"));
 
-interface NewCategorieModalProps {
+interface EditCategorieModalProps {
   data: Categorie | null;
   isVisible: boolean;
   onClose: () => void;
+  orgId: string;
 }
 
 function EditCategorieModal({
   isVisible,
   onClose,
   data,
-}: NewCategorieModalProps) {
+  orgId
+}: EditCategorieModalProps) {
   const queryClient = useQueryClient();
   const [emojiValue, setEmoji] = useState<string>("");
   const [deleteModal, setDeleteModal] = useState<boolean>(false);
@@ -59,7 +61,7 @@ function EditCategorieModal({
       toast.error("O nome da categoria é obrigatório");
       return;
     }
-    editCategorie({ id: data._id, icon: emojiValue || "🥗", name: categoryName });
+    editCategorie({ id: data._id, icon: emojiValue || "🥗", name: categoryName, org: orgId });
   };
 
   return (
@@ -69,6 +71,7 @@ function EditCategorieModal({
           fallback={<DeleteCategorieModalSkeleton isVisible={deleteModal} />}
         >
           <DeleteCategorieModal
+            orgId={orgId}
             closeEditModal={onClose}
             isVisible={deleteModal}
             data={data}

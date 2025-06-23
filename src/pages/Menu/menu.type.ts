@@ -16,22 +16,40 @@ export interface ProductsTableProps {
     productIdToEdit: string | null;
     handleNewProductModal: () => void;
     handleProductIdToEdit: (id: string | null) => void;
-    DeleteProduct: UseMutateAsyncFunction<AxiosResponse<any, any>, Error, string, unknown>;
+    DeleteProduct: UseMutateAsyncFunction<
+      AxiosResponse<any, any>,
+      Error,
+      {
+        orgId: string;
+        id: string;
+      },
+      unknown
+    >;
     data: ProductsForFe[] | undefined;
     isLoading: boolean;
     isFetching: boolean;
-  }
+    orgId: string;
+    userId: string;
+  };
 }
 
 export interface CategoriesTableProps {
-  props : {
+  props: {
     newCategorieModal: boolean;
     editCategorieModal: Categorie | null;
     handleNewCategorieModal: () => void;
     handleEditCategorieModal: (data: Categorie | null) => void;
-    DeleteCategorie: UseMutateAsyncFunction<AxiosResponse<any, any>, Error, string, unknown>;
+    DeleteCategorie: UseMutateAsyncFunction<
+      AxiosResponse<any, any>,
+      Error,
+      {
+        orgId: string;
+        id: string;
+      },
+      unknown
+    >;
     isPending: boolean;
     data: Categorie[] | undefined;
-  }
+    orgId: string;
+  };
 }
-

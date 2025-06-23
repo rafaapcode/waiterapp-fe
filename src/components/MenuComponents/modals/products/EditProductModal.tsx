@@ -29,12 +29,14 @@ interface EditProductModalProps {
   isVisible: boolean;
   onClose: () => void;
   productid: string;
+  orgId: string;
 }
 
 function EditProductModal({
   isVisible,
   onClose,
   productid,
+  orgId
 }: EditProductModalProps) {
   const queryClient = useQueryClient();
   const [removeProductModal, setRemoveProductModal] = useState<boolean>(false);
@@ -55,7 +57,7 @@ function EditProductModal({
     []
   );
 
-  const { data, isLoading, isFetching } = MenuService.getInfoProduct(productid, onClose, (data) => setProduct(data));
+  const { data, isLoading, isFetching } = MenuService.getInfoProduct({productId: productid, orgId: orgId}, onClose, (data) => setProduct(data));
 
   const { mutateAsync: editProductMutation, isPending } = useMutation({
     mutationFn: async (data: ProductFieldsChanged) => {
@@ -131,6 +133,7 @@ function EditProductModal({
           }
         >
           <RemoveProductModal
+            orgId={orgId}
             data={{
               id: data._id,
               imageUrl: data.imageUrl,

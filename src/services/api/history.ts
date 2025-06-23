@@ -43,7 +43,7 @@ export class HistoryService {
     cb: (data: { total_pages: number; history: HistoryOrder[] }) => void
   ): UseQueryResult<{ total_pages: number; history: HistoryOrder[] }, Error> {
     return useQuery({
-      queryKey: ["history_orders", { page }],
+      queryKey: ["history_orders", { page, orgId }],
       queryFn: async (): Promise<{
         total_pages: number;
         history: HistoryOrder[];
@@ -76,7 +76,7 @@ export class HistoryService {
   > {
     return useQuery({
       enabled: !!(filteredDateSelected?.to && filteredDateSelected.from),
-      queryKey: ["history_orders", { page }, filteredDateSelected],
+      queryKey: ["history_orders", { page, orgId }, filteredDateSelected],
       queryFn: async (): Promise<{
         total_pages: number;
         history: HistoryOrder[];

@@ -28,14 +28,24 @@ interface ProductsTableProps {
     productIdToEdit: string | null;
     handleNewProductModal: () => void;
     handleProductIdToEdit: (id: string | null) => void;
-    DeleteProduct: UseMutateAsyncFunction<AxiosResponse<any, any>, Error, string, unknown>;
+    DeleteProduct: UseMutateAsyncFunction<
+      AxiosResponse<any, any>,
+      Error,
+      {
+        orgId: string;
+        id: string;
+      },
+      unknown
+    >;
     data: ProductsForFe[] | undefined;
     isLoading: boolean;
     isFetching: boolean;
-  }
+    orgId: string;
+    userId: string;
+  };
 }
 
-function ProductsTable({props}: ProductsTableProps) {
+function ProductsTable({ props }: ProductsTableProps) {
   const {
     DeleteProduct,
     data,
@@ -44,7 +54,7 @@ function ProductsTable({props}: ProductsTableProps) {
     isFetching,
     isLoading,
     newProductModal,
-    productIdToEdit
+    productIdToEdit,
   } = props;
 
   const columns = useMemo(
@@ -92,7 +102,12 @@ function ProductsTable({props}: ProductsTableProps) {
               >
                 <EditIcon size={20} />
               </button>
-              <button onClick={() => DeleteProduct(row.original.id)} className="text-red-600 hover:text-red-800 transition-all duration-200">
+              <button
+                onClick={() =>
+                  DeleteProduct({ id: row.original.id, orgId: props.orgId })
+                }
+                className="text-red-600 hover:text-red-800 transition-all duration-200"
+              >
                 <Trash size={20} />
               </button>
             </div>
@@ -112,6 +127,8 @@ function ProductsTable({props}: ProductsTableProps) {
           fallback={<NewProductModalSkeleton isVisible={newProductModal} />}
         >
           <NewProductModal
+            orgId={props.orgId}
+            userId={props.userId}
             isVisible={newProductModal}
             onClose={handleNewProductModal}
           />
@@ -122,6 +139,7 @@ function ProductsTable({props}: ProductsTableProps) {
           fallback={<NewProductModalSkeleton isVisible={!!productIdToEdit} />}
         >
           <EditProductModal
+            orgId={props.orgId}
             productid={productIdToEdit}
             isVisible={!!productIdToEdit}
             onClose={() => handleProductIdToEdit(null)}

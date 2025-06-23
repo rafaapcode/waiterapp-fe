@@ -9,9 +9,10 @@ import { toast } from "react-toastify";
 interface NewCategorieModalProps {
   isVisible: boolean;
   onClose: () => void;
+  orgId: string;
 }
 
-function NewCategorieModal({ isVisible, onClose }: NewCategorieModalProps) {
+function NewCategorieModal({ isVisible, onClose, orgId }: NewCategorieModalProps) {
   const emojiRef = useRef<HTMLInputElement>(null);
   const [categoryName, setCategorieName] = useState<string>("");
   const queryClient = useQueryClient();
@@ -35,7 +36,7 @@ function NewCategorieModal({ isVisible, onClose }: NewCategorieModalProps) {
       toast.error("O nome da categoria é obrigatório");
       return;
     }
-    createCategorie({icon: emojivalue ?? "🥗", name: categoryName});
+    createCategorie({icon: emojivalue ?? "🥗", name: categoryName, org: orgId});
   };
 
   return (

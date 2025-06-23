@@ -6,13 +6,14 @@ import Sidebar from "../components/Sidebar/Sidebar";
 
 function Layout() {
   const state = useUser((state: any) => state);
+  console.log(state);
   return (
     <main className="bg-[#FAFAFA] flex h-screen">
       <ToastContainer position="top-center" />
       <Sidebar />
       <section className="w-full h-full px-9">
-        {!state.user.orgId && <NotFoundOrg />}
-        {state.user.orgId && <Outlet />}
+        {!state.orgId && <NotFoundOrg />}
+        {state.orgId && <Outlet />}
       </section>
     </main>
   );

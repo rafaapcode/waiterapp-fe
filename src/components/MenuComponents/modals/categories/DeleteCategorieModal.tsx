@@ -10,6 +10,7 @@ interface DeleteCategorieModalProps {
   isVisible: boolean;
   onClose: () => void;
   closeEditModal: () => void;
+  orgId: string;
 }
 
 function DeleteCategorieModal({
@@ -17,6 +18,7 @@ function DeleteCategorieModal({
   onClose,
   data,
   closeEditModal,
+  orgId
 }: DeleteCategorieModalProps) {
   const queryClient = useQueryClient();
 
@@ -39,7 +41,7 @@ function DeleteCategorieModal({
   }
 
   const onDelete = async () => {
-    deleteCategorie(data._id);
+    deleteCategorie({id: data._id, orgId: orgId});
   };
 
   return (

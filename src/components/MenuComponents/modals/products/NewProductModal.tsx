@@ -1,5 +1,4 @@
 import Modal from "@/components/Modal";
-import { useUser } from "@/context/user";
 import { MenuService } from "@/services/api/menu";
 import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -11,6 +10,8 @@ import ProductForm from "./forms/ProductForm";
 interface NewProductModalProps {
   isVisible: boolean;
   onClose: () => void;
+  orgId: string;
+  userId: string;
 }
 export interface NewProductData {
   image: File | null;
@@ -24,8 +25,7 @@ export interface NewProductData {
   userId: string;
 }
 
-function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
-  const user = useUser((state: any) => state.user);
+function NewProductModal({ isVisible, onClose, orgId, userId }: NewProductModalProps) {
   const queryClient = useQueryClient();
   const [product, setProduct] = useState<NewProductData>({
     image: null,
@@ -35,7 +35,7 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
     ingredients: [],
     name: "",
     price: 0,
-    org: '',
+    org: orgId,
     userId: ''
   });
 
@@ -56,7 +56,7 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
     }
   );
 
-  const onSave = () => createProduct({...product, userId: user});
+  const onSave = () => createProduct({...product, userId: userId, org: orgId});
 
   return (
     <Modal.Root size="lg" isVisible={isVisible}>
@@ -65,7 +65,7 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
       </Modal.Header>
 
       <Modal.Body className="my-2">
-        <ProductForm product={product} setProduct={setProduct} />
+        <ProductForm orgId={orgId} product={product} setProduct={setProduct} />
       </Modal.Body>
 
       <Modal.CustomFooter>

@@ -12,7 +12,7 @@ import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 export class OrderService {
   static getOrders(orgId: string): UseQueryResult<Order[], Error> {
     return useQuery({
-      queryKey: ["orders"],
+      queryKey: ["orders", orgId],
       queryFn: async (): Promise<Order[]> => {
         try {
           const { data: orders } = await apiclient.get(`/order/${orgId}`);

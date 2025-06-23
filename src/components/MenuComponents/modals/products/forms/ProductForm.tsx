@@ -19,9 +19,10 @@ const IngredientModal = lazy(
 interface ProductFormProp {
   product: NewProductData;
   setProduct: Dispatch<SetStateAction<NewProductData>>;
+  orgId: string;
 }
 
-export default function ProductForm({ product, setProduct }: ProductFormProp) {
+export default function ProductForm({ product, setProduct, orgId }: ProductFormProp) {
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
 
   const handleIngredientModal = useCallback(
@@ -113,6 +114,7 @@ export default function ProductForm({ product, setProduct }: ProductFormProp) {
 
         {/* Category */}
         <Categories
+          orgId={orgId}
           selectedCategory={product.category}
           setSelectedCategory={(category) =>
             setProduct((prev) => ({ ...prev, category }))

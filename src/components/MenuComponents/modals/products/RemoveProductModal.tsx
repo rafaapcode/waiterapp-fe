@@ -17,13 +17,15 @@ interface RemoveProductModalProps {
     price: string;
     id: string;
   };
+  orgId: string;
 }
 
 function RemoveProductModal({
   isVisible,
   onClose,
   data,
-  editModalClose
+  editModalClose,
+  orgId
 }: RemoveProductModalProps) {
   const queryClient = useQueryClient();
 
@@ -81,7 +83,7 @@ function RemoveProductModal({
         orientation="horizontal"
       >
         <button
-          onClick={() => deleteProduct(data.id)}
+          onClick={() => deleteProduct({id: data.id, orgId: orgId})}
           type="button"
           className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
         >

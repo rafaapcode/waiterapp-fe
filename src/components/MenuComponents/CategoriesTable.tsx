@@ -29,9 +29,13 @@ interface CategoriesTableProps {
     editCategorieModal: Categorie | null;
     handleNewCategorieModal: () => void;
     handleEditCategorieModal: (data: Categorie | null) => void;
-    DeleteCategorie: UseMutateAsyncFunction<AxiosResponse<any, any>, Error, string, unknown>;
+    DeleteCategorie: UseMutateAsyncFunction<AxiosResponse<any, any>, Error, {
+        orgId: string;
+        id: string;
+    }, unknown>;
     isPending: boolean;
     data: Categorie[] | undefined;
+    orgId: string;
   }
 }
 
@@ -82,7 +86,7 @@ function CategoriesTable({ props }: CategoriesTableProps) {
               </button>
               <button
                 disabled={isPending}
-                onClick={() => DeleteCategorie(row.original._id)}
+                onClick={() => DeleteCategorie({id: row.original._id, orgId: props.orgId})}
                 className="text-red-600 hover:text-red-800 transition-all duration-200"
               >
                 <Trash size={20} />
@@ -111,6 +115,7 @@ function CategoriesTable({ props }: CategoriesTableProps) {
           fallback={<NewCategorieModalSkeleton isVisible={newCategorieModal} />}
         >
           <CategorieModal
+            orgId={props.orgId}
             isVisible={newCategorieModal}
             onClose={handleNewCategorieModal}
           />
@@ -123,6 +128,7 @@ function CategoriesTable({ props }: CategoriesTableProps) {
           }
         >
           <EditCategorieModal
+            orgId={props.orgId}
             data={editCategorieModal}
             isVisible={!!editCategorieModal}
             onClose={() => handleEditCategorieModal(null)}

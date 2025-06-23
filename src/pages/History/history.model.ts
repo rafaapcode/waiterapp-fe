@@ -1,3 +1,4 @@
+import { useUser } from "@/context/user";
 import { HistoryService } from "@/services/api/history";
 import { HistoryOrder } from "@/types/Order";
 import { apiclient } from "@/utils/apiClient";
@@ -9,8 +10,8 @@ import { toast } from "react-toastify";
 import { HistoryModelType } from "./history.type";
 
 export const useHistoryModel = (): HistoryModelType => {
+  const stateUser = useUser((state) => state.user);
   const queryClient = useQueryClient();
-
   const [selectedOrder, setSelectedOrder] = useState<HistoryOrder | null>(null);
   const [filterDateSelected, setFilterDateSelected] = useState<
     DateRange | undefined
@@ -61,11 +62,11 @@ export const useHistoryModel = (): HistoryModelType => {
     }
   );
 
-  HistoryService.getHistoryOrders(page, (data) => {
+  HistoryService.getHistoryOrders({orgId: stateUser.orgId, page}, (data) => {
     setFilteredData(data);
   })
 
-  const { isFetching } = HistoryService.getFilteredHistoryOrders(page, filterDateSelected, (data) => {
+  const { isFetching } = HistoryService.getFilteredHistoryOrders({orgId: stateUser.orgId, page}, filterDateSelected, (data) => {
     setFilteredData(data);
   })
 
@@ -94,7 +95,7 @@ export const useHistoryModel = (): HistoryModelType => {
       handleSelectedOrder,
       isFetching,
       isPending,
-      onDeleteOrder: (id: string) => deleteOrder(id),
+      onDeleteOrder: (id: string) => deleteOrder({orderid: id, orgId: stateUser.orgId }),
       page,
       selectedOrder,
     },

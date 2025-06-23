@@ -1,3 +1,4 @@
+import { useUser } from "@/context/user";
 import { OrderService } from "@/services/api/order";
 import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -8,9 +9,10 @@ import { Order } from "../../types/Order";
 import { OrdersViewType } from "./orders.type";
 
 export const useOrdersModel = (): OrdersViewType => {
+  const stateUser = useUser((state) => state.user);
   const queryClient = useQueryClient();
 
-  const { data: orders } = OrderService.getOrders();
+  const { data: orders } = OrderService.getOrders(stateUser.orgId);
 
   const { cancelOrder } = OrderService.cancelOrder(
     () => {
@@ -69,14 +71,14 @@ export const useOrdersModel = (): OrdersViewType => {
   const done = orders ? orders.filter((order) => order.status === "DONE") : [];
 
   const handleCancelOrder = async (orderId: string) => {
-    await cancelOrder(orderId);
+    await cancelOrder({orderId, orgId: stateUser.orgId});
   };
 
   const handleStatusChange = async (
     orderId: string,
     status: Order["status"]
   ) => {
-    await updateOrder({ orderId, status });
+    await updateOrder({ orderId, status, orgId: stateUser.orgId });
   };
 
   return {

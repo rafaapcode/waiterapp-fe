@@ -3,11 +3,12 @@ import { MenuService } from "@/services/api/menu";
 interface CategoriesProps {
   selectedCategory: string;
   setSelectedCategory: (category: string) => void;
+  orgId: string;
 }
 
-function Categories({ selectedCategory,setSelectedCategory }: CategoriesProps) {
+function Categories({ selectedCategory,setSelectedCategory, orgId }: CategoriesProps) {
 
-  const { data } = MenuService.getAllCategories();
+  const { data } = MenuService.getAllCategories(orgId);
 
   const toggleCategory = (id: string) => {
     setSelectedCategory(id);
