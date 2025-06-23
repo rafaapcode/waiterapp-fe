@@ -44,7 +44,7 @@ export const useLoginModel = (): LoginModelType => {
           return;
         }
 
-        setUser({ id: data.id });
+        setUser({ id: data.id, orgId: '' });
         return navigate("/app/home");
       } else {
         toast.error("Credenciais inválidas");

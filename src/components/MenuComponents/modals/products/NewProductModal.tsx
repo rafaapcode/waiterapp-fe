@@ -1,4 +1,5 @@
 import Modal from "@/components/Modal";
+import { useUser } from "@/context/user";
 import { MenuService } from "@/services/api/menu";
 import { useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -19,9 +20,12 @@ export interface NewProductData {
   ingredients: string[];
   category: string;
   price: number;
+  org: string;
+  userId: string;
 }
 
 function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
+  const user = useUser((state: any) => state.user);
   const queryClient = useQueryClient();
   const [product, setProduct] = useState<NewProductData>({
     image: null,
@@ -31,6 +35,8 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
     ingredients: [],
     name: "",
     price: 0,
+    org: '',
+    userId: ''
   });
 
   const { createProduct, isPending } = MenuService.createProduct(
@@ -50,7 +56,7 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
     }
   );
 
-  const onSave = () => createProduct(product);
+  const onSave = () => createProduct({...product, userId: user});
 
   return (
     <Modal.Root size="lg" isVisible={isVisible}>

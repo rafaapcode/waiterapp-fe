@@ -10,12 +10,12 @@ import { AxiosResponse } from "axios";
 import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 
 export class OrderService {
-  static getOrders(): UseQueryResult<Order[], Error> {
+  static getOrders(orgId: string): UseQueryResult<Order[], Error> {
     return useQuery({
       queryKey: ["orders"],
       queryFn: async (): Promise<Order[]> => {
         try {
-          const { data: orders } = await apiclient.get("/order");
+          const { data: orders } = await apiclient.get(`/order/${orgId}`);
           return orders;
         } catch (error) {
           return [];
@@ -31,13 +31,13 @@ export class OrderService {
     cancelOrder: UseMutateAsyncFunction<
       AxiosResponse<any, any>,
       Error,
-      string,
+      {orgId: string,orderId: string},
       unknown
     >;
   } {
     const { mutateAsync } = useMutation({
-      mutationFn: async (orderId: string) =>
-        await apiclient.delete(`/order/${orderId}`),
+      mutationFn: async ({orderId, orgId}:{orgId: string,orderId: string}) =>
+        await apiclient.delete(`/order/${orgId}/${orderId}`),
       onSuccess,
       onError,
     });
@@ -53,6 +53,7 @@ export class OrderService {
       AxiosResponse<any, any>,
       Error,
       {
+        orgId: string
         orderId: string;
         status: Order["status"];
       },
@@ -60,8 +61,8 @@ export class OrderService {
     >;
   } {
     const { mutateAsync } = useMutation({
-      mutationFn: async (data: { orderId: string; status: Order["status"] }) =>
-        await apiclient.patch(`/order/${data.orderId}`, {
+      mutationFn: async (data: {orgId: string, orderId: string; status: Order["status"] }) =>
+        await apiclient.patch(`/order/${data.orgId}/${data.orderId}`, {
           status: data.status,
         }),
       onSuccess,

@@ -18,14 +18,19 @@ export class HistoryService {
     deleteOrder: UseMutateAsyncFunction<
       AxiosResponse<any, any>,
       Error,
-      string,
+      { orgId: string; orderid: string },
       unknown
     >;
     isPending: boolean;
   } {
     const { mutateAsync: deleteOrder, isPending } = useMutation({
-      mutationFn: async (id: string) =>
-        await apiclient.delete(`/order/history/${id}`),
+      mutationFn: async ({
+        orgId,
+        orderid,
+      }: {
+        orgId: string;
+        orderid: string;
+      }) => await apiclient.delete(`/order/history/${orgId}/${orderid}`),
       onSuccess,
       onError,
     });
@@ -34,7 +39,7 @@ export class HistoryService {
   }
 
   static getHistoryOrders(
-    page: number,
+    { orgId, page }: { orgId: string; page: number },
     cb: (data: { total_pages: number; history: HistoryOrder[] }) => void
   ): UseQueryResult<{ total_pages: number; history: HistoryOrder[] }, Error> {
     return useQuery({
@@ -45,7 +50,7 @@ export class HistoryService {
       }> => {
         try {
           const { data: historyOrders } = await apiclient.get(
-            `/order/history/${page}`
+            `/order/history/${orgId}/${page}`
           );
           cb(historyOrders);
           return historyOrders;
@@ -59,7 +64,7 @@ export class HistoryService {
   }
 
   static getFilteredHistoryOrders(
-    page: number,
+    { orgId, page }: { orgId: string; page: number },
     filteredDateSelected: DateRange | undefined,
     cb: (data: { total_pages: number; history: HistoryOrder[] }) => void
   ): UseQueryResult<
@@ -78,7 +83,7 @@ export class HistoryService {
       }> => {
         try {
           const { data: historyOrdersFiltered } = await apiclient.get(
-            `/order/history/filter/${page}`,
+            `/order/history/filter/${orgId}/${page}`,
             {
               params: {
                 to: filteredDateSelected?.to,

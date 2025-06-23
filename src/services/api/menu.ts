@@ -19,12 +19,12 @@ import { AxiosResponse } from "axios";
 import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 
 export class MenuService {
-  static listAllProducts(): UseQueryResult<ProductsForFe[], Error> {
+  static listAllProducts(orgId: string): UseQueryResult<ProductsForFe[], Error> {
     return useQuery({
       queryKey: ["list_all_products"],
       queryFn: async (): Promise<ProductsForFe[]> => {
         try {
-          const { data } = await apiclient.get("/product");
+          const { data } = await apiclient.get(`/product/${orgId}`);
           const products = data as Products[];
 
           return products.map((product) => ({
@@ -48,14 +48,14 @@ export class MenuService {
     deleteProduct: UseMutateAsyncFunction<
       AxiosResponse<any, any>,
       Error,
-      string,
+      {orgId: string, id: string},
       unknown
     >;
     isPending: boolean;
   } {
     const { mutateAsync: deleteProduct, isPending } = useMutation({
-      mutationFn: async (id: string) =>
-        await apiclient.delete(`/product/${id}`),
+      mutationFn: async ({orgId,id}: {orgId: string, id: string}) =>
+        await apiclient.delete(`/product/${orgId}/${id}`),
       onSuccess,
       onError,
     });
@@ -63,13 +63,13 @@ export class MenuService {
     return { deleteProduct, isPending };
   }
 
-  static listAllCategories(): UseQueryResult<Categorie[], Error> {
+  static listAllCategories(orgId: string): UseQueryResult<Categorie[], Error> {
     return useQuery({
       queryKey: ["all_categories"],
       staleTime: Infinity,
       queryFn: async (): Promise<Categorie[]> => {
         try {
-          const { data } = await apiclient.get("/category/categories");
+          const { data } = await apiclient.get(`/category/categories/${orgId}`);
           return data as Categorie[];
         } catch (error: any) {
           console.log(error.response);
@@ -86,14 +86,14 @@ export class MenuService {
     deleteCategorie: UseMutateAsyncFunction<
       AxiosResponse<any, any>,
       Error,
-      string,
+      {orgId: string, id: string},
       unknown
     >;
     isPending: boolean;
   } {
     const { mutateAsync: deleteCategorie, isPending } = useMutation({
-      mutationFn: async (id: string) =>
-        await apiclient.delete(`/category/${id}`),
+      mutationFn: async ({id, orgId}:{orgId: string, id: string}) =>
+        await apiclient.delete(`/category/${orgId}/${id}`),
       onSuccess,
       onError,
     });
@@ -123,7 +123,7 @@ export class MenuService {
         } else {
           try {
             // Upload image
-            const { data: responseImageUrl } = await uploadImage.postForm("", {
+            const { data: responseImageUrl } = await uploadImage.postForm(`?userid=${data.userId}&orgId=${data.org}&productId=${data.name}`, {
               image: data.image,
             });
             productData.imageUrl = responseImageUrl.url;
@@ -149,7 +149,7 @@ export class MenuService {
   }
 
   static getInfoProduct(
-    productId: string,
+    {orgId, productId}:{orgId: string, productId: string},
     onClose: () => void,
     cb: (data: ProductFieldsChanged) => void
   ): UseQueryResult<Products | undefined, Error> {
@@ -157,7 +157,7 @@ export class MenuService {
       queryKey: ["get_product_info_edit_form", { productId }],
       queryFn: async () => {
         try {
-          const { data } = await apiclient.get(`/product/${productId}`);
+          const { data } = await apiclient.get(`/product/${orgId}/${productId}`);
           const product = data as Products;
           cb({
             description: product.description,
@@ -205,12 +205,12 @@ export class MenuService {
     });
   }
 
-  static getAllCategories(): UseQueryResult<Categorie[], Error> {
+  static getAllCategories(orgId: string): UseQueryResult<Categorie[], Error> {
     return useQuery({
       queryKey: ["all_categories"],
       queryFn: async (): Promise<Categorie[]> => {
         try {
-          const { data } = await apiclient.get("/category/categories");
+          const { data } = await apiclient.get(`/category/categories/${orgId}`);
           return data as Categorie[];
         } catch (error: any) {
           console.log(error.message);
@@ -230,14 +230,15 @@ export class MenuService {
       {
         icon: string;
         name: string;
+        org: string;
       },
       unknown
     >;
     isPending: boolean;
   } {
     const { mutateAsync, isPending } = useMutation({
-      mutationFn: async ({ name, icon }: { icon: string; name: string }) => {
-        return await apiclient.post("/category/categories", { icon, name });
+      mutationFn: async ({ name, icon, org }: { icon: string; name: string, org: string }) => {
+        return await apiclient.post("/category/categories", { icon, name, org });
       },
       onSuccess,
       onError,
@@ -257,6 +258,7 @@ export class MenuService {
         id: string;
         icon: string;
         name: string;
+        org: string;
       },
       unknown
     >;
@@ -267,12 +269,14 @@ export class MenuService {
         id,
         icon,
         name,
+        org
       }: {
         id: string;
         icon: string;
         name: string;
+        org: string;
       }) => {
-        return await apiclient.put(`/category/categories/${id}`, {
+        return await apiclient.patch(`/category/categories/${org}/${id}`, {
           icon,
           name,
         });

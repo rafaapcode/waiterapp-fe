@@ -24,7 +24,7 @@ export class LoginService {
   } {
     const { mutateAsync: loginUser, isPending } = useMutation({
       mutationFn: async (data: { email: string; password: string }) =>
-        await apiclient.post("/user/login", data),
+        await apiclient.post("/auth/signin", data),
       onSuccess,
       onError,
     });

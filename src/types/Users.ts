@@ -8,4 +8,5 @@ export interface Users {
 
 export interface UserContext {
   id: string;
+  orgId?: string;
 }
