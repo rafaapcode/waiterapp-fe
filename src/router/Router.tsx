@@ -1,3 +1,4 @@
+import NotFound from "@/pages/NotFound/NotFound";
 import OrgRegister from "@/pages/Org";
 import Profile from "@/pages/Profile/profile.page";
 import { Route, Routes } from "react-router";
@@ -24,6 +25,7 @@ function Router() {
           <Route path="profile" element={<Profile />} />
         </Route>
         <Route path="/org/register" element={<OrgRegister />} />
+        <Route path="/*" element={<NotFound />} />
       </Route>
     </Routes>
   );
