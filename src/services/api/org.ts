@@ -7,6 +7,10 @@ export class OrgService {
     return data;
   }
 
+    static async createOrg(): Promise<OrgService.ListOrgsOutPut> {
+    const { data } = await apiclient.get<OrgService.ListOrgsOutPut>('/org/user');
+    return data;
+  }
 }
 
 
