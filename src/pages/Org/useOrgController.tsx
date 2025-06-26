@@ -8,9 +8,7 @@ import { z } from "zod";
 
 const createOrgSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
-
   email: z.string().email("Email deve ser válido"),
-
   description: z
     .string()
     .min(4, "A descrição da organização deve ter no mínimo 4 caracteres")
@@ -27,8 +25,8 @@ const createOrgSchema = z.object({
     .min(4, "O horário de fechamento deve ter no mínimo 4 caracteres")
     .max(6, "O horário de fechamento deve ter no máximo 6 caracteres")
     .min(1, "Horário de fechamento é obrigatório"),
-
   cep: z.string().min(8, "O CEP deve ter no mínimo 8 caracteres"),
+  image: z.instanceof(File).optional(),
 });
 
 type FormData = z.infer<typeof createOrgSchema>;
@@ -39,7 +37,9 @@ export function useOrgController() {
   const {
     handleSubmit: hookFormSubmit,
     register,
-    formState: { errors },
+    formState: { errors, isValid },
+    control,
+    getValues
   } = useForm<FormData>({
     resolver: zodResolver(createOrgSchema),
   });
@@ -53,18 +53,18 @@ export function useOrgController() {
   const handleSubmit = hookFormSubmit(async (data) => {
     try {
       console.log(data);
-      await mutateAsync();
-      setOrgInfo({
-        imgUrl: '',
-        name: '',
-        orgId: ''
-      });
-      navigate('/app/home');
+      // await mutateAsync();
+      // setOrgInfo({
+      //   imgUrl: '',
+      //   name: '',
+      //   orgId: ''
+      // });
+      // navigate('/app/home');
       return;
     } catch (error) {
       toast.error("Erro ao criar a organização.");
     }
   });
 
-  return { handleSubmit, register, errors, isLoading: isPending };
+  return { handleSubmit, register, errors, isLoading: isPending, control, isValid, getValues };
 }
