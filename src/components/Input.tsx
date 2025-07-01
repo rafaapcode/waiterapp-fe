@@ -5,11 +5,29 @@ import { ComponentProps, forwardRef } from "react";
 interface InputProps extends ComponentProps<"input"> {
   name: string;
   error?: string;
+  isLoading?: boolean;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ error, name, id, className, placeholder, ...props }, ref) => {
+  ({ error, name, id, className, placeholder, isLoading, ...props }, ref) => {
     const inputId = id ?? name;
+
+    if (isLoading) {
+      return (
+        <div className="flex flex-col gap-1 w-full">
+          <label htmlFor={inputId} className="text-gray-300 text-sm bg-gray-300 animate-pulse w-1/12 rounded-md">
+            label
+          </label>
+          <input
+            id={inputId}
+            name={name}
+            {...props}
+            disabled
+            className="outline-none p-3 rounded-lg bg-gray-300 animate-pulse"
+          />
+        </div>
+      );
+    }
 
     return (
       <div className="flex flex-col gap-1 w-full">

@@ -2,7 +2,7 @@ import Input from "@/components/Input";
 import { Building2, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";
-import DefaulImage from "../../assets/images/default-image.png";
+import DefaulImage from "../../../assets/images/default-image.png";
 import { useOrgController } from "./useOrgController";
 
 function OrgRegister() {

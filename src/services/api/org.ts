@@ -1,4 +1,5 @@
-import { CreateOrgBody } from "@/pages/Org/useOrgController";
+import { UpdateOrgBody } from "@/pages/Org/info/userOrgInfoController";
+import { CreateOrgBody } from "@/pages/Org/register/useOrgController";
 import { apiclient, cepClient, uploadImage } from "@/utils/apiClient";
 
 export class OrgService {
@@ -47,6 +48,15 @@ export class OrgService {
     );
 
     return res;
+  }
+
+  static async getOrg({
+    orgid,
+  }: OrgService.GetOrgInPut): Promise<OrgService.GetOrgOutPut> {
+
+    const { data } = await apiclient.get<OrgService.GetOrgOutPut>(`/org/${orgid}`);
+
+    return data;
   }
 
   static async getInfoFromCep({
@@ -119,6 +129,11 @@ export namespace OrgService {
 
   export type UploadImageOutPut = {
     url: string;
-    // categoryOfImage: 'PRODUCT';
   };
+
+  export type GetOrgInPut = {
+    orgid: string;
+  };
+
+   export type GetOrgOutPut = UpdateOrgBody & {imageUrl?: string};
 }

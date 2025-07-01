@@ -10,7 +10,7 @@ import { NavLink, useNavigate } from "react-router";
 import OrgDropdown from "./OrgDropdown";
 
 function Sidebar() {
-  const logout = useUser(state => state.logout);
+  const logout = useUser((state) => state.logout);
   const navigate = useNavigate();
 
   const logoutUser = () => {
@@ -55,7 +55,10 @@ function Sidebar() {
           <p>Meu Perfil</p>
           <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
         </NavLink>
-        <NavLink to={"/org"} className={styleStyleConditional}>
+        <NavLink
+          to={"/app/org"}
+          className={styleStyleConditional}
+        >
           <Building2 size={28} />
           <p>Orgs</p>
           <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
