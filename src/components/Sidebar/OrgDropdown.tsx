@@ -50,7 +50,7 @@ function OrgDropdown() {
   });
 
   return (
-    <section ref={dropdownRef} className="h-[108px] w-[108px] relative">
+    <section ref={dropdownRef} className="h-[100px] w-[100px] relative">
       <button
         onClick={() => {
           setShowOrgs((prev) => !prev);
@@ -61,7 +61,7 @@ function OrgDropdown() {
           !stateUser.orgId && <img src={IconSidebar} alt="Logo" className="w-11 h-7" />
         }
         {
-          stateUser.orgImageUrl && <img src={stateUser.orgImageUrl} alt="Logo" className="w-11 h-7" />
+          stateUser.orgImageUrl && <img src={stateUser.orgImageUrl} alt="Logo" className="w-full h-full object-cover" />
         }
         {
           (!stateUser.orgImageUrl && stateUser.orgName) && <p className="text-3xl text-gray-700 font-semibold">{formatNameOfOrg(stateUser.orgName)}</p>
@@ -69,7 +69,7 @@ function OrgDropdown() {
       </button>
       <div
         className={cn(
-          "flex pointer-events-none flex-col justify-center items-start gap-2 bg-gradient-to-r from-[#FAFAFA] to-gray-200 absolute top-0 p-4 opacity-0 -right-0 w-0 border-r border-gray-400 rounded-br-md transition-all duration-150",
+          "flex pointer-events-none flex-col justify-center items-start gap-2 bg-gradient-to-r from-[#FAFAFA] to-gray-200 absolute top-0 p-4 opacity-0 -right-0 w-0 border-r border-gray-400 rounded-br-md transition-all duration-150 overflow-y-auto",
           showOrgs && "-right-60 w-60 opacity-100 pointer-events-auto"
         )}
       >

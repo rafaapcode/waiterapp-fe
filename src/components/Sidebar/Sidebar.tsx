@@ -1,5 +1,6 @@
 import { CONSTANTS } from "@/constants";
 import { useUser } from "@/context/user";
+import { Building2 } from "lucide-react";
 import { BiFoodMenu } from "react-icons/bi";
 import { CgLogOff, CgProfile } from "react-icons/cg";
 import { FiUsers } from "react-icons/fi";
@@ -20,11 +21,11 @@ function Sidebar() {
 
   const styleStyleConditional = ({ isActive }: { isActive: boolean }) =>
     isActive
-      ? "group relative h-[108px] w-[108px] flex flex-col gap-2 items-center justify-center text-[#D73035]"
-      : "group h-[108px] w-[108px] flex flex-col gap-2 items-center justify-center text-[#666666]";
+      ? "group relative h-[100px] w-[100px] flex flex-col gap-2 items-center justify-center text-[#D73035]"
+      : "group h-[100px] w-[100px] flex flex-col gap-2 items-center justify-center text-[#666666]";
 
   return (
-    <section className="bg-white w-[108px] flex flex-col shadow-md">
+    <section className="bg-white w-[100px] flex flex-col shadow-md">
       <OrgDropdown />
       <nav className="flex flex-col">
         <NavLink to={"/app/home"} className={styleStyleConditional}>
@@ -48,10 +49,15 @@ function Sidebar() {
           <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
         </NavLink>
       </nav>
-      <nav className="flex flex-col flex-1 justify-end">
+      <nav className="flex flex-col flex-1 justify-end ">
         <NavLink to={"/app/profile"} className={styleStyleConditional}>
           <CgProfile size={28} />
           <p>Meu Perfil</p>
+          <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
+        </NavLink>
+        <NavLink to={"/org"} className={styleStyleConditional}>
+          <Building2 size={28} />
+          <p>Orgs</p>
           <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
         </NavLink>
         <button
