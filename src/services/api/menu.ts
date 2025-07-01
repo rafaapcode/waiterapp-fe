@@ -123,8 +123,8 @@ export class MenuService {
         } else {
           try {
             // Upload image
-            const { data: responseImageUrl } = await uploadImage.postForm(`?userid=${data.userId}&orgId=${data.org}&productId=${data.name}`, {
-              image: data.image,
+            const { data: responseImageUrl } = await uploadImage.postForm(`?userid=${data.userId}&orgId=${data.org}&productId=${data.name}&categoryOfImage='PRODUCT'`, {
+              file: data.image,
             });
             productData.imageUrl = responseImageUrl.url;
           } catch (error) {

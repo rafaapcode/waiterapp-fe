@@ -9,6 +9,10 @@ export const apiclient = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL
 })
 
+export const cepClient = axios.create({
+  baseURL: import.meta.env.VITE_GET_INFO_FROM_CEP
+})
+
 apiclient.interceptors.request.use(
   (config) => {
     const token = useGetToken();
@@ -31,3 +35,4 @@ uploadImage.interceptors.request.use(
     return config;
   },
 );
+

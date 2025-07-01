@@ -13,9 +13,9 @@ function OrgRegister() {
     isLoading,
     control,
     isValid,
-    getValues,
+    image
   } = useOrgController();
-  console.log(getValues('image'));
+
   return (
     <section className="container mx-auto pt-10">
       <header className="flex flex-col gap-2">
@@ -30,19 +30,28 @@ function OrgRegister() {
       </header>
       <form
         onSubmit={handleSubmit}
-        className="grid grid-cols-4 gap-6 h-full mt-10"
+        className="grid grid-cols-4 gap-6 h-full mt-16"
       >
-        <div className="col-span-1 flex flex-col">
-          <div className="bg-red-700 h-[200px] rounded-tr-md rounded-tl-md overflow-hidden">
-            <img src={DefaulImage} alt="Image of organization" className="w-full h-full object-cover" />
-          </div>
+        <div className="col-span-4 flex flex-col">
           <Controller
             control={control}
             name="image"
             render={({ field }) => {
               return (
-                <div className="flex justify-center items-center p-2 bg-white rounded-br-md rounded-bl-md shadow-sm">
-                  <label htmlFor="uploadImage" className="text-red-600 text-sm font-medium cursor-pointer flex gap-2 items-center"><Upload size={16}/> Selecionar imagem</label>
+                <div className="flex flex-col justify-center items-center w-fit mx-auto">
+                  <div className="h-[200px] rounded-md shadow overflow-hidden relative max-w-[300px] group">
+                    <img
+                      src={image ? URL.createObjectURL(image) : DefaulImage}
+                      alt="Image of organization"
+                      className="w-full h-full object-cover"
+                    />
+                    <label
+                      htmlFor="uploadImage"
+                      className="opacity-0 group-hover:opacity-100 text-red-600 bg-black/70 w-full h-full text-sm font-medium rounded-md gap-2 justify-center items-center absolute cursor-pointer flex transition-all duration-200 top-0"
+                    >
+                      <Upload size={32} />
+                    </label>
+                  </div>
                   <Input
                     {...field}
                     id="uploadImage"
@@ -60,13 +69,6 @@ function OrgRegister() {
             }}
           />
         </div>
-        <div className="col-span-3">
-          <textarea
-            placeholder="Descrição"
-            {...register("description")}
-            className="w-full border border-gray-300 h-full"
-          />
-        </div>
         <div className="col-span-2">
           <Input
             placeholder="Nome"
@@ -82,23 +84,31 @@ function OrgRegister() {
             {...register("email")}
           />
         </div>
-
-        <Input
-          placeholder="Horário de abertura"
-          error={errors.openHour?.message}
-          {...register("openHour")}
-        />
-        <Input
-          placeholder="Horário de fechamento"
-          error={errors.closeHour?.message}
-          {...register("closeHour")}
-        />
-        <Input
-          type="number"
-          placeholder="CEP"
-          error={errors.cep?.message}
-          {...register("cep")}
-        />
+        <div className="col-span-4">
+          <Input
+            placeholder="Descrição"
+            {...register("description")}
+            className="w-full border border-gray-300 h-full"
+          />
+        </div>
+        <div className="col-span-4 flex justify-between items-center gap-6">
+          <Input
+            placeholder="Horário de abertura"
+            error={errors.openHour?.message}
+            {...register("openHour")}
+          />
+          <Input
+            placeholder="Horário de fechamento"
+            error={errors.closeHour?.message}
+            {...register("closeHour")}
+          />
+          <Input
+            type="number"
+            placeholder="CEP"
+            error={errors.cep?.message}
+            {...register("cep")}
+          />
+        </div>
 
         <div className="col-span-4 flex justify-end">
           <button

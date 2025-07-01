@@ -12,7 +12,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? name;
 
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 w-full">
         <label htmlFor={inputId} className="text-gray-600 text-sm">
           {placeholder}
         </label>
