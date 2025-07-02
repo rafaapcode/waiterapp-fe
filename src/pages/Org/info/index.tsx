@@ -130,7 +130,7 @@ function InfoOrgs() {
 
           <div className="col-span-4 flex justify-end">
             <button
-              disabled={true || !isValid || !isDirty}
+              disabled={isFetching || !isValid || !isDirty}
               type="submit"
               className="flex justify-center items-center text-lg bg-red-600 text-white p-2 rounded-lg w-1/6 hover:bg-red-700 disabled:bg-red-400 transition-all duration-100"
             >

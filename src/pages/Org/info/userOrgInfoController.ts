@@ -50,23 +50,14 @@ export function useOrgInfoController() {
     },
   });
 
-  console.log(orgInfo);
-
   const {
     handleSubmit: hookFormSubmit,
     register,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isValid, isDirty, defaultValues },
     control,
   } = useForm<UpdateOrgBody>({
     resolver: zodResolver(updateOrgSchema),
-    defaultValues: {
-      cep: orgInfo && orgInfo.cep,
-      closeHour: orgInfo && orgInfo.closeHour,
-      description: orgInfo && orgInfo.description,
-      email: orgInfo && orgInfo.email,
-      name: orgInfo && orgInfo.name,
-      openHour: orgInfo && orgInfo.openHour
-    }
+    defaultValues: async () => await OrgService.getOrg({ orgid })
   });
 
   // Update Org Info
@@ -74,6 +65,7 @@ export function useOrgInfoController() {
   const handleSubmit = hookFormSubmit(async (data) => {
     try {
       console.log(data);
+      console.log('default', defaultValues);
       return;
     } catch (error) {
       console.log(error);

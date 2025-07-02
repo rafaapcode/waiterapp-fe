@@ -53,10 +53,19 @@ export class OrgService {
   static async getOrg({
     orgid,
   }: OrgService.GetOrgInPut): Promise<OrgService.GetOrgOutPut> {
-
-    const { data } = await apiclient.get<OrgService.GetOrgOutPut>(`/org/${orgid}`);
+    const { data } = await apiclient.get<OrgService.GetOrgOutPut>(
+      `/org/${orgid}`
+    );
 
     return data;
+  }
+
+  static async updateOrg({
+    newData,
+    orgId,
+    defaultvalues,
+  }: OrgService.UpdateOrgInput): Promise<void> {
+    await apiclient.patch(`/org/${orgId}`);
   }
 
   static async getInfoFromCep({
@@ -85,9 +94,53 @@ export class OrgService {
       url: res.url,
     };
   }
+
+  static getOnlyTheDirtyFields({
+    newData,
+    defaultvalues,
+  }: {
+    newData: UpdateOrgBody;
+    defaultvalues: UpdateOrgBody;
+  }): UpdateOrgBody {
+    const dirtiedFields = {} as UpdateOrgBody;
+
+    const newDataKeys = Object.keys(newData);
+
+    for(const dataKey of newDataKeys) {
+      const key = dataKey as keyof typeof newData;
+
+      if(newData[key] !== defaultvalues[key]){
+        dirtiedFields[key] = newData[key];
+      }
+    }
+    console.log(dirtiedFields);
+    return {
+      cep: "123",
+    };
+  }
 }
 
 export namespace OrgService {
+  export type FullOrgInfo = {
+    cep: string;
+    city: string;
+    closeHour: string;
+    description: string;
+    email: string;
+    imageUrl?: string;
+    name: string;
+    neighborhood: string;
+    openHour: string;
+    street: string;
+    user: string;
+  };
+
+  export type UpdateOrgInput = {
+    orgId: string;
+    newData: UpdateOrgBody;
+    defaultvalues: UpdateOrgBody;
+  };
+
   export type CreateOrgInput = {
     data: CreateOrgBody & { userid: string };
   };
@@ -107,19 +160,9 @@ export namespace OrgService {
     cep: string;
   };
   export type GetInfoFromCepOutPut = {
-    cep: string;
     logradouro: string;
-    complemento: string;
-    unidade: string;
     bairro: string;
     localidade: string;
-    uf: string;
-    estado: string;
-    regiao: string;
-    ibge: string;
-    gia: string;
-    ddd: string;
-    siafi: string;
   };
 
   export type UploadImageInPut = {
@@ -135,5 +178,5 @@ export namespace OrgService {
     orgid: string;
   };
 
-   export type GetOrgOutPut = UpdateOrgBody & {imageUrl?: string};
+  export type GetOrgOutPut = FullOrgInfo;
 }
