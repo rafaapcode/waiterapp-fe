@@ -64,8 +64,50 @@ export class OrgService {
     newData,
     orgId,
     defaultvalues,
+    userId
   }: OrgService.UpdateOrgInput): Promise<void> {
-    await apiclient.patch(`/org/${orgId}`);
+
+    // Pegando somente os dados modificados
+    const {image, ...dirtiedFields} = OrgService.getOnlyTheDirtyFields({
+      newData,
+      defaultvalues,
+    });
+    let imageUrl = "";
+    const location = {
+      neighborhood: '',
+      city: '',
+      street: ''
+    }
+
+    // Busca informações , caso o CEP existe
+    if (dirtiedFields.cep) {
+      const {
+        bairro: neighborhood,
+        localidade: city,
+        logradouro: street,
+      } = await OrgService.getInfoFromCep({ cep: dirtiedFields.cep });
+      location.neighborhood = neighborhood;
+      location.city = city;
+      location.street = street;
+    }
+
+    // Uploading a imagem se existir
+    if(image && userId) {
+      const { url } = await OrgService.uploadImage({
+        image: image,
+        userid: userId,
+      });
+
+      imageUrl = url;
+    }
+
+
+    // Atualizando dados da ORG
+    await apiclient.patch(`/org/${orgId}`, {
+      ...dirtiedFields,
+      ...(imageUrl && { imageUrl }),
+      ...(dirtiedFields.cep && location)
+    });
   }
 
   static async getInfoFromCep({
@@ -102,21 +144,14 @@ export class OrgService {
     newData: UpdateOrgBody;
     defaultvalues: UpdateOrgBody;
   }): UpdateOrgBody {
-    const dirtiedFields = {} as UpdateOrgBody;
+    return Object.keys(newData).reduce((acc, key) => {
+      const typedKey = key as keyof UpdateOrgBody;
 
-    const newDataKeys = Object.keys(newData);
-
-    for(const dataKey of newDataKeys) {
-      const key = dataKey as keyof typeof newData;
-
-      if(newData[key] !== defaultvalues[key]){
-        dirtiedFields[key] = newData[key];
+      if (newData[typedKey] !== defaultvalues[typedKey]) {
+        (acc as any)[typedKey] = newData[typedKey];
       }
-    }
-    console.log(dirtiedFields);
-    return {
-      cep: "123",
-    };
+      return acc;
+    }, {} as UpdateOrgBody);
   }
 }
 
@@ -139,6 +174,7 @@ export namespace OrgService {
     orgId: string;
     newData: UpdateOrgBody;
     defaultvalues: UpdateOrgBody;
+    userId?: string;
   };
 
   export type CreateOrgInput = {

@@ -61,18 +61,15 @@ export function useOrgInfoController() {
   });
 
   // Update Org Info
-
   const handleSubmit = hookFormSubmit(async (data) => {
     try {
-      console.log(data);
-      console.log('default', defaultValues);
+      await OrgService.updateOrg({ newData: data, defaultvalues: defaultValues!, orgId: orgid, userId: user.id })
       return;
     } catch (error) {
       console.log(error);
       toast.error("Erro ao criar a organização.");
     }
   });
-
 
 
   // Tracking Image changes
