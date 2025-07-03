@@ -1,7 +1,7 @@
 import { useUser } from "@/context/user";
 import { OrgService } from "@/services/api/org";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -38,7 +38,6 @@ const updateOrgSchema = z.object({
 export type UpdateOrgBody = z.infer<typeof updateOrgSchema>;
 
 export function useOrgInfoController() {
-  const queryClient = useQueryClient();
   const user = useUser((state) => state.user);
   const orgid = user.orgId;
   const orgName = user.orgName;

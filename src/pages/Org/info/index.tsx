@@ -1,9 +1,11 @@
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input";
+import Select from "@/components/Select";
 import { Building2, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";
 import DefaulImage from "../../../assets/images/default-image.png";
+import { closeHoursOptions, openHoursOptions } from "../constants";
 import { useOrgInfoController } from "./userOrgInfoController";
 
 function InfoOrgs() {
@@ -108,17 +110,16 @@ function InfoOrgs() {
             />
           </div>
           <div className="col-span-4 flex justify-between items-center gap-6">
-            <Input
-              isLoading={isFetching}
-              placeholder="Horário de abertura"
-              error={errors.openHour?.message}
+
+            <Select
+              label="Horário de abertura"
               {...register("openHour")}
+              options={openHoursOptions}
             />
-            <Input
-              isLoading={isFetching}
-              placeholder="Horário de fechamento"
-              error={errors.closeHour?.message}
+            <Select
+              label="Horário de fechamento"
               {...register("closeHour")}
+              options={closeHoursOptions}
             />
             <Input
               isLoading={isFetching}
