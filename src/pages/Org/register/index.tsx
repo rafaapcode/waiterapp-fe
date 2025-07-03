@@ -1,20 +1,15 @@
 import Input from "@/components/Input";
+import Select from "@/components/Select";
 import { Building2, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";
 import DefaulImage from "../../../assets/images/default-image.png";
+import { closeHoursOptions, openHoursOptions } from "../constants";
 import { useOrgController } from "./useOrgController";
 
 function OrgRegister() {
-  const {
-    errors,
-    handleSubmit,
-    register,
-    isLoading,
-    control,
-    isValid,
-    image
-  } = useOrgController();
+  const { errors, handleSubmit, register, isLoading, control, isValid, image } =
+    useOrgController();
 
   return (
     <section className="container mx-auto pt-10">
@@ -92,15 +87,15 @@ function OrgRegister() {
           />
         </div>
         <div className="col-span-4 flex justify-between items-center gap-6">
-          <Input
-            placeholder="Horário de abertura"
-            error={errors.openHour?.message}
+          <Select
+            label="Horário de abertura"
             {...register("openHour")}
+            options={openHoursOptions}
           />
-          <Input
-            placeholder="Horário de fechamento"
-            error={errors.closeHour?.message}
+          <Select
+            label="Horário de fechamento"
             {...register("closeHour")}
+            options={closeHoursOptions}
           />
           <Input
             type="number"
