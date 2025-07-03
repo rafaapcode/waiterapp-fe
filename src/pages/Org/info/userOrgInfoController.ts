@@ -1,7 +1,7 @@
 import { useUser } from "@/context/user";
 import { OrgService } from "@/services/api/org";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "react-toastify";
 import { z } from "zod";
@@ -38,6 +38,7 @@ const updateOrgSchema = z.object({
 export type UpdateOrgBody = z.infer<typeof updateOrgSchema>;
 
 export function useOrgInfoController() {
+  const queryClient = useQueryClient();
   const user = useUser((state) => state.user);
   const orgid = user.orgId;
   const orgName = user.orgName;
@@ -61,9 +62,17 @@ export function useOrgInfoController() {
   });
 
   // Update Org Info
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (data: UpdateOrgBody) => {
+      return OrgService.updateOrg({ newData: data, defaultvalues: defaultValues!, orgId: orgid, userId: user.id })
+    }
+  });
+
   const handleSubmit = hookFormSubmit(async (data) => {
     try {
-      await OrgService.updateOrg({ newData: data, defaultvalues: defaultValues!, orgId: orgid, userId: user.id })
+      await mutateAsync(data);
+      toast.success("Organização atualizada com sucesso !");
       return;
     } catch (error) {
       console.log(error);
@@ -90,6 +99,7 @@ export function useOrgInfoController() {
     image,
     isDirty,
     isFetching,
-    imageUrl: orgInfo &&  orgInfo.imageUrl
+    imageUrl: orgInfo &&  orgInfo.imageUrl,
+    isPending
   };
 }

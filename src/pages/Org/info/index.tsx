@@ -18,7 +18,8 @@ function InfoOrgs() {
     register,
     isDirty,
     isFetching,
-    imageUrl
+    imageUrl,
+    isPending
   } = useOrgInfoController();
 
   if (!orgid) {
@@ -130,11 +131,11 @@ function InfoOrgs() {
 
           <div className="col-span-4 flex justify-end">
             <button
-              disabled={isFetching || !isValid || !isDirty}
+              disabled={isFetching || !isValid || !isDirty || isPending}
               type="submit"
               className="flex justify-center items-center text-lg bg-red-600 text-white p-2 rounded-lg w-1/6 hover:bg-red-700 disabled:bg-red-400 transition-all duration-100"
             >
-              {false ? (
+              {isPending ? (
                 <VscLoading size={20} className="animate-spin" />
               ) : (
                 "Atualizar"
