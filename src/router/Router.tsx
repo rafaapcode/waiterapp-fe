@@ -25,6 +25,7 @@ function Router() {
           <Route path="users" element={<Users />} />
           <Route path="profile" element={<Profile />} />
           <Route path="org" element={<InfoOrgs />} />
+          {/* <Route path="org/register" element={<OrgRegister />} /> */}
         </Route>
         <Route path="/org/register" element={<OrgRegister />} />
         <Route path="/*" element={<NotFound />} />
