@@ -110,6 +110,12 @@ export class OrgService {
     });
   }
 
+  static async deleteOrg({
+    orgId
+  }: OrgService.DeleteOrgInPut): Promise<void> {
+    await apiclient.delete(`/org/${orgId}`);
+  }
+
   static async getInfoFromCep({
     cep,
   }: OrgService.GetInfoFromCepInPut): Promise<OrgService.GetInfoFromCepOutPut> {
@@ -215,4 +221,8 @@ export namespace OrgService {
   };
 
   export type GetOrgOutPut = FullOrgInfo;
+
+  export type DeleteOrgInPut = {
+    orgId: string;
+  };
 }

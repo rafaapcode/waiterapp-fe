@@ -1,7 +1,7 @@
 import Header from "@/components/Header/Header";
 import Input from "@/components/Input";
 import Select from "@/components/Select";
-import { Building2, Upload } from "lucide-react";
+import { Building2, TrashIcon, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";
 import DefaulImage from "../../../assets/images/default-image.png";
@@ -21,7 +21,9 @@ function InfoOrgs() {
     isDirty,
     isFetching,
     imageUrl,
-    isPending
+    isPending,
+    isOrgDeleting,
+    deleteOrg
   } = useOrgInfoController();
 
   if (!orgid) {
@@ -130,11 +132,26 @@ function InfoOrgs() {
             />
           </div>
 
-          <div className="col-span-4 flex justify-end">
+          <div className="col-span-4 flex justify-end gap-4">
+             <button
+              onClick={deleteOrg}
+              disabled={isOrgDeleting}
+              type="button"
+              className="flex justify-center items-center bg-red-600 text-white p-2 rounded-lg w-1/6 hover:bg-red-700 disabled:bg-red-400 transition-all duration-100"
+            >
+              {isOrgDeleting ? (
+                <VscLoading size={20} className="animate-spin" />
+              ) : (
+                <span className="flex gap-2 items-center">
+                  <TrashIcon size={16}/>
+                  Deletar Organização
+                </span>
+              )}
+            </button>
             <button
               disabled={isFetching || !isValid || !isDirty || isPending}
               type="submit"
-              className="flex justify-center items-center text-lg bg-red-600 text-white p-2 rounded-lg w-1/6 hover:bg-red-700 disabled:bg-red-400 transition-all duration-100"
+              className="flex justify-center items-center bg-red-600 text-white p-2 rounded-lg w-1/6 hover:bg-red-700 disabled:bg-red-400 transition-all duration-100"
             >
               {isPending ? (
                 <VscLoading size={20} className="animate-spin" />

@@ -3,6 +3,7 @@ import { OrgService } from "@/services/api/org";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
+import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -39,14 +40,23 @@ export type UpdateOrgBody = z.infer<typeof updateOrgSchema>;
 
 export function useOrgInfoController() {
   const user = useUser((state) => state.user);
+  const setOrgId = useUser((state) => state.setOrgInfo);
   const orgid = user.orgId;
   const orgName = user.orgName;
+  const navigate = useNavigate();
 
   // Get OrgInfo
   const {data: orgInfo, isFetching} = useQuery({
     queryKey: ["get", "org", orgid],
     queryFn: async () => {
       return  await OrgService.getOrg({ orgid });
+    },
+  });
+
+   // Delete Org
+  const { mutateAsync: deleteMutate, isPending: isOrgDeleting } = useMutation({
+    mutationFn: async () => {
+      return await OrgService.deleteOrg({orgId: orgid});
     },
   });
 
@@ -61,7 +71,6 @@ export function useOrgInfoController() {
   });
 
   // Update Org Info
-
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: UpdateOrgBody) => {
       return OrgService.updateOrg({ newData: data, defaultvalues: defaultValues!, orgId: orgid, userId: user.id })
@@ -79,6 +88,19 @@ export function useOrgInfoController() {
     }
   });
 
+  const deleteOrg  = async () => {
+    try {
+      await deleteMutate();
+      setOrgId({
+        imgUrl: '',
+        name: '',
+        orgId: ''
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error('Erro ao deletar a organização');
+    }
+  }
 
   // Tracking Image changes
   const image = useWatch({
@@ -99,6 +121,8 @@ export function useOrgInfoController() {
     isDirty,
     isFetching,
     imageUrl: orgInfo &&  orgInfo.imageUrl,
-    isPending
+    isPending,
+    isOrgDeleting,
+    deleteOrg
   };
 }
