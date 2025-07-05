@@ -57,7 +57,7 @@ export const useProductsMenu = (): ProductsTableProps => {
 };
 
 export const useCategorieMenu = (): CategoriesTableProps => {
-  const stateUser = useUser((state: any) => state);
+  const stateUser = useUser((state) => state.user);
   const queryClient = useQueryClient();
   const [newCategorieModal, setNewCategorieModal] = useState<boolean>(false);
   const [editCategorieModal, setEditCategorieModal] =
