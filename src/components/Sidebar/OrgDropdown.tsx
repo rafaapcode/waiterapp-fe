@@ -79,6 +79,13 @@ function OrgDropdown() {
           </div>
         ) : data ? (
           <>
+            <button
+              onClick={handleCreateNew}
+              className="text-sm hover:bg-gray-300 px-4 py-1 rounded-lg max-w-56 truncate text-ellipsis transition-all duration-150 flex items-center gap-2 bg-white border border-black"
+            >
+              <CirclePlus size={14} />
+              Criar Nova Organização
+            </button>
             {data.map((org) => (
               <button
                 key={org._id}

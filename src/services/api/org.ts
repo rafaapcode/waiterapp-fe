@@ -40,6 +40,7 @@ export class OrgService {
         openHour: data.openHour,
         closeHour: data.closeHour,
         cep: data.cep,
+        locationCode: data.locationCode,
         city,
         street,
         neighborhood,

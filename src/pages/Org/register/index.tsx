@@ -1,8 +1,9 @@
 import Input from "@/components/Input";
 import Select from "@/components/Select";
-import { Building2, Upload } from "lucide-react";
+import { Building2, ChevronLeft, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";
+import { Link } from "react-router";
 import { ToastContainer } from "react-toastify";
 import DefaulImage from "../../../assets/images/default-image.png";
 import { closeHoursOptions, openHoursOptions } from "../constants";
@@ -16,6 +17,9 @@ function OrgRegister() {
     <section className="container mx-auto pt-10">
       <ToastContainer position="top-center" />
       <header className="flex flex-col gap-2">
+        <Link to="/app/home" className="mb-4 hover:bg-gray-100 w-fit p-1 rounded-md transition-colors duration-150 hover:shadow-md">
+          <ChevronLeft />
+        </Link>
         <div className="flex items-center gap-4 text-2xl font-medium">
           <Building2 size={24} />
           <p>Crie uma organização</p>
