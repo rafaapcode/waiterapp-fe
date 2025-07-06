@@ -112,7 +112,6 @@ function InfoOrgs() {
             />
           </div>
           <div className="col-span-4 flex justify-between items-center gap-6">
-
             <Select
               label="Horário de abertura"
               {...register("openHour")}
@@ -129,6 +128,13 @@ function InfoOrgs() {
               placeholder="CEP"
               error={errors.cep?.message}
               {...register("cep")}
+            />
+            <Input
+              isLoading={isFetching}
+              type="number"
+              placeholder="Número"
+              error={errors.locationCode?.message}
+              {...register("locationCode")}
             />
           </div>
 

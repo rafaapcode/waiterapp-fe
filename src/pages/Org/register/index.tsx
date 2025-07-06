@@ -3,6 +3,7 @@ import Select from "@/components/Select";
 import { Building2, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";
+import { ToastContainer } from "react-toastify";
 import DefaulImage from "../../../assets/images/default-image.png";
 import { closeHoursOptions, openHoursOptions } from "../constants";
 import { useOrgController } from "./useOrgController";
@@ -13,6 +14,7 @@ function OrgRegister() {
 
   return (
     <section className="container mx-auto pt-10">
+      <ToastContainer position="top-center" />
       <header className="flex flex-col gap-2">
         <div className="flex items-center gap-4 text-2xl font-medium">
           <Building2 size={24} />
@@ -103,6 +105,12 @@ function OrgRegister() {
             error={errors.cep?.message}
             {...register("cep")}
           />
+            <Input
+              type="number"
+              placeholder="Número"
+              error={errors.locationCode?.message}
+              {...register("locationCode")}
+            />
         </div>
 
         <div className="col-span-4 flex justify-end">

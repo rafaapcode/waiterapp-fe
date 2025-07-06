@@ -19,6 +19,9 @@ const createOrgSchema = z.object({
     .min(4, "O horário de abertura deve ter no mínimo 4 caracteres")
     .max(6, "O horário de abertura deve ter no máximo 6 caracteres")
     .min(1, "Horário de abertura é obrigatório"),
+  locationCode: z
+    .string()
+    .min(1, "O número do estabelecimento é obrigatório"),
   closeHour: z
     .string()
     .min(4, "O horário de fechamento deve ter no mínimo 4 caracteres")

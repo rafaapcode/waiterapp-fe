@@ -3,7 +3,6 @@ import { OrgService } from "@/services/api/org";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
-import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
@@ -27,6 +26,10 @@ const updateOrgSchema = z.object({
     .max(6, "O horário de fechamento deve ter no máximo 6 caracteres")
     .min(1, "Horário de fechamento é obrigatório")
     .optional(),
+  locationCode: z
+    .string()
+    .min(1, "O número do estabelecimento é obrigatório")
+    .optional(),
   cep: z
     .string()
     .min(8, "O CEP deve ter no mínimo 8 caracteres")
@@ -43,7 +46,6 @@ export function useOrgInfoController() {
   const setOrgId = useUser((state) => state.setOrgInfo);
   const orgid = user.orgId;
   const orgName = user.orgName;
-  const navigate = useNavigate();
 
   // Get OrgInfo
   const {data: orgInfo, isFetching} = useQuery({
@@ -84,7 +86,7 @@ export function useOrgInfoController() {
       return;
     } catch (error) {
       console.log(error);
-      toast.error("Erro ao criar a organização.");
+      toast.error("Erro ao atualizar a organização.");
     }
   });
 

@@ -50,7 +50,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           )}
         >
           {
-            options.map(({label, value}) => <option value={value}>{label}</option>)
+            options.map(({label, value}) => <option key={value} value={value}>{label}</option>)
           }
         </select>
         {error && (
