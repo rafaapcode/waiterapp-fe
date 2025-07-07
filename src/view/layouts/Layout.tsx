@@ -2,7 +2,7 @@ import NotFoundOrg from "@/components/org/NotFoundOrg";
 import { useAuth } from "@/hooks/useAuth";
 import { Outlet } from "react-router";
 import { ToastContainer } from "react-toastify";
-import Sidebar from "../components/Sidebar/Sidebar";
+import Sidebar from "../../components/Sidebar/Sidebar";
 
 function Layout() {
   const { user } = useAuth();
