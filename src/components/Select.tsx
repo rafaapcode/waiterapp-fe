@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/cn";
 import { CircleX } from "lucide-react";
 import { ComponentProps, forwardRef } from "react";
 

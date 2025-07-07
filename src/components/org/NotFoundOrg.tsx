@@ -1,4 +1,4 @@
-import { useUser } from "@/context/user";
+import { useAuth } from "@/hooks/useAuth";
 import { OrgService } from "@/services/api/org";
 import { useQuery } from "@tanstack/react-query";
 import { Building2, CirclePlus } from "lucide-react";
@@ -8,14 +8,13 @@ import { useNavigate } from "react-router";
 import SelectSkeleton from "./SelectSkeleton";
 
 function NotFoundOrg() {
-  const stateUser = useUser((state) => state.user);
-  const setOrgInfo = useUser((state) => state.setOrgInfo);
+  const {user, setOrgInfo} = useAuth();
   const navigate = useNavigate();
   const [selectedOrganization, setSelectedOrganization] = useState<string>("");
 
   const { isLoading, isFetching, data } = useQuery({
-    enabled: !!stateUser.id,
-    queryKey: ["orgs-user", stateUser.id],
+    enabled: !!user.id,
+    queryKey: ["orgs-user", user.id],
     queryFn: async () => {
       try {
         return await OrgService.listOrgsOfUser();

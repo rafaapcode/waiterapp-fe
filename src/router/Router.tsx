@@ -8,16 +8,16 @@ import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login.page";
 import Menu from "../pages/Menu/menu.page";
 import Users from "../pages/Users/users.page";
-import Authentication from "./Authentication";
+import AuthenticationGuard from "./AuthenticationGuard";
 import Layout from "./Layout";
 
 function Router() {
   return (
     <Routes>
-      <Route element={<Authentication isPrivate={false}/>}>
+      <Route element={<AuthenticationGuard isPrivate={false}/>}>
         <Route index element={<Login />} />
       </Route>
-      <Route element={<Authentication isPrivate/>}>
+      <Route element={<AuthenticationGuard isPrivate/>}>
         <Route path="/app" element={<Layout />}>
           <Route path="home" element={<Home />} />
           <Route path="history" element={<History />} />
@@ -25,7 +25,6 @@ function Router() {
           <Route path="users" element={<Users />} />
           <Route path="profile" element={<Profile />} />
           <Route path="org" element={<InfoOrgs />} />
-          {/* <Route path="org/register" element={<OrgRegister />} /> */}
         </Route>
         <Route path="/org/register" element={<OrgRegister />} />
         <Route path="/*" element={<NotFound />} />

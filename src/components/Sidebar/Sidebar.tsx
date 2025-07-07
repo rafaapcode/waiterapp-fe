@@ -1,5 +1,4 @@
-import { CONSTANTS } from "@/constants";
-import { useUser } from "@/context/user";
+import { useAuth } from "@/hooks/useAuth";
 import { Building2 } from "lucide-react";
 import { BiFoodMenu } from "react-icons/bi";
 import { CgLogOff, CgProfile } from "react-icons/cg";
@@ -10,12 +9,11 @@ import { NavLink, useNavigate } from "react-router";
 import OrgDropdown from "./OrgDropdown";
 
 function Sidebar() {
-  const logout = useUser((state) => state.logout);
+  const { signOut } = useAuth();
   const navigate = useNavigate();
 
   const logoutUser = () => {
-    localStorage.removeItem(CONSTANTS.TOKEN);
-    logout();
+    signOut();
     return navigate("/");
   };
 
@@ -55,10 +53,7 @@ function Sidebar() {
           <p>Meu Perfil</p>
           <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
         </NavLink>
-        <NavLink
-          to={"/app/org"}
-          className={styleStyleConditional}
-        >
+        <NavLink to={"/app/org"} className={styleStyleConditional}>
           <Building2 size={28} />
           <p>Orgs</p>
           <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />

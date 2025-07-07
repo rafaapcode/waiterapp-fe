@@ -1,4 +1,4 @@
-import { useUser } from "@/context/user";
+import { useAuth } from "@/hooks/useAuth";
 import { OrgService } from "@/services/api/org";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -34,8 +34,7 @@ const createOrgSchema = z.object({
 export type CreateOrgBody = z.infer<typeof createOrgSchema>;
 
 export function useOrgController() {
-  const setOrgInfo = useUser(state => state.setOrgInfo);
-  const user = useUser(state => state.user);
+  const {user, setOrgInfo} = useAuth();
   const navigate = useNavigate();
   const {
     handleSubmit: hookFormSubmit,

@@ -1,4 +1,4 @@
-import { useUser } from "@/context/user";
+import { useAuth } from "@/hooks/useAuth";
 import { apiclient } from "@/utils/apiClient";
 import { AxiosError } from "axios";
 import { useCallback, useState } from "react";
@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import HomePageProps from "./home.type";
 
 export const useHomeModel = (): HomePageProps => {
-  const stateUser = useUser((state) => state.user);
+  const {user} = useAuth();
   const [restartModal, setRestartModal] = useState<boolean>(false);
 
   const toogleRestartModal = useCallback(
@@ -16,7 +16,7 @@ export const useHomeModel = (): HomePageProps => {
 
   const refetchData = async () => {
     try {
-      const res = await apiclient.patch(`/order/restart/${stateUser.orgId}`);
+      const res = await apiclient.patch(`/order/restart/${user.orgId}`);
       if (res.status != 200) {
         toast.error("Erro ao reinicializar o dia !");
       } else {

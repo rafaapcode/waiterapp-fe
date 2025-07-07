@@ -178,4 +178,8 @@ export class UsersService {
       },
     });
   }
+
+  static getMe() {
+    return apiclient.get('/user/current');
+  }
 }

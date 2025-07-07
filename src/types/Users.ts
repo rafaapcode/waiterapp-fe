@@ -4,9 +4,3 @@ export interface Users {
   email: string;
   role: string;
 }
-
-
-export interface UserContext {
-  id: string;
-  orgId?: string;
-}

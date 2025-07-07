@@ -1,6 +1,7 @@
-import { useUser } from "@/context/user";
-import { cn, formatNameOfOrg } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 import { OrgService } from "@/services/api/org";
+import { cn } from "@/utils/cn";
+import { formatNameOfOrg } from "@/utils/formatNameOfOrg";
 import { useQuery } from "@tanstack/react-query";
 import { CirclePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -9,8 +10,7 @@ import { useNavigate } from "react-router";
 import IconSidebar from "../../assets/images/icon-sidebar.svg";
 
 function OrgDropdown() {
-  const stateUser = useUser((state) => state.user);
-  const setOrgInfo = useUser((state) => state.setOrgInfo);
+  const {user, setOrgInfo} = useAuth();
   const navigate = useNavigate();
   const [showOrgs, setShowOrgs] = useState<boolean>(false);
 
@@ -37,8 +37,8 @@ function OrgDropdown() {
   };
 
   const { isLoading, data } = useQuery({
-    enabled: !!stateUser.id,
-    queryKey: ["orgs-user", stateUser.id],
+    enabled: !!user.id,
+    queryKey: ["orgs-user", user.id],
     queryFn: async () => {
       try {
         return await OrgService.listOrgsOfUser();
@@ -58,13 +58,13 @@ function OrgDropdown() {
         className="flex items-center justify-center h-full w-full hover:bg-gray-100 transition-all duration-100 rounded-md"
       >
         {
-          !stateUser.orgId && <img src={IconSidebar} alt="Logo" className="w-11 h-7" />
+          !user.orgId && <img src={IconSidebar} alt="Logo" className="w-11 h-7" />
         }
         {
-          stateUser.orgImageUrl && <img src={stateUser.orgImageUrl} alt="Logo" className="w-full h-full object-cover" />
+          user.orgImageUrl && <img src={user.orgImageUrl} alt="Logo" className="w-full h-full object-cover" />
         }
         {
-          (!stateUser.orgImageUrl && stateUser.orgName) && <p className="text-3xl text-gray-700 font-semibold">{formatNameOfOrg(stateUser.orgName)}</p>
+          (!user.orgImageUrl && user.orgName) && <p className="text-3xl text-gray-700 font-semibold">{formatNameOfOrg(user.orgName)}</p>
         }
       </button>
       <div

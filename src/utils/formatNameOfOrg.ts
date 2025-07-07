@@ -1,11 +1,3 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-
-
 export function formatNameOfOrg(orgName: string): string {
   const nameSplited = orgName.split(' ');
   if(nameSplited.length < 2) {

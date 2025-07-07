@@ -1,11 +1,9 @@
 import { LoaderCircle } from "lucide-react";
 import { BsEye, BsEyeSlash } from "react-icons/bs";
-import SplashScreen from "../../components/SplashScreen/SplashScreen";
 import { LoginModelType } from "./login.type";
 
 function LoginView({ props }: LoginModelType) {
   const {
-    splashTimeout,
     passwordVisibility,
     setPasswordVisibility,
     isValid,
@@ -14,9 +12,6 @@ function LoginView({ props }: LoginModelType) {
     userCredentials,
     isLoading
   } = props;
-  if (splashTimeout) {
-    return <SplashScreen />;
-  }
 
   return (
     <main className="container mx-auto h-screen flex items-center justify-center">

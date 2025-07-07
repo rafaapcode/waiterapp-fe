@@ -1,4 +1,4 @@
-import { useUser } from "@/context/user";
+import { useAuth } from "@/hooks/useAuth";
 import { useSetToken } from "@/hooks/useToken";
 import { LoginService } from "@/services/api/login";
 import { AxiosError } from "axios";
@@ -8,10 +8,9 @@ import { toast } from "react-toastify";
 import { LoginModelType } from "./login.type";
 
 export const useLoginModel = (): LoginModelType => {
-  const setUser = useUser(state => state.setUser);
+  const {setUser, signIn} = useAuth();
   const setToken = useSetToken();
   const navigate = useNavigate();
-  const [splashTimeout, setSplashTimeout] = useState<boolean>(true);
   const [isValid, setIsValid] = useState<boolean>(false);
   const [passwordVisibility, setPasswordVisibility] = useState<
     "password" | "text"
@@ -36,18 +35,11 @@ export const useLoginModel = (): LoginModelType => {
           toast.error("Você não tem permissão para acessar o sistema");
           return;
         }
-
-        const tokenResponse = setToken(data.access_token);
-
-        if (!tokenResponse) {
-          toast.error(data.message || "Erro ao realizar o login");
-          return;
-        }
-
         setUser({
           id: data.id,
           orgId: ''
         })
+        signIn(data.access_token);
         return navigate("/app/home");
       } else {
         toast.error("Credenciais inválidas");
@@ -67,12 +59,6 @@ export const useLoginModel = (): LoginModelType => {
       [e.target.name]: e.target.value,
     }));
   };
-
-  useEffect(() => {
-    setTimeout(() => {
-      setSplashTimeout(false);
-    }, 1000);
-  }, []);
 
   useEffect(() => {
     const isValidCredentials =
@@ -95,7 +81,6 @@ export const useLoginModel = (): LoginModelType => {
       passwordVisibility,
       setPasswordVisibility,
       handleChange: handleChangeCredentials,
-      splashTimeout,
       handleSubmit,
       userCredentials,
       isLoading: isPending,

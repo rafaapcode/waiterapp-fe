@@ -1,4 +1,4 @@
-import { useUser } from "@/context/user";
+import { useAuth } from "@/hooks/useAuth";
 import { MenuService } from "@/services/api/menu";
 import { Categorie } from "@/types/Categorie";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { CategoriesTableProps, ProductsTableProps } from "./menu.type";
 
 export const useProductsMenu = (): ProductsTableProps => {
-  const stateUser = useUser((state) => state.user);
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newProductModal, setNewProductModal] = useState<boolean>(false);
   const [productIdToEdit, setProductIdToEdit] = useState<string | null>(null);
@@ -38,7 +38,9 @@ export const useProductsMenu = (): ProductsTableProps => {
     }
   );
 
-  const { data, isLoading, isFetching } = MenuService.listAllProducts(stateUser.orgId);
+  const { data, isLoading, isFetching } = MenuService.listAllProducts(
+    user.orgId
+  );
 
   return {
     props: {
@@ -50,14 +52,14 @@ export const useProductsMenu = (): ProductsTableProps => {
       newProductModal,
       isLoading,
       productIdToEdit,
-      orgId: stateUser.orgId,
-      userId: stateUser.id
+      orgId: user.orgId,
+      userId: user.id,
     },
   };
 };
 
 export const useCategorieMenu = (): CategoriesTableProps => {
-  const stateUser = useUser((state) => state.user);
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newCategorieModal, setNewCategorieModal] = useState<boolean>(false);
   const [editCategorieModal, setEditCategorieModal] =
@@ -84,7 +86,7 @@ export const useCategorieMenu = (): CategoriesTableProps => {
     }
   );
 
-  const { data } = MenuService.listAllCategories(stateUser.orgId);
+  const { data } = MenuService.listAllCategories(user.orgId);
 
   return {
     props: {
@@ -95,7 +97,7 @@ export const useCategorieMenu = (): CategoriesTableProps => {
       isPending,
       newCategorieModal,
       DeleteCategorie: deleteCategorie,
-      orgId: stateUser.orgId
+      orgId: user.orgId,
     },
   };
 };
