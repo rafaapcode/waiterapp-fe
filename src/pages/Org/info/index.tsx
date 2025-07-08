@@ -1,6 +1,6 @@
-import Header from "@/components/Header/Header";
-import Input from "@/components/Input";
-import Select from "@/components/Select";
+import Input from "@/components/atoms/Input";
+import Select from "@/components/atoms/Select";
+import Header from "@/components/molecule/Header";
 import { Building2, TrashIcon, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";

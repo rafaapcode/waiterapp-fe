@@ -1,5 +1,4 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useSetToken } from "@/hooks/useToken";
 import { LoginService } from "@/services/api/login";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
@@ -9,7 +8,6 @@ import { LoginModelType } from "./login.type";
 
 export const useLoginModel = (): LoginModelType => {
   const {setUser, signIn} = useAuth();
-  const setToken = useSetToken();
   const navigate = useNavigate();
   const [isValid, setIsValid] = useState<boolean>(false);
   const [passwordVisibility, setPasswordVisibility] = useState<

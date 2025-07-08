@@ -1,4 +1,6 @@
 import { ElementType } from 'react';
+import Button from '../atoms/Button';
+import Text from '../atoms/Text';
 
 interface HeaderProps {
   title: string;
@@ -19,15 +21,15 @@ function Header({ title, subtitle, Icon, rightButton, iconSize }: HeaderProps) {
       <div className="flex flex-col">
         <div className="flex gap-2">
           <Icon size={iconSize ? iconSize : 32} />
-          <p className="font-semibold text-2xl">{title}</p>
+          <Text className="font-semibold text-2xl">{title}</Text>
         </div>
-        <p className="text-[#666666] mt-4">{subtitle}</p>
+        <Text className="text-[#666666] mt-4">{subtitle}</Text>
       </div>
       {rightButton && (
-        <button className="flex gap-2 items-center" onClick={rightButton.onClick}>
+        <Button  onClick={rightButton.onClick}>
           <rightButton.Icon size={rightButton.iconSize ? rightButton.iconSize : 24} className="text-[#D73035]" />
           <p className="text-[#D73035] font-semibold">{rightButton.text}</p>
-        </button>
+        </Button>
       )}
     </header>
   );

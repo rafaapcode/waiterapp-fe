@@ -1,5 +1,5 @@
-import Input from "@/components/Input";
-import Select from "@/components/Select";
+import Input from "@/components/atoms/Input";
+import Select from "@/components/atoms/Select";
 import { Building2, ChevronLeft, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";

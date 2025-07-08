@@ -1,34 +1,25 @@
+import { UserRoles } from "@/types/Users";
 import { apiclient } from "@/utils/apiClient";
-import {
-  UseMutateAsyncFunction,
-  useMutation
-} from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
-import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 
 export class LoginService {
-  static loginUser(
-    onSuccess: OnSuccessCBType,
-    onError: OnErrorCBType
-  ): {
-    loginUser: UseMutateAsyncFunction<
-      AxiosResponse<any, any>,
-      Error,
-      {
-        email: string;
-        password: string;
-      },
-      unknown
-    >;
-    isPending: boolean;
-  } {
-    const { mutateAsync: loginUser, isPending } = useMutation({
-      mutationFn: async (data: { email: string; password: string }) =>
-        await apiclient.post("/auth/signin", data),
-      onSuccess,
-      onError,
-    });
-
-    return { loginUser: loginUser, isPending };
+  static async loginUser(
+    data: LoginService.Input
+  ): Promise<LoginService.Output> {
+    const { data: res } = await apiclient.post<LoginService.Output>(
+      "/auth/signin",
+      data
+    );
+    return res;
   }
+}
+
+export namespace LoginService {
+  export type Input = { email: string; password: string };
+
+  export type Output = {
+    access_token: string;
+    refresh_token: string;
+    role: UserRoles;
+    id: string;
+  };
 }

@@ -1,6 +1,7 @@
 import SplashScreen from "@/components/SplashScreen/SplashScreen";
 import { CONSTANTS } from "@/constants";
 import { UsersService } from "@/services/api/users";
+import { UserRoles } from "@/types/Users";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, ReactNode, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -10,12 +11,14 @@ import { createJSONStorage, persist } from "zustand/middleware";
 interface UserContext {
   id: string;
   orgId?: string;
+  role?: UserRoles;
 }
 
 interface AuthStateValue {
   user: {
     id: string;
     orgId: string;
+    role?: UserRoles;
     orgImageUrl: string;
     orgName: string;
   };
@@ -26,7 +29,7 @@ interface AuthStateValue {
 export const AuthenticatioContext = createContext(
   {} as AuthStateValue & {
     isSignedIn: boolean;
-    signIn: (acess_token: string) => void;
+    signIn: (acess_token: string, refresh_token: string) => void;
     signOut: () => void;
   }
 );
@@ -56,6 +59,7 @@ export default function AuthenticationProvider({
             user: {
               id: user.id,
               orgId: user.orgId || "",
+              role: user.role || UserRoles.CLIENT,
               orgImageUrl: "",
               orgName: "",
             },
@@ -85,8 +89,9 @@ export default function AuthenticationProvider({
     staleTime: Infinity
   });
 
-  const signIn = useCallback((acess_token: string) => {
+  const signIn = useCallback((acess_token: string, refresh_token: string) => {
     localStorage.setItem(CONSTANTS.TOKEN, acess_token);
+    localStorage.setItem(CONSTANTS.REFRESH_TOKEN, refresh_token);
     setSignedIn(true);
   }, []);
 

@@ -2,7 +2,7 @@ import RestartModalSkeleton from "@/components/RestartModal/RestartModalSkeleton
 import { lazy, Suspense } from "react";
 import { RiHomeLine } from "react-icons/ri";
 import { RxUpdate } from "react-icons/rx";
-import Header from "../../components/Header/Header";
+import Header from "../../components/molecule/Header";
 import Orders from "../Orders/OrdersPage";
 import HomePageProps from "./home.type";
 
