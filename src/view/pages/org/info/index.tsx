@@ -1,10 +1,10 @@
+import DefaulImage from "@/assets/images/default-image.png";
 import Input from "@/components/atoms/Input";
 import Select from "@/components/atoms/Select";
 import Header from "@/components/molecule/Header";
 import { Building2, TrashIcon, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";
-import DefaulImage from "../../../assets/images/default-image.png";
 import { closeHoursOptions, openHoursOptions } from "../constants";
 import { useOrgInfoController } from "./userOrgInfoController";
 

@@ -1,7 +1,7 @@
 import NotFound from "@/pages/NotFound/NotFound";
-import InfoOrgs from "@/pages/Org/info";
-import OrgRegister from "@/pages/Org/register";
 import Profile from "@/pages/Profile/profile.page";
+import InfoOrgs from "@/view/pages/org/info/index";
+import OrgRegister from "@/view/pages/org/register/index";
 import { Route, Routes } from "react-router";
 import History from "../pages/History/history.page";
 import Home from "../pages/Home/Home";

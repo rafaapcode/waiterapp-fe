@@ -1,3 +1,4 @@
+import DefaulImage from "@/assets/images/default-image.png";
 import Input from "@/components/atoms/Input";
 import Select from "@/components/atoms/Select";
 import { Building2, ChevronLeft, Upload } from "lucide-react";
@@ -5,7 +6,6 @@ import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";
 import { Link } from "react-router";
 import { ToastContainer } from "react-toastify";
-import DefaulImage from "../../../assets/images/default-image.png";
 import { closeHoursOptions, openHoursOptions } from "../constants";
 import { useOrgController } from "./useOrgController";
 
