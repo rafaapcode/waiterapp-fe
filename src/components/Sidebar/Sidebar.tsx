@@ -1,11 +1,12 @@
 import { useAuth } from "@/hooks/useAuth";
-import { Building2 } from "lucide-react";
 import { BiFoodMenu } from "react-icons/bi";
 import { CgLogOff, CgProfile } from "react-icons/cg";
 import { FiUsers } from "react-icons/fi";
 import { IoNewspaperOutline } from "react-icons/io5";
+import { LuBuilding2 } from "react-icons/lu";
 import { RiHomeLine } from "react-icons/ri";
 import { NavLink, useNavigate } from "react-router";
+import Section from "../atoms/Section";
 import OrgDropdown from "./OrgDropdown";
 
 function Sidebar() {
@@ -19,55 +20,48 @@ function Sidebar() {
 
   const styleStyleConditional = ({ isActive }: { isActive: boolean }) =>
     isActive
-      ? "group relative h-[100px] w-[100px] flex flex-col gap-2 items-center justify-center text-[#D73035]"
-      : "group h-[100px] w-[100px] flex flex-col gap-2 items-center justify-center text-[#666666]";
+      ? "h-[80px] w-[80px] flex flex-col group-hover:flex-row group-hover:w-[150px] group-hover:justify-start gap-2 items-center justify-center text-[#D73035]"
+      : "h-[80px] w-[80px] flex flex-col group-hover:flex-row group-hover:w-[150px] group-hover:justify-start gap-2 items-center justify-center text-[#666666]";
 
   return (
-    <section className="bg-white w-[100px] flex flex-col shadow-md">
+    <Section className="bg-[#FAFAFA] w-[80px] items-center hover:w-[300px] group transition-all duration-700" layoutType="flexCol" fillScreen >
       <OrgDropdown />
       <nav className="flex flex-col">
         <NavLink to={"/app/home"} className={styleStyleConditional}>
-          <RiHomeLine size={28} />
-          <p>Home</p>
-          <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
+          <RiHomeLine  />
+          <p className="opacity-0 text-sm group-hover:opacity-100 transition-all duration-150">Home</p>
         </NavLink>
         <NavLink to={"/app/history"} className={styleStyleConditional}>
-          <IoNewspaperOutline size={28} />
-          <p>Histórico</p>
-          <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
+          <IoNewspaperOutline  />
+          <p className="opacity-0 text-sm group-hover:opacity-100 transition-all duration-150">Histórico</p>
         </NavLink>
         <NavLink to={"/app/menu"} className={styleStyleConditional}>
-          <BiFoodMenu size={28} />
-          <p>Cardápio</p>
-          <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
+          <BiFoodMenu  />
+          <p className="opacity-0 text-sm group-hover:opacity-100 transition-all duration-150">Cardápio</p>
         </NavLink>
         <NavLink to={"/app/users"} className={styleStyleConditional}>
-          <FiUsers size={28} />
-          <p>Usuários</p>
-          <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
+          <FiUsers  />
+          <p className="opacity-0 text-sm group-hover:opacity-100 transition-all duration-150">Usuários</p>
         </NavLink>
       </nav>
-      <nav className="flex flex-col flex-1 justify-end ">
+      <nav className="flex flex-col flex-1 justify-end items-center">
         <NavLink to={"/app/profile"} className={styleStyleConditional}>
-          <CgProfile size={28} />
-          <p>Meu Perfil</p>
-          <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
+          <CgProfile  />
+          <p className="opacity-0 text-sm group-hover:opacity-100 transition-all duration-150">Meu Perfil</p>
         </NavLink>
         <NavLink to={"/app/org"} className={styleStyleConditional}>
-          <Building2 size={28} />
-          <p>Orgs</p>
-          <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
+          <LuBuilding2  />
+          <p className="opacity-0 text-sm group-hover:opacity-100 transition-all duration-150">Orgs</p>
         </NavLink>
         <button
           onClick={logoutUser}
-          className="h-[108px] w-[108px] flex flex-col gap-2 items-center justify-center text-[#666666]"
+          className="flex flex-col gap-2 items-center justify-center text-[#666666] group-hover:flex-row group-hover:justify-start group-hover:w-[150px]"
         >
-          <CgLogOff size={28} />
-          <p>Sair</p>
-          <div className="group-[.relative]:w-1/5 absolute bottom-4 w-0 rounded-md h-[2px] bg-red-500 transition-all duration-150" />
+          <CgLogOff  />
+          <p className="opacity-0 text-sm group-hover:opacity-100 transition-all duration-150">Sair</p>
         </button>
       </nav>
-    </section>
+    </Section>
   );
 }
 
