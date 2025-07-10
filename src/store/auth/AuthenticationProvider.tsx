@@ -52,6 +52,7 @@ export default function AuthenticationProvider({
           orgId: "",
           orgImageUrl: "",
           orgName: "",
+          role: UserRoles.CLIENT,
           signedIn: false,
         },
         setUser: (user: UserContext) =>
@@ -72,6 +73,7 @@ export default function AuthenticationProvider({
               orgId: props.orgId,
               orgImageUrl: props.imgUrl,
               orgName: props.name,
+              role: state.user.role
             },
           })),
       }),

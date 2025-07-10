@@ -2,7 +2,7 @@ import { cn } from "@/utils/cn";
 import { cva, VariantProps } from "class-variance-authority";
 import { ComponentProps } from "react";
 
-const headerVariants = cva(["w-full p-4"], {
+const headerVariants = cva(["w-full"], {
   variants: {
     layoutType: {
       flex: "flex justify-start items-center gap-4",
@@ -23,7 +23,7 @@ interface HeaderProps
   extends ComponentProps<"div">,
     VariantProps<typeof headerVariants> {}
 
-function Header({
+function HeaderContainer({
   children,
   className,
   fillScreen,
@@ -40,4 +40,4 @@ function Header({
   );
 }
 
-export default Header;
+export default HeaderContainer;

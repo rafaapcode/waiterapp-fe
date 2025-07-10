@@ -8,6 +8,7 @@ import UnpermissionlessPage from "../components/UnpermissionlessPage";
 
 function Layout() {
   const { user } = useAuth();
+  console.log(user.role);
   return (
     <main className="bg-[#FAFAFA] flex h-screen">
       <ToastContainer position="top-center" />

@@ -1,6 +1,8 @@
 import { ElementType } from 'react';
 import Button from '../atoms/Button';
+import HeaderContainer from '../atoms/Header';
 import Text from '../atoms/Text';
+
 
 interface HeaderProps {
   title: string;
@@ -17,7 +19,7 @@ interface HeaderProps {
 
 function Header({ title, subtitle, Icon, rightButton, iconSize }: HeaderProps) {
   return (
-    <header className="flex justify-between">
+    <HeaderContainer className="justify-between">
       <div className="flex flex-col">
         <div className="flex gap-2">
           <Icon size={iconSize ? iconSize : 32} />
@@ -26,12 +28,12 @@ function Header({ title, subtitle, Icon, rightButton, iconSize }: HeaderProps) {
         <Text className="text-[#666666] mt-4">{subtitle}</Text>
       </div>
       {rightButton && (
-        <Button  onClick={rightButton.onClick}>
+        <Button  onClick={rightButton.onClick} variant="secondary">
           <rightButton.Icon size={rightButton.iconSize ? rightButton.iconSize : 24} className="text-[#D73035]" />
           <p className="text-[#D73035] font-semibold">{rightButton.text}</p>
         </Button>
       )}
-    </header>
+    </HeaderContainer>
   );
 }
 
