@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { UserRoles } from "@/types/Users";
 import { Outlet } from "react-router";
 import { ToastContainer } from "react-toastify";
-import Sidebar from "../../components/Sidebar/Sidebar";
+import Sidebar from "../components/sidebar/Sidebar";
 import UnpermissionlessPage from "../components/UnpermissionlessPage";
 
 function Layout() {

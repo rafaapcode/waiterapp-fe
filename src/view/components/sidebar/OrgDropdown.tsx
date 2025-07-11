@@ -1,3 +1,4 @@
+import IconSidebar from "@/assets/images/icon-sidebar.svg";
 import { useAuth } from "@/hooks/useAuth";
 import { OrgService } from "@/services/api/org";
 import { cn } from "@/utils/cn";
@@ -7,7 +8,6 @@ import { CirclePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { VscLoading } from "react-icons/vsc";
 import { useNavigate } from "react-router";
-import IconSidebar from "../../assets/images/icon-sidebar.svg";
 
 function OrgDropdown() {
   const {user, setOrgInfo} = useAuth();

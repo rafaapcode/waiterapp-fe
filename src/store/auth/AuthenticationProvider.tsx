@@ -1,7 +1,7 @@
-import SplashScreen from "@/components/SplashScreen/SplashScreen";
 import { CONSTANTS } from "@/constants";
 import { UsersService } from "@/services/api/users";
 import { UserRoles } from "@/types/Users";
+import SplashScreen from "@/view/components/SplashScreen";
 import { useQuery } from "@tanstack/react-query";
 import { createContext, ReactNode, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
