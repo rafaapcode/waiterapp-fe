@@ -1,36 +1,17 @@
 import IconSidebar from "@/assets/images/icon-sidebar.svg";
+import Divider from "@/components/atoms/Divider";
+import DropdownMenu from "@/components/molecule/DropdownMenu";
 import { useAuth } from "@/hooks/useAuth";
 import { OrgService } from "@/services/api/org";
-import { cn } from "@/utils/cn";
 import { formatNameOfOrg } from "@/utils/formatNameOfOrg";
 import { useQuery } from "@tanstack/react-query";
 import { CirclePlus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
 import { VscLoading } from "react-icons/vsc";
 import { useNavigate } from "react-router";
 
 function OrgDropdown() {
-  const {user, setOrgInfo} = useAuth();
+  const { user, setOrgInfo } = useAuth();
   const navigate = useNavigate();
-  const [showOrgs, setShowOrgs] = useState<boolean>(false);
-
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowOrgs(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const handleCreateNew = () => {
     navigate("/org/register");
@@ -48,72 +29,62 @@ function OrgDropdown() {
       }
     },
   });
-
   return (
-    <section ref={dropdownRef} className="h-[100px] w-[100px] relative">
-      <button
-        onClick={() => {
-          setShowOrgs((prev) => !prev);
-        }}
-        className="flex items-center justify-center h-full w-full hover:bg-gray-100 transition-all duration-100 rounded-md"
-      >
-        {
-          !user.orgId && <img src={IconSidebar} alt="Logo" className="w-11 h-7" />
-        }
-        {
-          user.orgImageUrl && <img src={user.orgImageUrl} alt="Logo" className="w-full h-full object-cover" />
-        }
-        {
-          (!user.orgImageUrl && user.orgName) && <p className="text-3xl text-gray-700 font-semibold">{formatNameOfOrg(user.orgName)}</p>
-        }
-      </button>
-      <div
-        className={cn(
-          "flex pointer-events-none flex-col justify-center items-start gap-2 bg-gradient-to-r from-[#FAFAFA] to-gray-200 absolute top-0 p-4 opacity-0 -right-0 w-0 border-r border-gray-400 rounded-br-md transition-all duration-150 overflow-y-auto",
-          showOrgs && "-right-60 w-60 opacity-100 pointer-events-auto"
-        )}
-      >
+    <DropdownMenu>
+      <DropdownMenu.Trigger>
+        <div className="flex items-center justify-center cursor-pointer">
+          {!user.orgId && (
+            <img src={IconSidebar} alt="Logo" className="w-11 h-7" />
+          )}
+          {user.orgImageUrl && (
+            <img
+              src={user.orgImageUrl}
+              alt="Logo"
+              className="w-full h-full object-cover"
+            />
+          )}
+          {!user.orgImageUrl && user.orgName && (
+            <p className="text-3xl text-gray-700 font-semibold">
+              {formatNameOfOrg(user.orgName)}
+            </p>
+          )}
+        </div>
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Content side="right">
         {isLoading ? (
           <div className="mx-auto">
             <VscLoading className="animate-spin" />
           </div>
-        ) : data ? (
+        ) : (
           <>
-            <button
-              onClick={handleCreateNew}
-              className="text-sm hover:bg-gray-300 px-4 py-1 rounded-lg max-w-56 truncate text-ellipsis transition-all duration-150 flex items-center gap-2 bg-white border border-black"
+            <DropdownMenu.Item
+              onSelect={handleCreateNew}
+              className="cursor-pointer py-2 rounded-lg px-4 flex items-center justify-center gap-2 max-w-64 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none transition-colors"
             >
               <CirclePlus size={14} />
               Criar Nova Organização
-            </button>
-            {data.map((org) => (
-              <button
-                key={org._id}
-                onClick={() => {
+            </DropdownMenu.Item>
+            {(data && data.filter(org => org._id !== user.orgId).length > 0) && <Divider />}
+            {data?.filter(org => org._id !== user.orgId).map((org) => (
+              <DropdownMenu.Item
+                onSelect={() => {
                   setOrgInfo({
                     orgId: org._id,
-                    imgUrl: org.imageUrl || '',
-                    name: org.name
-                  })
-                  setShowOrgs((prev) => !prev)
+                    imgUrl: org.imageUrl || "",
+                    name: org.name,
+                  });
                 }}
-                className="text-sm hover:bg-gray-300 px-4 py-1 rounded-lg max-w-56 truncate text-ellipsis transition-all duration-150"
+                key={org._id}
+                className="cursor-pointer text-sm hover:bg-gray-50 px-4 py-2 rounded-lg max-w-56 truncate text-ellipsis transition-all duration-150"
               >
                 {org.name}
-              </button>
+              </DropdownMenu.Item>
             ))}
           </>
-        ) : (
-          <button
-            onClick={handleCreateNew}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-md shadow-sm max-w-56 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none transition-colors"
-          >
-            <CirclePlus size={14} />
-            Criar Nova Organização
-          </button>
         )}
-      </div>
-    </section>
+      </DropdownMenu.Content>
+    </DropdownMenu>
   );
 }
 
