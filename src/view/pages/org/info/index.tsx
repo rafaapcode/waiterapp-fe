@@ -1,7 +1,7 @@
 import DefaulImage from "@/assets/images/default-image.png";
 import Input from "@/components/atoms/Input";
 import Select from "@/components/atoms/Select";
-import Header from "@/components/molecule/Header";
+import PageHeader from "@/components/molecule/PageHeader";
 import { Building2, TrashIcon, Upload } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { VscLoading } from "react-icons/vsc";
@@ -36,7 +36,7 @@ function InfoOrgs() {
 
   return (
     <main className="w-full h-full pt-10 overflow-y-auto">
-      <Header
+      <PageHeader
         Icon={Building2}
         subtitle="Atualize as informações da sua organização"
         title={orgName}

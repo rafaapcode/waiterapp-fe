@@ -17,7 +17,7 @@ interface HeaderProps {
   };
 }
 
-function Header({ title, subtitle, Icon, rightButton, iconSize }: HeaderProps) {
+function PageHeader({ title, subtitle, Icon, rightButton, iconSize }: HeaderProps) {
   return (
     <HeaderContainer className="justify-between">
       <div className="flex flex-col">
@@ -37,4 +37,4 @@ function Header({ title, subtitle, Icon, rightButton, iconSize }: HeaderProps) {
   );
 }
 
-export default Header;
+export default PageHeader;

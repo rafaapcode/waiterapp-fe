@@ -1,6 +1,6 @@
 import ProfileEditForm from "@/components/profile/ProfileEditForm";
 import { CgProfile } from "react-icons/cg";
-import Header from "../../components/molecule/Header";
+import Header from "../../components/molecule/PageHeader";
 import { ProfilePageProps } from "./profile.type";
 
 function ProfileView({ props }: ProfilePageProps) {

@@ -1,6 +1,6 @@
 import UsersTable from "@/components/UsersComponents/usersTable";
 import { FiUsers } from "react-icons/fi";
-import Header from "../../components/molecule/Header";
+import Header from "../../components/molecule/PageHeader";
 import { UsersPageProps } from "./users.type";
 
 function UsersView({ props }: UsersPageProps) {

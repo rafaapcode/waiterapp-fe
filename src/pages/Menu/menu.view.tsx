@@ -3,7 +3,7 @@ import { BiFoodMenu } from "react-icons/bi";
 import { VscLoading } from "react-icons/vsc";
 import Menutab from "../../components/MenuComponents/Menutab";
 import ProductsTable from "../../components/MenuComponents/ProductsTable";
-import Header from "../../components/molecule/Header";
+import Header from "../../components/molecule/PageHeader";
 import { CategoriesTableProps, ProductsTableProps } from "./menu.type";
 
 const CategoriesTable = lazy(
