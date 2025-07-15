@@ -1,3 +1,9 @@
+export enum OrderStatus {
+  WAITING = "WAITING",
+  IN_PRODUCTION = "IN_PRODUCTION",
+  DONE = "DONE",
+}
+
 export interface Order {
   _id: string;
   table: string;
@@ -31,9 +37,7 @@ export type HistoryOrder = {
     discount: boolean;
     id: string;
   }[];
-}
-
-
+};
 
 export interface Products {
   _id: string | number;
@@ -46,4 +50,3 @@ export interface Products {
     discount: boolean;
   };
 }
-

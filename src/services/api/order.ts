@@ -1,33 +1,22 @@
-import { Order } from "@/types/Order";
+import { Order, OrderStatus } from "@/types/Order";
 import { apiclient } from "@/utils/apiClient";
-import {
-  UseMutateAsyncFunction,
-  useMutation,
-  useQuery,
-  UseQueryResult,
-} from "@tanstack/react-query";
+import { UseMutateAsyncFunction, useMutation } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 
 export class OrderService {
-  // await apiclient.patch(`/order/restart/${user.orgId}`);
-
-  static async refreshDay({ orgId }: OrderService.RefreshDayInput): Promise<OrderService.RefreshDayOutput> {
+  static async refreshDay({
+    orgId,
+  }: OrderService.RefreshDayInput): Promise<OrderService.RefreshDayOutput> {
     await apiclient.patch(`/order/restart/${orgId}`);
   }
 
-  static getOrders(orgId: string): UseQueryResult<Order[], Error> {
-    return useQuery({
-      queryKey: ["orders", orgId],
-      queryFn: async (): Promise<Order[]> => {
-        try {
-          const { data: orders } = await apiclient.get(`/order/${orgId}`);
-          return orders;
-        } catch (error) {
-          return [];
-        }
-      },
-    });
+  static async getOrders({
+    orgId,
+  }: OrderService.GetOrdersInput): Promise<OrderService.GetOrdersOutput[]> {
+    const { data: orders } = await apiclient.get<OrderService.GetOrdersOutput[]>(`/order/${orgId}`);
+
+    return orders;
   }
 
   static cancelOrder(
@@ -89,8 +78,32 @@ export class OrderService {
 }
 
 export namespace OrderService {
+  type Product = {
+    product: {
+      _id: string;
+      name: string;
+      description: string;
+      imageUrl: string;
+      category: string;
+    };
+    quantity: number;
+    discount: boolean;
+    price: number;
+  };
+
   export type RefreshDayInput = {
     orgId: string;
   };
   export type RefreshDayOutput = void;
+
+  export type GetOrdersInput = {
+    orgId: string;
+  };
+  export type GetOrdersOutput = {
+    _id: string;
+    createdAt: string;
+    table: string;
+    status: OrderStatus;
+    products: Product[];
+  };
 }
