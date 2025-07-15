@@ -10,6 +10,12 @@ import { AxiosResponse } from "axios";
 import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 
 export class OrderService {
+  // await apiclient.patch(`/order/restart/${user.orgId}`);
+
+  static async refreshDay({ orgId }: OrderService.RefreshDayInput): Promise<OrderService.RefreshDayOutput> {
+    await apiclient.patch(`/order/restart/${orgId}`);
+  }
+
   static getOrders(orgId: string): UseQueryResult<Order[], Error> {
     return useQuery({
       queryKey: ["orders", orgId],
@@ -31,13 +37,18 @@ export class OrderService {
     cancelOrder: UseMutateAsyncFunction<
       AxiosResponse<any, any>,
       Error,
-      {orgId: string,orderId: string},
+      { orgId: string; orderId: string },
       unknown
     >;
   } {
     const { mutateAsync } = useMutation({
-      mutationFn: async ({orderId, orgId}:{orgId: string,orderId: string}) =>
-        await apiclient.delete(`/order/${orgId}/${orderId}`),
+      mutationFn: async ({
+        orderId,
+        orgId,
+      }: {
+        orgId: string;
+        orderId: string;
+      }) => await apiclient.delete(`/order/${orgId}/${orderId}`),
       onSuccess,
       onError,
     });
@@ -53,7 +64,7 @@ export class OrderService {
       AxiosResponse<any, any>,
       Error,
       {
-        orgId: string
+        orgId: string;
         orderId: string;
         status: Order["status"];
       },
@@ -61,7 +72,11 @@ export class OrderService {
     >;
   } {
     const { mutateAsync } = useMutation({
-      mutationFn: async (data: {orgId: string, orderId: string; status: Order["status"] }) =>
+      mutationFn: async (data: {
+        orgId: string;
+        orderId: string;
+        status: Order["status"];
+      }) =>
         await apiclient.patch(`/order/${data.orgId}/${data.orderId}`, {
           status: data.status,
         }),
@@ -71,4 +86,11 @@ export class OrderService {
 
     return { updateOrder: mutateAsync };
   }
+}
+
+export namespace OrderService {
+  export type RefreshDayInput = {
+    orgId: string;
+  };
+  export type RefreshDayOutput = void;
 }

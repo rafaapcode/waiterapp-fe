@@ -1,4 +1,4 @@
-import Modal from "../Modal";
+import Modal from "@/components/molecule/Modal";
 
 interface RestartModalSkeletonProps {
   isVisible: boolean;
@@ -10,7 +10,7 @@ function RestartModalSkeleton({
   isVisible,
 }: RestartModalSkeletonProps) {
   return (
-    <Modal.Root size={size} isVisible={isVisible}>
+    <Modal size={size} isVisible={isVisible}>
       <div className="p-6">
         <div className="flex items-center gap-4 animate-pulse">
           <div className="w-6 h-6 bg-gray-300 rounded-full"></div>
@@ -31,7 +31,7 @@ function RestartModalSkeleton({
           <div className="h-10 w-44 bg-gray-300 rounded-full"></div>
         </div>
       </div>
-    </Modal.Root>
+    </Modal>
   );
 }
 

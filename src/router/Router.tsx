@@ -4,10 +4,10 @@ import InfoOrgs from "@/view/pages/org/info/index";
 import OrgRegister from "@/view/pages/org/register/index";
 import { Route, Routes } from "react-router";
 import History from "../pages/History/history.page";
-import Home from "../pages/Home/Home";
 import Menu from "../pages/Menu/menu.page";
 import Users from "../pages/Users/users.page";
 import Layout from "../view/layouts/Layout";
+import Home from "../view/pages/home/index";
 import Login from "../view/pages/login";
 import AuthenticationGuard from "./AuthenticationGuard";
 

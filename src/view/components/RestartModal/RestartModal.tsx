@@ -1,5 +1,7 @@
+import Button from "@/components/atoms/Button";
+import Modal from "@/components/molecule/Modal";
+import { LoaderCircle } from "lucide-react";
 import { RxUpdate } from "react-icons/rx";
-import Modal from "../Modal";
 
 interface RestartModalProps {
   isVisible: boolean;
@@ -7,6 +9,7 @@ interface RestartModalProps {
   onClose: () => void;
   onCancel: () => void;
   onClick: () => Promise<void>;
+  isLoading?: boolean;
 }
 
 function RestartModal({
@@ -15,9 +18,10 @@ function RestartModal({
   onClose,
   onCancel,
   onClick,
+  isLoading = false,
 }: RestartModalProps) {
   return (
-    <Modal.Root size={size} isVisible={isVisible}>
+    <Modal size={size} isVisible={isVisible}>
       <Modal.Header onClose={onClose}>
         <div className="flex items-center gap-4">
           <RxUpdate size={24} className="text-[#333333]" />
@@ -26,7 +30,7 @@ function RestartModal({
           </p>
         </div>
       </Modal.Header>
-      <Modal.Body className="my-12">
+      <Modal.Body>
         <div className="w-3/4 mx-auto">
           <p className="text-center font-semibold">
             Ao reiniciar o dia, todos os pedidos serão arquivados no status
@@ -36,16 +40,29 @@ function RestartModal({
             Deseja reniciar o dia ?
           </p>
         </div>
+        <div className="mt-10 flex">
+          <Button
+            onClick={onCancel}
+            type="button"
+            variant="secondary"
+            className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none"
+          >
+            Não, continuar pedidos
+          </Button>
+          <Button
+            onClick={onClick}
+            disabled={isLoading}
+            type="button"
+          >
+            {isLoading ? (
+              <LoaderCircle size={22} className="animate-spin" />
+            ) : (
+              "Sim, reiniciar o dia"
+            )}
+          </Button>
+        </div>
       </Modal.Body>
-      <Modal.Footer
-        isLoading={false}
-        cancelTitle="Não, continuar pedidos"
-        successTitle="Sim, reiniciar o dia"
-        orientation="horizontal"
-        onCancel={onCancel}
-        onClick={onClick}
-      />
-    </Modal.Root>
+    </Modal>
   );
 }
 

@@ -1,6 +1,6 @@
-import { UpdateOrgBody } from "@/pages/Org/info/userOrgInfoController";
-import { CreateOrgBody } from "@/pages/Org/register/useOrgController";
 import { apiclient, cepClient, uploadImage } from "@/utils/apiClient";
+import { UpdateOrgBody } from "@/view/pages/org/info/userOrgInfoController";
+import { CreateOrgBody } from "@/view/pages/org/register/useOrgController";
 
 export class OrgService {
   static async listOrgsOfUser(): Promise<OrgService.ListOrgsOutPut> {

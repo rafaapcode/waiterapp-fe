@@ -14,10 +14,11 @@ interface HeaderProps {
     text: string;
     onClick: () => void;
     iconSize?: number;
+    isLoading?: boolean;
   };
 }
 
-function PageHeader({ title, subtitle, Icon, rightButton, iconSize }: HeaderProps) {
+function PageHeader({ title, subtitle, Icon, rightButton, iconSize, }: HeaderProps) {
   return (
     <HeaderContainer className="justify-between">
       <div className="flex flex-col">
@@ -28,7 +29,7 @@ function PageHeader({ title, subtitle, Icon, rightButton, iconSize }: HeaderProp
         <Text className="text-[#666666] mt-4">{subtitle}</Text>
       </div>
       {rightButton && (
-        <Button  onClick={rightButton.onClick} variant="secondary">
+        <Button isLoading={rightButton.isLoading} onClick={rightButton.onClick} variant="secondary">
           <rightButton.Icon size={rightButton.iconSize ? rightButton.iconSize : 24} className="text-[#D73035]" />
           <p className="text-[#D73035] font-semibold">{rightButton.text}</p>
         </Button>

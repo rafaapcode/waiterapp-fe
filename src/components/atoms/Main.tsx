@@ -8,6 +8,7 @@ const mainVariants = cva(["w-full p-4"], {
       flex: "flex justify-start items-center gap-4",
       flexCol: "flex flex-col justify-center items-start gap-4",
       grid: "grid gap-4",
+      custom: ""
     },
     fillScreen: {
       true: "h-full",
