@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import { toast } from "react-toastify";
-import { Order } from "../../types/Order";
+import { Order, OrderStatus } from "../../types/Order";
 import OrderModalSkeleton from "../OrderModal/OrderModalSkeleton";
 
 const OrderModal = lazy(() => import("../OrderModal/OrderModal"));
@@ -12,7 +12,7 @@ type OrdersBoardProps = {
   onCancelOrder: (orderId: string) => Promise<void>;
   onChangeOrderStatus: (
     orderId: string,
-    status: Order["status"]
+    status: OrderStatus
   ) => Promise<void>;
 };
 
@@ -41,7 +41,7 @@ function OrdersBoard({
     try {
       setIsloading(true);
       const status =
-        selectedOrder?.status === "WAITING" ? "IN_PRODUCTION" : "DONE";
+        selectedOrder?.status === OrderStatus.WAITING ? OrderStatus.IN_PRODUCTION : OrderStatus.DONE;
       await onChangeOrderStatus(selectedOrder!._id, status);
       toast.success(
         `O pedido da mesa ${selectedOrder?.table} teve o status alterado!`

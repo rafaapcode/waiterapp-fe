@@ -1,8 +1,5 @@
-import { Order, OrderStatus } from "@/types/Order";
+import { OrderStatus } from "@/types/Order";
 import { apiclient } from "@/utils/apiClient";
-import { UseMutateAsyncFunction, useMutation } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
-import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 
 export class OrderService {
   static async refreshDay({
@@ -14,71 +11,34 @@ export class OrderService {
   static async getOrders({
     orgId,
   }: OrderService.GetOrdersInput): Promise<OrderService.GetOrdersOutput[]> {
-    const { data: orders } = await apiclient.get<OrderService.GetOrdersOutput[]>(`/order/${orgId}`);
+    const { data: orders } = await apiclient.get<
+      OrderService.GetOrdersOutput[]
+    >(`/order/${orgId}`);
 
     return orders;
   }
 
-  static cancelOrder(
-    onSuccess: OnSuccessCBType,
-    onError: OnErrorCBType
-  ): {
-    cancelOrder: UseMutateAsyncFunction<
-      AxiosResponse<any, any>,
-      Error,
-      { orgId: string; orderId: string },
-      unknown
-    >;
-  } {
-    const { mutateAsync } = useMutation({
-      mutationFn: async ({
-        orderId,
-        orgId,
-      }: {
-        orgId: string;
-        orderId: string;
-      }) => await apiclient.delete(`/order/${orgId}/${orderId}`),
-      onSuccess,
-      onError,
-    });
-
-    return { cancelOrder: mutateAsync };
+  static async cancelOrder({
+    orderId,
+    orgId,
+  }: OrderService.CancelOrderInput): Promise<void> {
+    await apiclient.delete(`/order/${orgId}/${orderId}`);
   }
 
-  static updateOrder(
-    onSuccess: OnSuccessCBType,
-    onError: OnErrorCBType
-  ): {
-    updateOrder: UseMutateAsyncFunction<
-      AxiosResponse<any, any>,
-      Error,
-      {
-        orgId: string;
-        orderId: string;
-        status: Order["status"];
-      },
-      unknown
-    >;
-  } {
-    const { mutateAsync } = useMutation({
-      mutationFn: async (data: {
-        orgId: string;
-        orderId: string;
-        status: Order["status"];
-      }) =>
-        await apiclient.patch(`/order/${data.orgId}/${data.orderId}`, {
-          status: data.status,
-        }),
-      onSuccess,
-      onError,
+  static async updateOrder({
+    orderId,
+    orgId,
+    status,
+  }: OrderService.UpdateOrderInput): Promise<void> {
+    await apiclient.patch(`/order/${orgId}/${orderId}`, {
+      status,
     });
-
-    return { updateOrder: mutateAsync };
   }
 }
 
 export namespace OrderService {
   type Product = {
+    _id: string;
     product: {
       _id: string;
       name: string;
@@ -105,5 +65,13 @@ export namespace OrderService {
     table: string;
     status: OrderStatus;
     products: Product[];
+  };
+
+  export type CancelOrderInput = { orgId: string; orderId: string };
+
+  export type UpdateOrderInput = {
+    orgId: string;
+    orderId: string;
+    status: OrderStatus;
   };
 }
