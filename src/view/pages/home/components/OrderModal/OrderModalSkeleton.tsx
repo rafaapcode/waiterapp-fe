@@ -1,4 +1,4 @@
-import Modal from "../Modal";
+import Modal from "@/components/molecule/Modal";
 
 interface OrderModalSkeletonProps {
   visible: boolean;
@@ -10,7 +10,7 @@ function OrderModalSkeleton({ visible }: OrderModalSkeletonProps) {
   }
 
   return (
-    <Modal.Root isVisible={visible} size="sm">
+    <Modal isVisible={visible} size="sm">
       <div className="p-6">
 
         <div className="flex items-center justify-between">
@@ -58,7 +58,7 @@ function OrderModalSkeleton({ visible }: OrderModalSkeletonProps) {
           <div className="h-12 w-full bg-gray-300 rounded-full"></div>
         </div>
       </div>
-    </Modal.Root>
+    </Modal>
   );
 }
 

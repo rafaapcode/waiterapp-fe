@@ -1,12 +1,13 @@
-import OrdersBoard from "@/components/OrdersBoard/OrdersBoard";
+import OrdersBoard from "../OrdersBoard";
 import { useOrdersController } from "./useOrdersController";
 
 function OrdersView() {
-  const {done, handleCancelOrder, handleStatusChange, inProduction, waiting} = useOrdersController();
+  const {done, handleCancelOrder, handleStatusChange, inProduction, waiting, updatingOrder, cancelingOrder} = useOrdersController();
 
    return (
     <div className="max-w-full mt-12 mx-auto flex gap-8">
       <OrdersBoard
+        isLoading={updatingOrder || cancelingOrder}
         orders={waiting}
         icon="🕛"
         title="Fila de espera"
@@ -14,6 +15,7 @@ function OrdersView() {
         onChangeOrderStatus={handleStatusChange}
       />
       <OrdersBoard
+        isLoading={updatingOrder || cancelingOrder}
         orders={inProduction}
         icon="🍪"
         title="Em preparação"
@@ -21,6 +23,7 @@ function OrdersView() {
         onChangeOrderStatus={handleStatusChange}
       />
       <OrdersBoard
+        isLoading={updatingOrder || cancelingOrder}
         orders={done}
         icon="🆗"
         title="Concluído"

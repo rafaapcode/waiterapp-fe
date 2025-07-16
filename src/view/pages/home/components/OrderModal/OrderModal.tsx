@@ -1,8 +1,8 @@
+import Modal from "@/components/molecule/Modal";
+import ProductInfo from "@/components/ProductInfo/ProductInfo";
+import { Order } from "@/types/Order";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { useEffect } from "react";
-import { Order } from "../../types/Order";
-import { formatCurrency } from "../../utils/formatCurrency";
-import Modal from "../Modal";
-import ProductInfo from "../ProductInfo/ProductInfo";
 
 type OrderModalProps = {
   visible: boolean;
@@ -63,7 +63,7 @@ function OrderModal({
   }, []);
 
   return (
-    <Modal.Root isVisible={visible} size="sm">
+    <Modal isVisible={visible} size="sm">
       <Modal.Header onClose={handleCloseModal}>
         <strong className="text-2xl">Mesa {order.table}</strong>
       </Modal.Header>
@@ -81,6 +81,7 @@ function OrderModal({
           <div className="mt-4 flex flex-col gap-4 max-h-full overflow-y-auto">
             {order.products.map((product) => (
               <ProductInfo
+                key={product._id}
                 products={{
                   _id: product._id,
                   product: {
@@ -126,7 +127,7 @@ function OrderModal({
           </button>
         ) : <></>}
       </Modal.Footer>
-    </Modal.Root>
+    </Modal>
   );
 }
 

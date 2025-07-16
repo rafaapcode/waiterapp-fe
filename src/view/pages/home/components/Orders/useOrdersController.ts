@@ -60,11 +60,12 @@ export const useOrdersController = () => {
 
   const handleCancelOrder = async (orderId: string) => {
     await cancelOrder(orderId);
-    queryClient.invalidateQueries({ queryKey: ["orders"] });
+    queryClient.invalidateQueries({ queryKey: ["get", "orders", user.orgId] });
   };
 
   const handleStatusChange = async (orderId: string, status: OrderStatus) => {
     await updateOrder({ orderId, status });
+    queryClient.invalidateQueries({ queryKey: ["get", "orders", user.orgId] });
   };
 
   return {
