@@ -10,8 +10,7 @@ import {
 import { AxiosResponse } from "axios";
 import { EditIcon, Trash } from "lucide-react";
 import { lazy, Suspense, useMemo } from "react";
-import Table from "../Table";
-import InputFilter from "../Table/InputFilter";
+import TableComponent from "../molecule/Table";
 import MenuHeader from "./MenuHeader";
 import EditCategorieModalSkeleton from "./modals/categories/EditCategorieModalSkeleton";
 import NewCategorieModalSkeleton from "./modals/categories/NewCategorieModalSkeleton";
@@ -136,7 +135,7 @@ function CategoriesTable({ props }: CategoriesTableProps) {
         </Suspense>
       )}
       <div className="max-h-full overflow-y-auto">
-        <Table.Root table={table}>
+        <TableComponent table={table}>
           <MenuHeader
             quantity={(data || []).length ?? 0}
             onClick={handleNewCategorieModal}
@@ -145,14 +144,14 @@ function CategoriesTable({ props }: CategoriesTableProps) {
             filters
           >
             <div className="w-3/4 mx-auto px-2">
-              <InputFilter />
+              <TableComponent.InputFilter />
             </div>
           </MenuHeader>
-          <Table.Container>
-            <Table.Header />
-            <Table.Body />
-          </Table.Container>
-        </Table.Root>
+          <TableComponent.Container>
+            <TableComponent.Header />
+            <TableComponent.Body />
+          </TableComponent.Container>
+        </TableComponent>
       </div>
     </div>
   );

@@ -12,8 +12,8 @@ import {
   useMemo
 } from "react";
 import MenuHeader from "../MenuComponents/MenuHeader";
+import TableComponent from "../molecule/Table";
 import Pagination from "../pagination/Pagination";
-import Table from "../Table";
 import EditUserModalSkeleton from "./skeletons/EditUserModalSkeleton";
 import NewUserModalSkeleton from "./skeletons/NewUserModalSkeleton";
 
@@ -121,18 +121,18 @@ function UsersTable({props}: UsersTableProps) {
           <LoaderCircle size={26} className="animate-spin" />
         </div>
       ) : (
-        <Table.Root table={table}>
-          <Table.Container>
-            <Table.Header />
-            <Table.Body />
-          </Table.Container>
+        <TableComponent table={table}>
+          <TableComponent.Container>
+            <TableComponent.Header />
+            <TableComponent.Body />
+          </TableComponent.Container>
           <Pagination
             existsOrder={AllUsers?.users.length !== 0}
             page={page}
             setCurrentPage={setCurrentPage}
             totalPage={AllUsers?.total_pages || 0}
           />
-        </Table.Root>
+        </TableComponent>
       )}
     </>
   );

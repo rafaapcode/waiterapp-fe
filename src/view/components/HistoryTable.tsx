@@ -1,3 +1,4 @@
+import TableComponent from "@/components/molecule/Table";
 import createTable from "@/hooks/createTable";
 import { HistoryOrder } from "@/types/Order";
 import {
@@ -9,7 +10,6 @@ import {
 import { Eye, LoaderCircle, Trash } from "lucide-react";
 import { Dispatch, lazy, SetStateAction, Suspense, useMemo } from "react";
 import Pagination from "../../components/pagination/Pagination";
-import Table from "../../components/Table";
 import HistoryModalSkeleton from "../pages/history/modals/HistoryModalSkeleton";
 
 const HistoryModal = lazy(() => import("../pages/history/modals/HistoryModal"));
@@ -150,7 +150,7 @@ function HistoryTable(props: HistoryTableProps) {
         </div>
       </div>
 
-      <Table.Root table={table}>
+      <TableComponent table={table}>
         {
           isGettingHistoryOrders && (
             <div className="w-full bg-gray-200 animate-pulse h-24 rounded-lg" />
@@ -162,10 +162,10 @@ function HistoryTable(props: HistoryTableProps) {
           </div>
         )}
         {(data && data.history.length > 0 && !isGettingHistoryOrders) && (
-          <Table.Container>
-            <Table.Header />
-            <Table.Body />
-          </Table.Container>
+          <TableComponent.Container>
+            <TableComponent.Header />
+            <TableComponent.Body />
+          </TableComponent.Container>
         )}
         <Pagination
           existsOrder={(data && data.history.length === 0) ?? false}
@@ -173,7 +173,7 @@ function HistoryTable(props: HistoryTableProps) {
           page={page}
           setCurrentPage={setCurrentPage}
         />
-      </Table.Root>
+      </TableComponent>
     </>
   );
 }

@@ -5,7 +5,7 @@ import { Cell, ColumnDef } from "@tanstack/react-table";
 import { AxiosResponse } from "axios";
 import { EditIcon, LoaderCircle, Trash } from "lucide-react";
 import { lazy, Suspense, useMemo } from "react";
-import Table from "../Table";
+import TableComponent from "../molecule/Table";
 import MenuHeader from "./MenuHeader";
 import NewProductModalSkeleton from "./modals/products/skeletons/NewProductModalSkeleton";
 
@@ -158,12 +158,12 @@ function ProductsTable({ props }: ProductsTableProps) {
             <LoaderCircle size={26} className="animate-spin" />
           </div>
         ) : (
-          <Table.Root table={table}>
-            <Table.Container>
-              <Table.Header />
-              <Table.Body />
-            </Table.Container>
-          </Table.Root>
+          <TableComponent table={table}>
+            <TableComponent.Container>
+              <TableComponent.Header />
+              <TableComponent.Body />
+            </TableComponent.Container>
+          </TableComponent>
         )}
       </div>
     </div>

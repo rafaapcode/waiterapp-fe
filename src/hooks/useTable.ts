@@ -1,4 +1,4 @@
-import { TableCtx } from "@/components/Table/TableContext";
+import { TableCtx } from "@/store/table/TableContext";
 import { useContext } from "react";
 
 const useTable = () => {
