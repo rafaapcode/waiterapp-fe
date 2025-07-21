@@ -6,46 +6,35 @@ import {
   getFilteredRowModel,
   TableOptions,
 } from "@tanstack/react-table";
-import { AxiosResponse } from "axios";
-import { Eye, Trash } from "lucide-react";
+import { Eye, LoaderCircle, Trash } from "lucide-react";
 import { Dispatch, lazy, SetStateAction, Suspense, useMemo } from "react";
-import { type DateRange } from "react-day-picker";
-import Pagination from "../pagination/Pagination";
-import Table from "../Table";
-import DropdownDateFilter from "./DropdownFilter";
-import HistoryModalSkeleton from "./modals/HistoryModalSkeleton";
+import Pagination from "../../components/pagination/Pagination";
+import Table from "../../components/Table";
+import HistoryModalSkeleton from "../pages/history/modals/HistoryModalSkeleton";
 
-const HistoryModal = lazy(() => import("./modals/HistoryModal"));
+const HistoryModal = lazy(() => import("../pages/history/modals/HistoryModal"));
 
 interface HistoryTableProps {
-  props: {
-    selectedOrder: HistoryOrder | null;
-    isPending: boolean;
-    isFetching: boolean;
-    handleSelectedOrder: (order: HistoryOrder | null) => void;
-    onDeleteOrder: (id: string) => Promise<AxiosResponse<any, any>>;
-    data: { total_pages: number; history: HistoryOrder[] };
-    handleResetData: () => void;
-    filterDateSelected: DateRange | undefined;
-    handleSelectedDate: (date: DateRange | undefined) => void;
-    setCurrentPage: Dispatch<SetStateAction<number>>;
-    page: number;
-  };
+  selectedOrder: HistoryOrder | null;
+  isGettingHistoryOrders: boolean;
+  isDeleting: boolean;
+  handleSelectedOrder: (order: HistoryOrder | null) => void;
+  onDeleteOrder: (id: string) => Promise<void>;
+  data?: { total_pages: number; history: HistoryOrder[] };
+  setCurrentPage: Dispatch<SetStateAction<number>>;
+  page: number;
 }
 
-function HistoryTable({ props }: HistoryTableProps) {
+function HistoryTable(props: HistoryTableProps) {
   const {
     data,
     selectedOrder,
-    isFetching,
-    isPending,
-    handleResetData,
     setCurrentPage,
-    handleSelectedDate,
     handleSelectedOrder,
-    filterDateSelected,
     page,
     onDeleteOrder,
+    isDeleting,
+    isGettingHistoryOrders
   } = props;
 
   const columns = useMemo(
@@ -117,7 +106,8 @@ function HistoryTable({ props }: HistoryTableProps) {
                 onClick={() => onDeleteOrder(row.original.id)}
                 className="text-red-600 hover:text-red-800 transition-all duration-200"
               >
-                <Trash size={20} />
+                {isDeleting && <LoaderCircle size={22} className="text-red-500"/>}
+                {!isDeleting && <Trash size={20} />}
               </button>
             </div>
           );
@@ -135,7 +125,7 @@ function HistoryTable({ props }: HistoryTableProps) {
     getFilteredRowModel: getFilteredRowModel(),
   };
 
-  const table = createTable(data.history, columns, optionsTable);
+  const table = createTable(data?.history ?? [], columns, optionsTable);
   return (
     <>
       {!!selectedOrder && (
@@ -143,7 +133,7 @@ function HistoryTable({ props }: HistoryTableProps) {
           fallback={<HistoryModalSkeleton isVisible={!!selectedOrder} />}
         >
           <HistoryModal
-            isLoading={isPending}
+            isLoading={isDeleting}
             order={selectedOrder}
             isVisible={!!selectedOrder}
             onClose={() => handleSelectedOrder(null)}
@@ -155,36 +145,31 @@ function HistoryTable({ props }: HistoryTableProps) {
         <div className="flex">
           <h2 className="text-lg font-semibold text=[#333333]">Pedidos</h2>
           <span className="bg-[#CCCCCC33] ml-4 px-2 py-1 rounded-md font-semibold">
-            {data.history.length ?? 0}
+            {data?.history.length ?? 0}
           </span>
         </div>
       </div>
 
       <Table.Root table={table}>
-        <div className="flex justify-end items-center gap-14">
-          {isFetching && (
-            <p className="text-zinc-400 animate-pulse">Atualizando dados...</p>
-          )}
-          <DropdownDateFilter
-            handleResetData={handleResetData}
-            date={filterDateSelected}
-            onSelectDates={handleSelectedDate}
-          />
-        </div>
-        {data.history.length === 0 && (
+        {
+          isGettingHistoryOrders && (
+            <div className="w-full bg-gray-200 animate-pulse h-24 rounded-lg" />
+          )
+        }
+        {((!data || data.history.length === 0) && !isGettingHistoryOrders) && (
           <div className="w-full mt-4 rounded-md border bg-white overflow-y-auto max-h-full text-center text-2xl py-10">
             <p>Nenhum pedido encontrado !</p>
           </div>
         )}
-        {data.history.length > 0 && (
+        {(data && data.history.length > 0 && !isGettingHistoryOrders) && (
           <Table.Container>
             <Table.Header />
             <Table.Body />
           </Table.Container>
         )}
         <Pagination
-          existsOrder={data.history.length !== 0}
-          totalPage={data.total_pages}
+          existsOrder={(data && data.history.length === 0) ?? false}
+          totalPage={data?.total_pages ?? 0}
           page={page}
           setCurrentPage={setCurrentPage}
         />

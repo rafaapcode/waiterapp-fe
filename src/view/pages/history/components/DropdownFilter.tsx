@@ -5,8 +5,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Funnel } from "lucide-react";
 import { type DateRange } from "react-day-picker";
-import { Button } from "../ui/button";
-import { Calendar } from "../ui/calendar";
+import { Button } from "../../../../components/ui/button";
+import { Calendar } from "../../../../components/ui/calendar";
 
 interface DropdownDateFilterProps {
   date: DateRange | undefined;

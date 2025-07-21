@@ -3,16 +3,12 @@ import { HistoryService } from "@/services/api/history";
 import { HistoryOrder } from "@/types/Order";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
-import { DateRange } from "react-day-picker";
 import { toast } from "react-toastify";
 
 export const useHistoryController = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [selectedOrder, setSelectedOrder] = useState<HistoryOrder | null>(null);
-  const [filterDateSelected, setFilterDateSelected] = useState<
-    DateRange | undefined
-  >(undefined);
   const [page, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
@@ -33,68 +29,34 @@ export const useHistoryController = () => {
     },
   });
 
-  const { data: historyOrders, isPending: isGettingHistoryOrders } = useQuery({
+  const { data: historyOrders, isFetching: isGettingHistoryOrders } = useQuery({
     queryKey: ["history_orders", { orgId: user.orgId, page }],
     queryFn: async () => {
       return await HistoryService.getHistoryOrders({ page, orgId: user.orgId });
     },
   });
 
-  const {
-    data: historyFilteredOrders,
-    isPending: isGettingHistoryFilteredOrders,
-  } = useQuery({
-    queryKey: [
-      "history",
-      "order",
-      "filter",
-      {
-        orgid: user.orgId,
-        filters: { from: filterDateSelected?.from, to: filterDateSelected?.to },
-      },
-    ],
-    queryFn: async () => {
-      return await HistoryService.getFilteredHistoryOrders({
-        filteredDateSelected: filterDateSelected,
-        page,
-        orgId: user.orgId,
-      });
-    },
-  });
-
-  const handleSelectedDate = useCallback(
-    (date: DateRange | undefined) => setFilterDateSelected(date),
-    []
-  );
-
   const handleSelectedOrder = useCallback(
     (order: HistoryOrder | null) => setSelectedOrder(order),
     []
   );
 
-  const handleResetData = () => {
-    queryClient.invalidateQueries({ queryKey: ["history_orders", { page }] });
-    setFilterDateSelected(undefined);
-  };
 
   const handleDeleteOrder = async (id: string) => {
     try {
       await deleteOrderMutate(id);
+      queryClient.invalidateQueries({queryKey: ["history_orders", { orgId: user.orgId, page }]});
     } catch (error) {
       toast.error('Erro ao deletar o pedido');
       console.log('Erro ao deletar o pedido', error);
     }
   };
-
+  console.log('HistoryOrders', historyOrders);
   return {
-    data: !filterDateSelected ? historyOrders : historyFilteredOrders,
-    filterDateSelected,
+    data: historyOrders && historyOrders,
     setCurrentPage,
-    handleResetData,
-    handleSelectedDate,
     handleSelectedOrder,
     isGettingHistoryOrders,
-    isGettingHistoryFilteredOrders,
     isDeleting,
     onDeleteOrder: (id: string) => handleDeleteOrder(id),
     page,

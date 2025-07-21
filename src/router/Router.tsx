@@ -1,9 +1,9 @@
 import NotFound from "@/pages/NotFound/NotFound";
 import Profile from "@/pages/Profile/profile.page";
+import History from "@/view/pages/history";
 import InfoOrgs from "@/view/pages/org/info/index";
 import OrgRegister from "@/view/pages/org/register/index";
 import { Route, Routes } from "react-router";
-import History from "../pages/History/history.page";
 import Menu from "../pages/Menu/menu.page";
 import Users from "../pages/Users/users.page";
 import Layout from "../view/layouts/Layout";

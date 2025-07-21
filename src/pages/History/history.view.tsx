@@ -1,4 +1,4 @@
-import HistoryTable from "@/components/HistoryComponents/HistoryTable";
+import HistoryTable from "@/view/components/HistoryTable";
 import { IoNewspaperOutline } from "react-icons/io5";
 import Header from "../../components/molecule/PageHeader";
 import { HistoryModelType } from "./history.type";
