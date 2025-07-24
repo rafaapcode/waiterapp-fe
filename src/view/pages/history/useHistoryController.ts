@@ -45,13 +45,18 @@ export const useHistoryController = () => {
   const handleDeleteOrder = async (id: string) => {
     try {
       await deleteOrderMutate(id);
-      queryClient.invalidateQueries({queryKey: ["history_orders", { orgId: user.orgId, page }]});
+      queryClient.setQueryData(["history_orders", { orgId: user.orgId, page }], (orders: HistoryService.GetHistoryOrdersOutput) => {
+        return {
+          ...orders,
+          history: orders.history.filter(o => o.id !== id)
+        }
+      })
     } catch (error) {
-      toast.error('Erro ao deletar o pedido');
+      toast.error('Erro ao deletar o pedido', {toastId: 'deleteOrderId'});
       console.log('Erro ao deletar o pedido', error);
     }
   };
-  console.log('HistoryOrders', historyOrders);
+
   return {
     data: historyOrders && historyOrders,
     setCurrentPage,

@@ -31,9 +31,7 @@ export const useOrdersBoardController = ({
           ? OrderStatus.IN_PRODUCTION
           : OrderStatus.DONE;
       await onChangeOrderStatus(selectedOrder!._id, status);
-      toast.success(
-        `O pedido da mesa ${selectedOrder?.table} teve o status alterado!`
-      );
+      toast.success('O pedido da mesa teve o status alterado!', {toastId: 'changeOrderStatusId'});
       setIsModalOpen(false);
     } catch (error: any) {
       if (error.response && error.response.data.message) {
@@ -46,13 +44,13 @@ export const useOrdersBoardController = ({
   const handleCancelOrder = async () => {
     try {
       await onCancelOrder(selectedOrder?._id!);
-      toast.success(`O pedido da mesa ${selectedOrder?.table} foi cancelado!`);
+      toast.success('O pedido da mesa foi cancelado!', {toastId: 'cancelOrder'});
       setIsModalOpen(false);
     } catch (error: any) {
       if (error.response && error.response.data.message) {
-        toast.error(error.response.data.message);
+        toast.error(error.response.data.message, {toastId: 'cancelOrderError'});
       }
-      toast.error("Erro ao mudar ao cancelar a sua ordem.");
+      toast.error("Erro ao mudar ao cancelar a sua ordem.", {toastId: 'cancelOrderError'});
     }
   };
 

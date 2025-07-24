@@ -20,7 +20,7 @@ function App() {
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthenticationProvider>
-          <ToastContainer position="top-center" />
+          <ToastContainer autoClose={2000} pauseOnHover={false} pauseOnFocusLoss={false} position="top-center" />
           <Router />
         </AuthenticationProvider>
       </QueryClientProvider>

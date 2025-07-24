@@ -27,7 +27,7 @@ export const useHomeController = () => {
       });
     } catch (error: any) {
       console.log(error);
-      toast.error("Erro ao reiniciar o dia.");
+      toast.error("Erro ao reiniciar o dia.", {toastId: 'restartDayId'});
     }
   };
 
