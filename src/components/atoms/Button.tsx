@@ -7,7 +7,7 @@ const buttonVariants = cva(['flex justify-center items-center gap-2 text-white t
   variants: {
     variant: {
       primary: 'bg-[#D73035] hover:bg-[#ec4248] disabled:bg-[#CCCCCC]',
-      secondary: 'bg-tranparent hover:tranparent text-[#D73035] disabled:text-[#c74e52]'
+      secondary: 'bg-tranparent hover:tranparent text-[#D73035] disabled:text-[#c74e52]',
     },
     size: {
       sm: 'py-[6px] px-3 rounded-[35px]',

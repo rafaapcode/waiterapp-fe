@@ -1,3 +1,4 @@
+import { cn } from "@/utils/cn";
 
 interface MenuTabProps {
   tabSelected: "products" | "categories";
@@ -5,25 +6,13 @@ interface MenuTabProps {
 }
 
 function Menutab({ handleTab, tabSelected }: MenuTabProps) {
-
-  const styles = {
-    selected: {
-      btn: "w-[142px] h-[53px] rounded-lg shadow-inner bg-white transition-all duration-150",
-      text: "text-sm text-[#D73035] font-semibold"
-    },
-    notSelected:  {
-      btn: "w-[142px] h-[53px] rounded-lg transition-all duration-150",
-      text: "text-sm text-[#666666]"
-    },
-  }
-
   return (
     <section className="w-full flex mt-16 border-b">
-      <button onClick={() => handleTab("products")} className={tabSelected === "products" ? styles.selected.btn : styles.notSelected.btn}>
-        <p className={tabSelected === "products" ? styles.selected.text : styles.notSelected.text}>Produtos</p>
+      <button onClick={() => handleTab("products")} className={cn('w-[142px] h-[53px] rounded-lg transition-all duration-150', tabSelected === "products" && 'shadow-inner bg-white')}>
+        <p className={cn("text-sm text-[#666666]", tabSelected === "products" && "text-[#D73035] font-semibold")}>Produtos</p>
       </button>
-      <button onClick={() => handleTab("categories")} className={tabSelected === "categories" ? styles.selected.btn : styles.notSelected.btn}>
-        <p className={tabSelected === "categories" ? styles.selected.text : styles.notSelected.text}>Categorias</p>
+      <button onClick={() => handleTab("categories")} className={cn('w-[142px] h-[53px] rounded-lg transition-all duration-150', tabSelected === "categories" && 'shadow-inner bg-white')}>
+        <p className={cn("text-sm text-[#666666]", tabSelected === "categories" && "text-[#D73035] font-semibold")}>Categorias</p>
       </button>
     </section>
   )
