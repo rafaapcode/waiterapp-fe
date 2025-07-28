@@ -1,7 +1,6 @@
 import { ProductFieldsChanged } from "@/components/MenuComponents/modals/products/EditProductModal";
 import { NewProductData } from "@/components/MenuComponents/modals/products/NewProductModal";
 import { createProductSchema } from "@/components/MenuComponents/modals/products/validations/createProductSchema";
-import { ProductsForFe } from "@/pages/Menu/menu.type";
 import { Categorie } from "@/types/Categorie";
 import {
   IngredientsTypeFromAPI,
@@ -19,86 +18,35 @@ import { AxiosResponse } from "axios";
 import { OnErrorCBType, OnSuccessCBType } from "../types/mutations.type";
 
 export class MenuService {
-  static listAllProducts(orgId: string): UseQueryResult<ProductsForFe[], Error> {
-    return useQuery({
-      queryKey: ["list_all_products", orgId],
-      queryFn: async (): Promise<ProductsForFe[]> => {
-        try {
-          const { data } = await apiclient.get(`/product/${orgId}`);
-          const products = data as Products[];
+  static async listAllProducts(
+    orgId: string
+  ): Promise<MenuService.ListAllProductOutput> {
+    const { data } = await apiclient.get(`/product/${orgId}`);
+    const products = data as Products[];
 
-          return products.map((product) => ({
-            id: product._id,
-            categoria: product.category.name,
-            imageUrl: product.imageUrl,
-            name: product.name,
-            preco: product.discount ? product.priceInDiscount : product.price,
-          }));
-        } catch (error) {
-          return [];
-        }
-      },
-    });
+    return products.map((product) => ({
+      id: product._id,
+      categoria: product.category.name,
+      imageUrl: product.imageUrl,
+      name: product.name,
+      preco: product.discount ? product.priceInDiscount : product.price,
+    }));
   }
 
-  static deleteProduct(
-    onSuccess: OnSuccessCBType,
-    onError: OnErrorCBType
-  ): {
-    deleteProduct: UseMutateAsyncFunction<
-      AxiosResponse<any, any>,
-      Error,
-      {orgId: string, id: string},
-      unknown
-    >;
-    isPending: boolean;
-  } {
-    const { mutateAsync: deleteProduct, isPending } = useMutation({
-      mutationFn: async ({orgId,id}: {orgId: string, id: string}) =>
-        await apiclient.delete(`/product/${orgId}/${id}`),
-      onSuccess,
-      onError,
-    });
-
-    return { deleteProduct, isPending };
+  static async deleteProduct({
+    id,
+    orgId,
+  }: MenuService.DeleteProductInput): Promise<void> {
+    await apiclient.delete(`/product/${orgId}/${id}`);
   }
 
-  static listAllCategories(orgId: string): UseQueryResult<Categorie[], Error> {
-    return useQuery({
-      queryKey: ["all_categories", orgId],
-      staleTime: Infinity,
-      queryFn: async (): Promise<Categorie[]> => {
-        try {
-          const { data } = await apiclient.get(`/category/categories/${orgId}`);
-          return data as Categorie[];
-        } catch (error: any) {
-          console.log(error.response);
-          return [];
-        }
-      },
-    });
+  static async listAllCategories(orgId: string): Promise<MenuService.ListAllCategoriesOutput> {
+    const { data } = await apiclient.get(`/category/categories/${orgId}`);
+    return data as Categorie[];
   }
 
-  static deleteCategorie(
-    onSuccess: OnSuccessCBType,
-    onError: OnErrorCBType
-  ): {
-    deleteCategorie: UseMutateAsyncFunction<
-      AxiosResponse<any, any>,
-      Error,
-      {orgId: string, id: string},
-      unknown
-    >;
-    isPending: boolean;
-  } {
-    const { mutateAsync: deleteCategorie, isPending } = useMutation({
-      mutationFn: async ({id, orgId}:{orgId: string, id: string}) =>
-        await apiclient.delete(`/category/${orgId}/${id}`),
-      onSuccess,
-      onError,
-    });
-
-    return { deleteCategorie, isPending };
+  static async deleteCategorie({id, orgId}: MenuService.DeleteCategorieInput): Promise<void> {
+    await apiclient.delete(`/category/${orgId}/${id}`);
   }
 
   static createProduct(
@@ -123,9 +71,12 @@ export class MenuService {
         } else {
           try {
             // Upload image
-            const { data: responseImageUrl } = await uploadImage.postForm(`?userid=${data.userId}&orgId=${data.org}&productId=${data.name}&categoryOfImage='PRODUCT'`, {
-              file: data.image,
-            });
+            const { data: responseImageUrl } = await uploadImage.postForm(
+              `?userid=${data.userId}&orgId=${data.org}&productId=${data.name}&categoryOfImage='PRODUCT'`,
+              {
+                file: data.image,
+              }
+            );
             productData.imageUrl = responseImageUrl.url;
           } catch (error) {
             productData.imageUrl =
@@ -149,7 +100,7 @@ export class MenuService {
   }
 
   static getInfoProduct(
-    {orgId, productId}:{orgId: string, productId: string},
+    { orgId, productId }: { orgId: string; productId: string },
     onClose: () => void,
     cb: (data: ProductFieldsChanged) => void
   ): UseQueryResult<Products | undefined, Error> {
@@ -157,7 +108,9 @@ export class MenuService {
       queryKey: ["get_product_info_edit_form", { productId, orgId }],
       queryFn: async () => {
         try {
-          const { data } = await apiclient.get(`/product/${orgId}/${productId}`);
+          const { data } = await apiclient.get(
+            `/product/${orgId}/${productId}`
+          );
           const product = data as Products;
           cb({
             description: product.description,
@@ -237,8 +190,20 @@ export class MenuService {
     isPending: boolean;
   } {
     const { mutateAsync, isPending } = useMutation({
-      mutationFn: async ({ name, icon, org }: { icon: string; name: string, org: string }) => {
-        return await apiclient.post("/category/categories", { icon, name, org });
+      mutationFn: async ({
+        name,
+        icon,
+        org,
+      }: {
+        icon: string;
+        name: string;
+        org: string;
+      }) => {
+        return await apiclient.post("/category/categories", {
+          icon,
+          name,
+          org,
+        });
       },
       onSuccess,
       onError,
@@ -269,7 +234,7 @@ export class MenuService {
         id,
         icon,
         name,
-        org
+        org,
       }: {
         id: string;
         icon: string;
@@ -312,4 +277,18 @@ export class MenuService {
 
     return { createIngredient: mutateAsync, isPending };
   }
+}
+
+export namespace MenuService {
+  export type ListAllProductOutput = {
+    id: string;
+    imageUrl: string;
+    name: string;
+    categoria: string;
+    preco: number;
+  }[];
+
+  export type DeleteProductInput = { orgId: string; id: string };
+  export type DeleteCategorieInput = { orgId: string; id: string };
+  export type ListAllCategoriesOutput = Categorie[];
 }
