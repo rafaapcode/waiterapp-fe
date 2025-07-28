@@ -1,6 +1,7 @@
 import PageHeader from "@/components/molecule/PageHeader";
 import { cn } from "@/utils/cn";
 import { BiFoodMenu } from "react-icons/bi";
+import ProductsTable from "./components/products";
 import { useMenuController } from "./useMenucontroller";
 
 function MenuPage() {
@@ -50,7 +51,7 @@ function MenuPage() {
       </section>
 
       <section className="w-full mt-8">
-        {tab === "products" && <p>produtos</p>}
+        {tab === "products" && <ProductsTable />}
         {tab === "categories" && <p>categories</p>}
       </section>
     </main>

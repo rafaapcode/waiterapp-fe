@@ -1,7 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { MenuService } from "@/services/api/menu";
-import { useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -20,34 +19,38 @@ export const useProductsController = () => {
     []
   );
 
-  const { deleteProduct } = MenuService.deleteProduct(
-    () => {
-      toast.success("Produto deletado com Sucesso");
-      queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
-    },
-    (error) => {
-      const err = error as AxiosError;
-      if (err.status === 404) {
-        toast.warning("Produto não encontrado !");
-      } else {
-        toast.error("Erro ao encontrar o ID do registro");
-      }
-      return;
-    }
-  );
+  const { mutateAsync: deleteProduct, isPending: deletingProduct } =
+    useMutation({
+      mutationFn: async (productId: string) =>
+        MenuService.deleteProduct({ id: productId, orgId: user.orgId }),
+    });
 
-  const { data, isLoading, isFetching } = MenuService.listAllProducts(
-    user.orgId
-  );
+  const { data: products, isFetching: isFetchingProducts } = useQuery({
+    queryKey: ["get", "all_products", { orgId: user.orgId }],
+    queryFn: async () => {
+      return await MenuService.listAllProducts(user.orgId);
+    }
+  });
+
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      await deleteProduct(productId);
+      queryClient.invalidateQueries({
+        queryKey: ["get", "all_products", { orgId: user.orgId }],
+      });
+    } catch (error) {
+      toast.error("Erro ao deletar o produto");
+    }
+  };
 
   return {
-    data,
-    DeleteProduct: deleteProduct,
+    products,
+    isFetchingProducts,
+    handleDeleteProduct,
+    deletingProduct,
     handleNewProductModal,
     handleProductIdToEdit,
-    isFetching,
     newProductModal,
-    isLoading,
     productIdToEdit,
     orgId: user.orgId,
     userId: user.id,

@@ -23,12 +23,12 @@ interface ProductsForFe {
 
 function ProductsTable() {
   const {
-    DeleteProduct,
-    data,
+    handleDeleteProduct,
+    products,
+    deletingProduct,
+    isFetchingProducts,
     handleNewProductModal,
     handleProductIdToEdit,
-    isFetching,
-    isLoading,
     newProductModal,
     productIdToEdit,
     orgId,
@@ -82,11 +82,12 @@ function ProductsTable() {
               </button>
               <button
                 onClick={() =>
-                  DeleteProduct({ id: row.original.id, orgId: orgId })
+                  handleDeleteProduct(row.original.id)
                 }
                 className="text-red-600 hover:text-red-800 transition-all duration-200"
               >
-                <Trash size={20} />
+                {deletingProduct &&  <LoaderCircle size={20} className="animate-spin text-red-500" />}
+                {!deletingProduct && <Trash size={20} />}
               </button>
             </div>
           );
@@ -96,7 +97,7 @@ function ProductsTable() {
     []
   );
 
-  const table = createTable(data || [], columns);
+  const table = createTable(products || [], columns);
 
   return (
     <div>
@@ -125,13 +126,13 @@ function ProductsTable() {
         </Suspense>
       )}
       <MenuHeader
-        quantity={data?.length}
+        quantity={products?.length}
         onClick={handleNewProductModal}
         title="Produtos"
         btnTitle="Novo Produto"
       />
       <div className="mt-2 max-h-full overflow-y-auto">
-        {isLoading || isFetching ? (
+        {isFetchingProducts ? (
           <div className="w-full mt-4 p-4 flex justify-center items-center">
             <LoaderCircle size={26} className="animate-spin" />
           </div>
