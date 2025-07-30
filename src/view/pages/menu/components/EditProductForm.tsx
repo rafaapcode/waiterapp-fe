@@ -1,13 +1,13 @@
 import { Switch } from "@/components/ui/switch";
 import { Tag } from "lucide-react";
 import { Dispatch, lazy, Suspense, useCallback, useState } from "react";
-import { ProductFieldsChanged } from "../EditProductModal";
-import IngredientModalSkeleton from "../ingredientsModal/IngredientModalSkeleton";
-import ImageUpload from "../productFormComponents/imageUpload";
-import { default as Ingredients } from "../productFormComponents/ingredients";
+import { ProductFieldsChanged } from "../modals/products/EditProductModal";
+import IngredientModalSkeleton from "../skeletons/ingredients/IngredientModalSkeleton";
+import ImageUpload from "./imageUpload";
+import { default as Ingredients } from "./ingredients";
 
 const IngredientModal = lazy(
-  () => import("../ingredientsModal/IngredientModal")
+  () => import("../modals/ingredients/IngredientModal")
 );
 
 interface EditProductFormProps {

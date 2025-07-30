@@ -88,16 +88,16 @@ export class MenuService {
   static async getAllIngredients(
     ingredientUsed?: string[]
   ): Promise<MenuService.GetAllIngredientsOutput> {
+    const setOfIngredientsAlreadyInUse = new Set(ingredientUsed ?? []);
     const { data } = await apiclient.get("/ingredient");
     const ingredient = data.data as IngredientsTypeFromAPI[];
-    // TODO: reusar essa logica
     const formatIngredient = ingredient.map((ingredient) => ({
       id: ingredient._id,
       name: ingredient.name,
       icon: ingredient.icon,
-      selected: new Set(ingredientUsed).has(ingredient._id),
+      ...(ingredientUsed && {selected: setOfIngredientsAlreadyInUse.has(ingredient._id)}),
     }));
-    return ingredient;
+    return formatIngredient;
   }
 
   static async getAllCategories(
@@ -152,7 +152,12 @@ export namespace MenuService {
   export type CreateProductInput = NewProductData;
   export type GetInfoProductsInput = { orgId: string; productId: string };
   export type GetInfoProductsOutput = Products | undefined;
-  export type GetAllIngredientsOutput = IngredientsTypeFromAPI[] | undefined;
+  export type GetAllIngredientsOutput = {
+    id: string;
+    name: string;
+    icon: string;
+    selected?: boolean;
+  }[] | undefined;
   export type GetAllCategoriesOutput = Categorie[];
   export type CreateCategorieInput = {
     icon: string;

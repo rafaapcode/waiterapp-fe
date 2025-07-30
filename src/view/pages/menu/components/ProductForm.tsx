@@ -6,14 +6,14 @@ import {
   useCallback,
   useState,
 } from "react";
-import IngredientModalSkeleton from "../ingredientsModal/IngredientModalSkeleton";
-import { NewProductData } from "../NewProductModal";
-import Categories from "../productFormComponents/categories";
-import ImageUpload from "../productFormComponents/imageUpload";
-import Ingredients from "../productFormComponents/ingredients";
+import { NewProductData } from "../modals/products/NewProductModal";
+import IngredientModalSkeleton from "../skeletons/ingredients/IngredientModalSkeleton";
+import Categories from "./categories";
+import ImageUpload from "./imageUpload";
+import Ingredients from "./ingredients";
 
 const IngredientModal = lazy(
-  () => import("../ingredientsModal/IngredientModal")
+  () => import("../modals/ingredients/IngredientModal")
 );
 
 interface ProductFormProp {
@@ -42,6 +42,7 @@ export default function ProductForm({ product, setProduct, orgId }: ProductFormP
           />
         </Suspense>
       )}
+
       <div className="space-y-4 pl-2">
         {/* Image Upload */}
         <ImageUpload

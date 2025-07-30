@@ -1,7 +1,6 @@
 import Modal from "@/components/Modal";
 import { MenuService } from "@/services/api/menu";
-import { useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -38,25 +37,22 @@ function NewProductModal({ isVisible, onClose, orgId, userId }: NewProductModalP
     org: orgId,
     userId: ''
   });
+  const {mutateAsync: createProduct, isPending} = useMutation({
+    mutationFn: async (data: MenuService.CreateProductInput) => {
+      await MenuService.createProduct(data);
+    }
+  })
 
-  const { createProduct, isPending } = MenuService.createProduct(
-    () => {
-      toast.success("Produto criado com sucesso !");
+  const onSave = async () => {
+    try {
+      await createProduct({...product, userId: userId, org: orgId});
+      toast.success("Produto criado com sucesso !", {toastId: 'criarProdutoSucessoId'});
       queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
       onClose();
-    },
-    (error: any) => {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        const err = error as AxiosError<{ message: string }>;
-        toast.error(err.response?.data?.message);
-      }
-      return;
+    } catch (error) {
+      toast.error("Erro ao criar o produto", {toastId: 'criarProdutoErroId'});
     }
-  );
-
-  const onSave = () => createProduct({...product, userId: userId, org: orgId});
+  }
 
   return (
     <Modal.Root size="lg" isVisible={isVisible}>

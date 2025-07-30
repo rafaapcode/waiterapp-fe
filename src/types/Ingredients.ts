@@ -8,6 +8,6 @@ export interface IngredientsTypeFromAPI {
 export interface IngredientTypeForFe {
   id: string;
   name: string;
-  selected: boolean;
+  selected?: boolean;
   icon: string;
 }

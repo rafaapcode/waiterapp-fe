@@ -1,8 +1,7 @@
 import Modal from "@/components/Modal";
 import { MenuService } from "@/services/api/menu";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Image, LoaderCircle } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -29,19 +28,23 @@ function RemoveProductModal({
 }: RemoveProductModalProps) {
   const queryClient = useQueryClient();
 
-  const { deleteProduct, isPending } = MenuService.deleteProduct(
-    () => {
-      toast.success("Produto deletado com Sucesso");
+  const {mutateAsync:deleteProduct, isPending } = useMutation({
+    mutationFn: async (data: MenuService.DeleteProductInput) => {
+      await MenuService.deleteProduct(data);
+    }
+  });
+
+  const onDelete = async () => {
+    try {
+      await deleteProduct({id: data.id, orgId});
+      toast.success("Produto deletado com Sucesso", {toastId: 'deletarProdutoSucessoId'});
       queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
       onClose();
       editModalClose();
-    },
-    (error) => {
-      const err = error as AxiosError<{message: string}>;
-      toast.error(err.response?.data?.message);
-      return;
+    } catch (error) {
+      toast.error("Erro ao deletar o produto", {toastId: 'deletarProdutoErroId'});
     }
-  );
+  }
 
   return (
     <Modal.Root size="sm" isVisible={isVisible} priority>
@@ -83,7 +86,7 @@ function RemoveProductModal({
         orientation="horizontal"
       >
         <button
-          onClick={() => deleteProduct({id: data.id, orgId: orgId})}
+          onClick={() => onDelete()}
           type="button"
           className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
         >

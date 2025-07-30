@@ -1,7 +1,7 @@
 import Modal from "@/components/Modal";
 import { MenuService } from "@/services/api/menu";
 import { apiclient, uploadImage } from "@/utils/apiClient";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
 import { lazy, Suspense, useCallback, useState } from "react";
@@ -57,7 +57,11 @@ function EditProductModal({
     []
   );
 
-  const { data, isLoading, isFetching } = MenuService.getInfoProduct({productId: productid, orgId: orgId}, onClose, (data) => setProduct(data));
+  // const { data, isLoading, isFetching } = MenuService.getInfoProduct({productId: productid, orgId: orgId}, onClose, (data) => setProduct(data));
+  const {data, isFetching} = useQuery({
+    queryKey: ['getInfoProduct', {productid, orgId}],
+    queryFn: async () => await MenuService.getInfoProduct({orgId, productId: productid})
+  });
 
   const { mutateAsync: editProductMutation, isPending } = useMutation({
     mutationFn: async (data: ProductFieldsChanged) => {
@@ -160,8 +164,8 @@ function EditProductModal({
             <div>
               <p>Nenhum produto encontrado !</p>
             </div>
-          ) : isLoading || isFetching ? (
-            <NewProductModalSkeleton isVisible={isLoading || isFetching} />
+          ) : isFetching ? (
+            <NewProductModalSkeleton isVisible={isFetching} />
           ) : (
             <EditProductForm product={product} setProduct={setProduct} />
           )}
