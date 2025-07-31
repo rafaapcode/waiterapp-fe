@@ -11,16 +11,20 @@ interface NewCategorieModalProps {
   orgId: string;
 }
 
-function NewCategorieModal({ isVisible, onClose, orgId }: NewCategorieModalProps) {
+function NewCategorieModal({
+  isVisible,
+  onClose,
+  orgId,
+}: NewCategorieModalProps) {
   const emojiRef = useRef<HTMLInputElement>(null);
   const [categoryName, setCategorieName] = useState<string>("");
   const queryClient = useQueryClient();
 
-  const {mutateAsync:createCategorie, isPending } = useMutation({
+  const { mutateAsync: createCategorie, isPending } = useMutation({
     mutationFn: async (data: MenuService.CreateCategorieInput) => {
       await MenuService.createCategorie(data);
-    }
-  })
+    },
+  });
 
   const onSave = async () => {
     const emojivalue = emojiRef.current?.value.toString();
@@ -29,12 +33,20 @@ function NewCategorieModal({ isVisible, onClose, orgId }: NewCategorieModalProps
       return;
     }
     try {
-     await  createCategorie({icon: emojivalue ?? "🥗", name: categoryName, org: orgId});
-     toast.success("Categoria criada com Sucesso !", {toastId: 'categoriaCriadaSucessoId'});
+      await createCategorie({
+        icon: emojivalue ?? "🥗",
+        name: categoryName,
+        org: orgId,
+      });
+      toast.success("Categoria criada com Sucesso !", {
+        toastId: "categoriaCriadaSucessoId",
+      });
       queryClient.invalidateQueries({ queryKey: ["all_categories"] });
       onClose();
     } catch (error) {
-      toast.error("Erro ao criar a categoria", {toastId: 'categoriaCriadaErroId'});
+      toast.error("Erro ao criar a categoria", {
+        toastId: "categoriaCriadaErroId",
+      });
     }
   };
 
@@ -44,7 +56,7 @@ function NewCategorieModal({ isVisible, onClose, orgId }: NewCategorieModalProps
         <p className="text-[#333333] text-2xl font-semibold">Nova Categoria</p>
       </Modal.Header>
 
-      <Modal.Body className="my-12">
+      <Modal.Body className="mt-12">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
             <label htmlFor="emoji" className="text-[#333333]">
@@ -73,10 +85,7 @@ function NewCategorieModal({ isVisible, onClose, orgId }: NewCategorieModalProps
             />
           </div>
         </div>
-      </Modal.Body>
-
-      <Modal.CustomFooter>
-        <div className="w-full flex justify-end">
+        <div className="w-full flex justify-end mt-10">
           <button
             onClick={onSave}
             disabled={categoryName.length < 4 || isPending}
@@ -90,7 +99,7 @@ function NewCategorieModal({ isVisible, onClose, orgId }: NewCategorieModalProps
             )}
           </button>
         </div>
-      </Modal.CustomFooter>
+      </Modal.Body>
     </Modal.Root>
   );
 }

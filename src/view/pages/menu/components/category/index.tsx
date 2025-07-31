@@ -15,10 +15,10 @@ import MenuHeader from "../MenuHeader";
 import { useCategoryController } from "./useCategoryController";
 
 const CategorieModal = lazy(
-  () => import("../../modals/category/NewCategorieModal")
+  () => import("../../modals/category/newCategorieModal/NewCategorieModal")
 );
 const EditCategorieModal = lazy(
-  () => import("../../modals/category/EditCategorieModal")
+  () => import("../../modals/category/editCategorieModal/EditCategorieModal")
 );
 
 function CategoriesTable() {

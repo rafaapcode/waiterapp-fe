@@ -2,6 +2,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { MenuService } from "@/services/api/menu";
 import { Categorie } from "@/types/Categorie";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -45,6 +46,7 @@ export const useCategoryController = () => {
       });
     }
   };
+
 
   return {
     data,

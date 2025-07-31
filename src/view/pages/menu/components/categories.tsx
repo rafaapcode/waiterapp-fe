@@ -9,7 +9,7 @@ interface CategoriesProps {
 
 function Categories({ selectedCategory,setSelectedCategory, orgId }: CategoriesProps) {
 
-  const {data: allCats} = useQuery({
+  const {data: allCategories} = useQuery({
     queryKey: ['get', 'categories', orgId],
     queryFn: async () => await MenuService.getAllCategories(orgId)
   });
@@ -22,7 +22,7 @@ function Categories({ selectedCategory,setSelectedCategory, orgId }: CategoriesP
     <div className="h-full">
       <label className="block text-sm font-medium mb-2">Categoria</label>
       <div className="flex flex-wrap w-full max-h-[200px] overflow-y-auto gap-2">
-        {(!allCats || allCats.length === 0) ? <div><p>Nenhuma categoria encontrada</p></div> : allCats.map((category) => (
+        {(!allCategories || allCategories.length === 0) ? <div><p>Nenhuma categoria encontrada</p></div> : allCategories.map((category) => (
           <button
             key={category._id}
             onClick={() => toggleCategory(category._id)}
