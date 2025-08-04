@@ -1,9 +1,8 @@
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
 import Modal from "@/components/Modal";
-import { MenuService } from "@/services/api/menu";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
-import { useRef, useState } from "react";
-import { toast } from "react-toastify";
+import { useNewCategorieController } from "./useNewCategorieController";
 
 interface NewCategorieModalProps {
   isVisible: boolean;
@@ -16,39 +15,12 @@ function NewCategorieModal({
   onClose,
   orgId,
 }: NewCategorieModalProps) {
-  const emojiRef = useRef<HTMLInputElement>(null);
-  const [categoryName, setCategorieName] = useState<string>("");
-  const queryClient = useQueryClient();
-
-  const { mutateAsync: createCategorie, isPending } = useMutation({
-    mutationFn: async (data: MenuService.CreateCategorieInput) => {
-      await MenuService.createCategorie(data);
-    },
-  });
-
-  const onSave = async () => {
-    const emojivalue = emojiRef.current?.value.toString();
-    if (!categoryName) {
-      toast.error("O nome da categoria é obrigatório");
-      return;
-    }
-    try {
-      await createCategorie({
-        icon: emojivalue ?? "🥗",
-        name: categoryName,
-        org: orgId,
-      });
-      toast.success("Categoria criada com Sucesso !", {
-        toastId: "categoriaCriadaSucessoId",
-      });
-      queryClient.invalidateQueries({ queryKey: ["all_categories"] });
-      onClose();
-    } catch (error) {
-      toast.error("Erro ao criar a categoria", {
-        toastId: "categoriaCriadaErroId",
-      });
-    }
-  };
+  const { errors, isPending, isValid, onSubmit, register } =
+    useNewCategorieController({
+      isVisible,
+      onClose,
+      orgId,
+    });
 
   return (
     <Modal.Root size="sm" isVisible={isVisible}>
@@ -57,48 +29,36 @@ function NewCategorieModal({
       </Modal.Header>
 
       <Modal.Body className="mt-12">
-        <div className="flex flex-col gap-8">
+        <form className="flex flex-col gap-8" onSubmit={onSubmit}>
           <div className="flex flex-col gap-2">
-            <label htmlFor="emoji" className="text-[#333333]">
-              Emoji
-            </label>
-            <input
-              ref={emojiRef}
-              id="emoji"
-              defaultValue={"🍽️"}
-              type="text"
-              className="p-4 border border-[#CCCCCC] rounded-md"
+            <Input
+              placeholder="Emoji"
+              error={errors.icon?.message}
+              {...register("icon")}
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="categoria" className="text-[#333333]">
-              Nome da Categoria
-            </label>
-            <input
-              value={categoryName}
-              onChange={(e) => setCategorieName(e.target.value)}
-              id="categoria"
-              type="text"
-              placeholder="Ex: Lanches"
-              className="p-4 border border-[#CCCCCC] rounded-md"
+            <Input
+              placeholder="Nome da Categoria"
+              error={errors.name?.message}
+              {...register("name")}
             />
           </div>
-        </div>
-        <div className="w-full flex justify-end mt-10">
-          <button
-            onClick={onSave}
-            disabled={categoryName.length < 4 || isPending}
-            type="button"
-            className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
-          >
-            {isPending ? (
-              <LoaderCircle size={22} className="animate-spin" />
-            ) : (
-              "Salvar alterações"
-            )}
-          </button>
-        </div>
+          <div className="w-full flex justify-end">
+            <Button
+              disabled={!isValid || isPending}
+              type="submit"
+              variant={"primary"}
+            >
+              {isPending ? (
+                <LoaderCircle size={22} className="animate-spin" />
+              ) : (
+                "Salvar alterações"
+              )}
+            </Button>
+          </div>
+        </form>
       </Modal.Body>
     </Modal.Root>
   );

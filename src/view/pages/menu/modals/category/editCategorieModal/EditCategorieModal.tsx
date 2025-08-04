@@ -1,3 +1,4 @@
+import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Modal from "@/components/Modal";
 import { Categorie } from "@/types/Categorie";
@@ -64,7 +65,7 @@ function EditCategorieModal({
         </Modal.Header>
 
         <Modal.Body className="mt-12">
-          <div className="flex flex-col gap-8">
+          <form className="flex flex-col gap-8" onSubmit={onSubmit}>
             <div className="flex flex-col gap-2">
               <Input
                 placeholder="Emoji"
@@ -80,28 +81,28 @@ function EditCategorieModal({
                 {...register("name")}
               />
             </div>
-          </div>
-          <div className="w-full flex justify-between mt-10">
-            <button
-              onClick={handleDeleteModal}
-              type="button"
-              className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none"
-            >
-              Excluir Categoria
-            </button>
-            <button
-              onClick={onSubmit}
-              disabled={!isValid || isPending}
-              type="button"
-              className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
-            >
-              {isPending ? (
-                <LoaderCircle size={22} className="animate-spin" />
-              ) : (
-                "Salvar alterações"
-              )}
-            </button>
-          </div>
+            <div className="w-full flex justify-between">
+              <Button
+                onClick={handleDeleteModal}
+                type="button"
+                variant="secondary"
+              >
+                Excluir Categoria
+              </Button>
+              <Button
+                disabled={!isValid || isPending}
+                type="submit"
+                variant="primary"
+                size={"md"}
+              >
+                {isPending ? (
+                  <LoaderCircle size={22} className="animate-spin" />
+                ) : (
+                  "Salvar alterações"
+                )}
+              </Button>
+            </div>
+          </form>
         </Modal.Body>
       </Modal.Root>
     </>

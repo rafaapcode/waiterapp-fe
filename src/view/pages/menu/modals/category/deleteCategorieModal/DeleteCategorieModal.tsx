@@ -1,3 +1,4 @@
+import Button from "@/components/atoms/Button";
 import Modal from "@/components/Modal";
 import { Categorie } from "@/types/Categorie";
 import { LoaderCircle } from "lucide-react";
@@ -46,30 +47,30 @@ function DeleteCategorieModal({
           </p>
         </div>
         <footer className="flex justify-between items-center mt-8">
-          <button
+          <Button
             disabled={isPending}
             onClick={onClose}
             type="button"
-            className="disabled:opacity-50 disabled:cursor-not-allowed py-3 px-6 text-[#D73035] font-bold border-none"
+            variant={"secondary"}
           >
             {isPending ? (
               <LoaderCircle size={22} className="animate-spin" />
             ) : (
               "Manter Categoria"
             )}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onDelete}
             disabled={isPending}
             type="button"
-            className="bg-[#D73035] disabled:opacity-50 disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
+            size={"md"}
           >
             {isPending ? (
               <LoaderCircle size={22} className="animate-spin" />
             ) : (
               "Excluir categoria"
             )}
-          </button>
+          </Button>
         </footer>
       </Modal.Body>
     </Modal.Root>

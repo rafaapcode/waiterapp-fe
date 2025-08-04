@@ -1,9 +1,8 @@
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
 import Modal from "@/components/Modal";
-import { MenuService } from "@/services/api/menu";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
-import { useState } from "react";
-import { toast } from "react-toastify";
+import { useIngredientController } from "./useIngredientController";
 
 interface IngredientModalProps {
   isVisible: boolean;
@@ -11,30 +10,10 @@ interface IngredientModalProps {
 }
 
 function IngredientModal({ isVisible, onClose }: IngredientModalProps) {
-  const queryClient = useQueryClient();
-  const [emojiValue, setEmoji] = useState<string>("🍕");
-  const [ingredientName, setIngredientName] = useState<string>("");
-
-  const {mutateAsync: createIngredient, isPending} = useMutation({
-    mutationFn: async (data: MenuService.CreateIngredientInput) => {
-      await MenuService.createIngredient(data);
-    }
-  });
-
-  const onSave = async () => {
-    if (!emojiValue || !ingredientName) {
-      toast.error("Emoji e o nome do ingrediente são obrigatórios !");
-      return;
-    }
-    try {
-      await createIngredient({ icon: emojiValue, name: ingredientName });
-      toast.success("Ingrediente cadastrado com Sucesso", {toastId: 'cadastroSucessoIngrediente'});
-      queryClient.invalidateQueries({ queryKey: ["all_ingredients"] });
-      onClose();
-    } catch (error) {
-      toast.error("Erro ao cadastrar ingredients", {toastId: 'cadastroErroIngrediente'});
-    }
-  };
+  const { errors, isPending, isValid, onSubmit, register } =
+    useIngredientController({
+      onClose,
+    });
 
   return (
     <Modal.Root size="sm" isVisible={isVisible} priority>
@@ -44,53 +23,39 @@ function IngredientModal({ isVisible, onClose }: IngredientModalProps) {
         </p>
       </Modal.Header>
 
-      <Modal.Body className="my-4">
-        <div className="flex flex-col gap-8">
+      <Modal.Body className="mt-4">
+        <form className="flex flex-col gap-8" onSubmit={onSubmit}>
           <div className="flex flex-col gap-2">
-            <label htmlFor="emoji" className="text-[#333333]">
-              Emoji
-            </label>
-            <input
-              value={emojiValue}
-              onChange={(e) => setEmoji(e.target.value)}
-              id="emoji"
-              type="text"
-              className="p-4 border border-[#CCCCCC] rounded-md"
+            <Input
+              placeholder="Emoji"
+              error={errors.icon?.message}
+              {...register("icon")}
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="categoria" className="text-[#333333]">
-              Nome do Ingrediente
-            </label>
-            <input
-              value={ingredientName}
-              onChange={(e) => setIngredientName(e.target.value)}
-              id="ingredient"
-              type="text"
-              placeholder="Ex: Carne"
-              className="p-4 border border-[#CCCCCC] rounded-md"
+            <Input
+              placeholder="Nome do Ingrediente"
+              error={errors.name?.message}
+              {...register("name")}
             />
           </div>
-        </div>
+
+          <div className="w-full flex justify-end">
+            <Button
+              disabled={!isValid || isPending}
+              type="submit"
+             variant={"primary"}
+            >
+              {isPending ? (
+                <LoaderCircle size={22} className="animate-spin" />
+              ) : (
+                "Salvar alterações"
+              )}
+            </Button>
+          </div>
+        </form>
       </Modal.Body>
-
-      <Modal.CustomFooter>
-        <div className="w-full flex justify-end">
-          <button
-            onClick={onSave}
-            disabled={(ingredientName.length < 4 && !emojiValue) || isPending}
-            type="button"
-            className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
-          >
-            {isPending ? (
-              <LoaderCircle size={22} className="animate-spin" />
-            ) : (
-              "Salvar alterações"
-            )}
-          </button>
-        </div>
-      </Modal.CustomFooter>
     </Modal.Root>
   );
 }
