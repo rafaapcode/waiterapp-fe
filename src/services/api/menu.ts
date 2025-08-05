@@ -4,6 +4,8 @@ import { Categorie } from "@/types/Categorie";
 import { IngredientsTypeFromAPI } from "@/types/Ingredients";
 import { Products } from "@/types/Products";
 import { apiclient, uploadImage } from "@/utils/apiClient";
+import { updateProductSchema } from "@/view/pages/menu/validations/updateProductSchema";
+import { toast } from "react-toastify";
 
 export class MenuService {
   static async listAllProducts(
@@ -75,6 +77,45 @@ export class MenuService {
     await apiclient.post("/product", productData);
   }
 
+  static async editProduct(data: MenuService.EditProductInput) {
+    const productDataUpdated = {
+      description: data.description,
+      discount: data.discount,
+      ingredients: [],
+      name: data.name,
+      priceInDiscount: data.priceInDiscount,
+      imageUrl: data.imageUrl,
+      price: data.price,
+    };
+
+    const isValid = updateProductSchema.safeParse(productDataUpdated);
+
+    if (!isValid.success) {
+      const msgs = isValid.error.issues.map((iss) => iss.message);
+      throw new Error(msgs.join(" , "));
+    }
+
+    if (data.image) {
+      try {
+        // Upload  image
+        const { data: responseImageUrl } = await uploadImage.postForm("", {
+          image: data.image,
+        });
+        productDataUpdated.imageUrl = responseImageUrl.url;
+      } catch (error: any) {
+        if (error.message === "Imagem infectada !") {
+          toast.error("Sua imagem pode estar infectada !");
+          productDataUpdated.imageUrl = data.imageUrl;
+        } else {
+          toast.error("Não foi possível realizar o upload da sua imagem !");
+          productDataUpdated.imageUrl = data.imageUrl;
+        }
+      }
+    }
+
+    await apiclient.put(`/product/${data.productId}`, productDataUpdated);
+  }
+
   static async getInfoProduct({
     orgId,
     productId,
@@ -95,7 +136,9 @@ export class MenuService {
       id: ingredient._id,
       name: ingredient.name,
       icon: ingredient.icon,
-      ...(ingredientUsed && {selected: setOfIngredientsAlreadyInUse.has(ingredient._id)}),
+      ...(ingredientUsed && {
+        selected: setOfIngredientsAlreadyInUse.has(ingredient._id),
+      }),
     }));
     return formatIngredient;
   }
@@ -150,14 +193,17 @@ export namespace MenuService {
   export type DeleteCategorieInput = { orgId: string; id: string };
   export type ListAllCategoriesOutput = Categorie[];
   export type CreateProductInput = NewProductData;
+  export type EditProductInput = NewProductData & {productId: string; discount: boolean; priceInDiscount: number};
   export type GetInfoProductsInput = { orgId: string; productId: string };
   export type GetInfoProductsOutput = Products | undefined;
-  export type GetAllIngredientsOutput = {
-    id: string;
-    name: string;
-    icon: string;
-    selected?: boolean;
-  }[] | undefined;
+  export type GetAllIngredientsOutput =
+    | {
+        id: string;
+        name: string;
+        icon: string;
+        selected?: boolean;
+      }[]
+    | undefined;
   export type GetAllCategoriesOutput = Categorie[];
   export type CreateCategorieInput = {
     icon: string;

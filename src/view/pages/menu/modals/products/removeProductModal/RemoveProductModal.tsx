@@ -1,10 +1,8 @@
 import Button from "@/components/atoms/Button";
 import Modal from "@/components/Modal";
-import { MenuService } from "@/services/api/menu";
 import { formatCurrency } from "@/utils/formatCurrency";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Image, LoaderCircle } from "lucide-react";
-import { toast } from "react-toastify";
+import { useRemoveProductController } from "./useRemoveProductController";
 
 interface RemoveProductModalProps {
   isVisible: boolean;
@@ -27,29 +25,15 @@ function RemoveProductModal({
   editModalClose,
   orgId,
 }: RemoveProductModalProps) {
-  const queryClient = useQueryClient();
-
-  const { mutateAsync: deleteProduct, isPending } = useMutation({
-    mutationFn: async (data: MenuService.DeleteProductInput) => {
-      await MenuService.deleteProduct(data);
-    },
+  const {
+    isPending,
+    onDelete
+  } = useRemoveProductController({
+    editModalClose,
+    onClose,
+    orgId,
+    productId: data.id
   });
-
-  const onDelete = async () => {
-    try {
-      await deleteProduct({ id: data.id, orgId });
-      toast.success("Produto deletado com Sucesso", {
-        toastId: "deletarProdutoSucessoId",
-      });
-      queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
-      onClose();
-      editModalClose();
-    } catch (error) {
-      toast.error("Erro ao deletar o produto", {
-        toastId: "deletarProdutoErroId",
-      });
-    }
-  };
 
   return (
     <Modal.Root size="sm" isVisible={isVisible} priority>

@@ -10,7 +10,7 @@ import { useProductsController } from "./useProductsController";
 
 const NewProductModal = lazy(() => import("../../modals/products/NewProductModal"));
 const EditProductModal = lazy(
-  () => import("../../modals/products/EditProductModal")
+  () => import("../../modals/products/editProductModal/EditProductModal")
 );
 
 interface ProductsForFe {
@@ -125,12 +125,14 @@ function ProductsTable() {
           />
         </Suspense>
       )}
+
       <MenuHeader
         quantity={products?.length}
         onClick={handleNewProductModal}
         title="Produtos"
         btnTitle="Novo Produto"
       />
+
       <div className="mt-2 max-h-full overflow-y-auto">
         {isFetchingProducts ? (
           <div className="w-full mt-4 p-4 flex justify-center items-center">

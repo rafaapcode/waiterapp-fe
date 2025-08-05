@@ -1,30 +1,30 @@
 import { Switch } from "@/components/ui/switch";
 import { LoaderCircle, Tag } from "lucide-react";
-import { Dispatch, lazy, Suspense, useCallback, useState } from "react";
-import { ProductFieldsChanged } from "../modals/products/editProductModal/EditProductModal";
-import IngredientModalSkeleton from "../skeletons/ingredients/IngredientModalSkeleton";
-import ImageUpload from "./imageUpload";
-import { default as Ingredients } from "./ingredients";
+import { Dispatch, lazy, Suspense } from "react";
+import { ProductFieldsChanged } from "../../../modals/products/editProductModal/EditProductModal";
+import IngredientModalSkeleton from "../../../skeletons/ingredients/IngredientModalSkeleton";
+import ImageUpload from "../../imageUpload";
+import { default as Ingredients } from "../../ingredients";
+import { useEditProductController } from "./useEditProductController";
 
 const IngredientModal = lazy(
-  () => import("../modals/ingredients/IngredientModal")
+  () => import("../../../modals/ingredients/IngredientModal")
 );
 
-interface EditProductFormProps {
+interface EditProductFormNewProps {
   product: ProductFieldsChanged;
   setProduct: Dispatch<React.SetStateAction<ProductFieldsChanged>>;
 }
 
-export default function EditProductForm({
+export default function EditProductFormNew({
   product,
   setProduct,
-}: EditProductFormProps) {
-  const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
+}: EditProductFormNewProps) {
+  const {
+    handleIngredientModal,
+    ingredientModal
+  } = useEditProductController();
 
-  const handleIngredientModal = useCallback(
-    () => setIngredienteModal((prev) => !prev),
-    []
-  );
 
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full overflow-y-auto">
@@ -38,6 +38,7 @@ export default function EditProductForm({
           />
         </Suspense>
       )}
+
       <div className="space-y-6 pl-2">
         {/* Image Upload */}
         <ImageUpload
@@ -129,6 +130,7 @@ export default function EditProductForm({
             Produto em promoção
           </label>
         </div>
+
         {product.discount && (
           <div className="pl-7 border-l-2 border-red-200">
             <label

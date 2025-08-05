@@ -3,15 +3,14 @@ import { MenuService } from "@/services/api/menu";
 import { apiclient, uploadImage } from "@/utils/apiClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { LoaderCircle } from "lucide-react";
 import { lazy, Suspense, useCallback, useState } from "react";
 import { toast } from "react-toastify";
-import EditProductForm from "../../components/EditProductForm";
-import NewProductModalSkeleton from "../../skeletons/products/NewProductModalSkeleton";
-import RemoveProductModalSkeleton from "../../skeletons/products/RemoveProductModalSkeleton";
-import { updateProductSchema } from "../../validations/updateProductSchema";
+import EditProductForm from "../../../components/EditProductForm";
+import NewProductModalSkeleton from "../../../skeletons/products/NewProductModalSkeleton";
+import RemoveProductModalSkeleton from "../../../skeletons/products/RemoveProductModalSkeleton";
+import { updateProductSchema } from "../../../validations/updateProductSchema";
 
-const RemoveProductModal = lazy(() => import("./RemoveProductModal"));
+const RemoveProductModal = lazy(() => import("../removeProductModal/RemoveProductModal"));
 
 export interface ProductFieldsChanged {
   ingredients: string[];
@@ -170,30 +169,6 @@ function EditProductModal({
             <EditProductForm product={product} setProduct={setProduct} />
           )}
         </Modal.Body>
-
-        <Modal.CustomFooter>
-          <div className="w-full flex justify-between">
-            <button
-              onClick={toggleRemoveProductModal}
-              type="button"
-              className="disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-red-500 px-6 font-semibold"
-            >
-              Excluir Produto
-            </button>
-            <button
-              onClick={onSave}
-              disabled={isPending}
-              type="button"
-              className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
-            >
-              {isPending ? (
-                <LoaderCircle size={26} className="animate-spin" />
-              ) : (
-                "Salvar alterações"
-              )}
-            </button>
-          </div>
-        </Modal.CustomFooter>
       </Modal.Root>
     </>
   );
