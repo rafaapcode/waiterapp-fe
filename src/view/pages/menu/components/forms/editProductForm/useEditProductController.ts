@@ -47,13 +47,7 @@ export const useEditProductController = ({onClose}: UseEditProductControllerProp
 
   const onSave = async (data: EditProductFormData) => {
     try {
-      await editProductMutation({
-        ...data,
-        ingredients: [],
-        productId: "",
-        org: "",
-
-      });
+      await editProductMutation(data);
       toast.success("Produto atualizado com sucesso !");
       queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
       queryClient.invalidateQueries({
