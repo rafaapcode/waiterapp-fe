@@ -1,5 +1,5 @@
 export interface Categorie {
-  _id: string;
+  id: string;
   icon: string;
   name: string;
 }

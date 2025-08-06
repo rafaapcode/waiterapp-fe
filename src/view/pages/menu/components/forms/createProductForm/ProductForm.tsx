@@ -27,7 +27,7 @@ export default function ProductForm() {
     categories,
     fetchingCategories,
   } = useCreateProductFormController();
-
+  console.log(categories);
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full">
       {ingredientModal && (
@@ -87,25 +87,24 @@ export default function ProductForm() {
         {/* Category */}
         <div>
           <label className="block text-sm mb-2">Categoria</label>
-          {categories && (
+          {fetchingCategories && <div className="animate-pulse bg-gray-200 h-[52px] rounded-md" />}
+          {(categories && !fetchingCategories) && (
             <Controller
               name="category"
               defaultValue=""
               control={control}
-              render={({ field: { onChange, value } }) => {
-                return (
-                  <Select
-                    value={value}
-                    onChange={(cat) => console.log(cat)}
-                    error={errors.category?.message}
-                    placeholder="Categoria"
-                    options={categories.map((cats) => ({
-                      label: `${cats.icon} - ${cats.name}`,
-                      value: cats._id,
-                    }))}
-                  />
-                );
-              }}
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  value={value}
+                  onChange={onChange}
+                  error={errors.category?.message}
+                  placeholder="Categoria"
+                  options={categories.map((cats) => ({
+                    label: `${cats.icon} - ${cats.name}`,
+                    value: cats.id,
+                  }))}
+                />
+              )}
             />
           )}
         </div>

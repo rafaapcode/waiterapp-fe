@@ -26,7 +26,6 @@ export function Select({
   const [selectedValue, setSelectedValue] = useState<string | undefined>(value);
 
   const handleSelect = (value: string) => {
-    console.log(value);
     setSelectedValue(value);
     onChange?.(value);
   };
