@@ -9,10 +9,10 @@ import z from "zod";
 
 const createProductschema = z.object({
   image: z.instanceof(File).optional(),
-  name: z.string(),
-  description: z.string(),
-  price: z.string(),
-  category: z.string(),
+  name: z.string().min(4, 'O nome deve ter no mínimo 4 caracteres'),
+  description: z.string().min(10, 'A descrição deve ter no mínimo 10 caracteres'),
+  price: z.string().regex(/\D+/g, 'O preço deve ser um número válido'),
+  category: z.string({required_error: 'Categoria é obrigatória'}).min(2, 'A categoria é obrigatória'),
   ingredients: z.string().array(),
 });
 
@@ -45,14 +45,15 @@ export const useCreateProductFormController = () => {
 
   const onCreate = async (data: CreateProductFormData) => {
     try {
-      await createProductMutation({
-        ...data,
-        price: Number(data.price),
-        image: data.image ?? null,
-        org: user.orgId,
-        userId: user.id,
-        imageUrl: "",
-      });
+      // await createProductMutation({
+      //   ...data,
+      //   price: Number(data.price),
+      //   image: data.image ?? null,
+      //   org: user.orgId,
+      //   userId: user.id,
+      //   imageUrl: "",
+      // });
+      console.log(data);
       toast.success("Produto criado com sucesso !");
       queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
     } catch (error) {
@@ -70,6 +71,8 @@ export const useCreateProductFormController = () => {
     errors,
     isValid,
     control,
-    isPending
+    isPending,
+    orgId: user.orgId,
+    userId: user.id
   };
 };

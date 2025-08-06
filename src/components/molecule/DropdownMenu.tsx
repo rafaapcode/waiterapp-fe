@@ -20,7 +20,7 @@ interface DropdownMenuContentProps {
 interface DropdownMenuItemProps {
   children: ReactNode;
   className?: string;
-  onSelect?: () => void;
+  onSelect?: (e: any | undefined) => void;
 }
 
 function DropdownMenu({ children }: DropdownMenuProps) {

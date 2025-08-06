@@ -31,8 +31,7 @@ function ProductsTable() {
     handleProductIdToEdit,
     newProductModal,
     productIdToEdit,
-    orgId,
-    userId
+    orgId
   } = useProductsController();
 
   const columns = useMemo(
@@ -106,8 +105,6 @@ function ProductsTable() {
           fallback={<NewProductModalSkeleton isVisible={newProductModal} />}
         >
           <NewProductModal
-            orgId={orgId}
-            userId={userId}
             isVisible={newProductModal}
             onClose={handleNewProductModal}
           />

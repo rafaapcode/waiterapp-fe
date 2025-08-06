@@ -1,9 +1,8 @@
 import Input from "@/components/atoms/Input";
 import TextArea from "@/components/atoms/TextArea";
 import { LoaderCircle } from "lucide-react";
-import { Dispatch, lazy, SetStateAction, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { Controller } from "react-hook-form";
-import { NewProductData } from "../../../modals/products/NewProductModal";
 import IngredientModalSkeleton from "../../../skeletons/ingredients/IngredientModalSkeleton";
 import Categories from "../../categories";
 import ImageUpload from "../../imageUpload";
@@ -14,17 +13,7 @@ const IngredientModal = lazy(
   () => import("../../../modals/ingredients/IngredientModal")
 );
 
-interface ProductFormProp {
-  product: NewProductData;
-  setProduct: Dispatch<SetStateAction<NewProductData>>;
-  orgId: string;
-}
-
-export default function ProductForm({
-  product,
-  setProduct,
-  orgId,
-}: ProductFormProp) {
+export default function ProductForm() {
   const {
     handleIngredientModal,
     ingredientModal,
@@ -34,6 +23,7 @@ export default function ProductForm({
     isValid,
     onSubmit,
     isPending,
+    orgId,
   } = useCreateProductFormController();
 
   return (
@@ -54,7 +44,7 @@ export default function ProductForm({
         <Controller
           name="image"
           control={control}
-          render={({field: {value, onChange}}) => (
+          render={({ field: { value, onChange } }) => (
             <ImageUpload
               selectedImage={value ?? null}
               setSelectedImage={(file: File | null) =>
@@ -93,19 +83,32 @@ export default function ProductForm({
         </div>
 
         {/* Category */}
-        <Categories
-          orgId={orgId}
-          selectedCategory={product.category}
-          setSelectedCategory={(category) =>
-            setProduct((prev) => ({ ...prev, category }))
-          }
+        <Controller
+          name="category"
+          defaultValue=""
+          control={control}
+          render={({ field: { onChange, value } }) => {
+            console.log(value);
+            return (
+              <Categories
+                orgId={orgId}
+                selectedCategory={value}
+                setSelectedCategory={onChange}
+              />
+            );
+          }}
         />
       </div>
-      <Ingredients
-        onClick={handleIngredientModal}
-        setIngredients={(ings) =>
-          setProduct((prev) => ({ ...prev, ingredients: ings }))
-        }
+
+      <Controller
+        name="ingredients"
+        control={control}
+        render={({ field: { onChange } }) => (
+          <Ingredients
+            onClick={handleIngredientModal}
+            setIngredients={(ings) => onChange(ings)}
+          />
+        )}
       />
 
       <div className="col-span-2 flex justify-end">

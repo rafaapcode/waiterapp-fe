@@ -29,6 +29,7 @@ function Ingredients({
       if(ings) {
         setListedIngredients(ings);
       }
+      return ings;
     }
   });
 
