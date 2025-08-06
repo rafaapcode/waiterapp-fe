@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { MenuService } from "@/services/api/menu";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -27,6 +27,11 @@ export const useCreateProductFormController = () => {
     () => setIngredienteModal((prev) => !prev),
     []
   );
+
+  const { data: allCategories, isFetching } = useQuery({
+    queryKey: ["get", "categories", user.orgId],
+    queryFn: async () => await MenuService.getAllCategories(user.orgId),
+  });
 
   const {
     register,
@@ -72,6 +77,8 @@ export const useCreateProductFormController = () => {
     isValid,
     control,
     isPending,
+    categories: allCategories,
+    fetchingCategories: isFetching,
     orgId: user.orgId,
     userId: user.id
   };

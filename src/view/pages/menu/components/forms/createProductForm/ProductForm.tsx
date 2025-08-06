@@ -1,10 +1,10 @@
 import Input from "@/components/atoms/Input";
 import TextArea from "@/components/atoms/TextArea";
+import { Select } from "@/components/molecule/Select";
 import { LoaderCircle } from "lucide-react";
 import { lazy, Suspense } from "react";
 import { Controller } from "react-hook-form";
 import IngredientModalSkeleton from "../../../skeletons/ingredients/IngredientModalSkeleton";
-import Categories from "../../categories";
 import ImageUpload from "../../imageUpload";
 import Ingredients from "../../ingredients";
 import { useCreateProductFormController } from "./useCreateProductFormController";
@@ -24,6 +24,8 @@ export default function ProductForm() {
     onSubmit,
     isPending,
     orgId,
+    categories,
+    fetchingCategories,
   } = useCreateProductFormController();
 
   return (
@@ -83,21 +85,30 @@ export default function ProductForm() {
         </div>
 
         {/* Category */}
-        <Controller
-          name="category"
-          defaultValue=""
-          control={control}
-          render={({ field: { onChange, value } }) => {
-            console.log(value);
-            return (
-              <Categories
-                orgId={orgId}
-                selectedCategory={value}
-                setSelectedCategory={onChange}
-              />
-            );
-          }}
-        />
+        <div>
+          <label className="block text-sm mb-2">Categoria</label>
+          {categories && (
+            <Controller
+              name="category"
+              defaultValue=""
+              control={control}
+              render={({ field: { onChange, value } }) => {
+                return (
+                  <Select
+                    value={value}
+                    onChange={(cat) => console.log(cat)}
+                    error={errors.category?.message}
+                    placeholder="Categoria"
+                    options={categories.map((cats) => ({
+                      label: `${cats.icon} - ${cats.name}`,
+                      value: cats._id,
+                    }))}
+                  />
+                );
+              }}
+            />
+          )}
+        </div>
       </div>
 
       <Controller
