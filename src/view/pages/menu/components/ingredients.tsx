@@ -22,7 +22,7 @@ function Ingredients({
     IngredientTypeForFe[]
   >([]);
 
-   const {isFetching} = useQuery({
+  const {isFetching} = useQuery({
     queryKey: ['get', 'allingredients'],
     queryFn: async () => {
       const ings = await MenuService.getAllIngredients(ingredientUsed);

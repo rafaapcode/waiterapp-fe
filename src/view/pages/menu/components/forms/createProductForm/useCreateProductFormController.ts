@@ -3,17 +3,27 @@ import { MenuService } from "@/services/api/menu";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import z from "zod";
 
 const createProductschema = z.object({
   image: z.instanceof(File).optional(),
-  name: z.string().min(4, 'O nome deve ter no mínimo 4 caracteres'),
-  description: z.string().min(10, 'A descrição deve ter no mínimo 10 caracteres'),
-  price: z.string().regex(/\D+/g, 'O preço deve ser um número válido'),
-  category: z.string({required_error: 'Categoria é obrigatória'}).min(2, 'A categoria é obrigatória'),
-  ingredients: z.string().array(),
+  name: z.string().min(4, "O nome deve ter no mínimo 4 caracteres"),
+  description: z
+    .string()
+    .min(10, "A descrição deve ter no mínimo 10 caracteres"),
+  price: z.string().regex(/\D+/g, "O preço deve ser um número válido"),
+  category: z
+    .string({ required_error: "Categoria é obrigatória" })
+    .min(2, "A categoria é obrigatória"),
+  ingredients: z
+    .array(
+      z.object({
+        ingredient_name: z.string().min(1, "Ingrediente é obrigatório"),
+      })
+    )
+    .min(1, "É obrigatório selecionar ao menos 1 ingrediente"),
 });
 
 type CreateProductFormData = z.infer<typeof createProductschema>;
@@ -28,9 +38,17 @@ export const useCreateProductFormController = () => {
     []
   );
 
-  const { data: allCategories, isFetching } = useQuery({
+  const { data: allCategories, isFetching: fetchingCategories } = useQuery({
     queryKey: ["get", "categories", user.orgId],
     queryFn: async () => await MenuService.getAllCategories(user.orgId),
+  });
+
+  const { data: allIngredients, isFetching: fetchingIngredients } = useQuery({
+    queryKey: ["get", "allingredients"],
+    queryFn: async () => {
+      const ings = await MenuService.getAllIngredients();
+      return ings;
+    },
   });
 
   const {
@@ -41,6 +59,11 @@ export const useCreateProductFormController = () => {
   } = useForm<CreateProductFormData>({
     resolver: zodResolver(createProductschema),
     mode: "onChange",
+  });
+
+  const ingredients_array = useFieldArray({
+    name: "ingredients",
+    control: control,
   });
 
   const { mutateAsync: createProductMutation, isPending } = useMutation({
@@ -77,9 +100,12 @@ export const useCreateProductFormController = () => {
     isValid,
     control,
     isPending,
+    ingredients_array,
     categories: allCategories,
-    fetchingCategories: isFetching,
+    fetchingCategories,
+    allIngredients,
+    fetchingIngredients,
     orgId: user.orgId,
-    userId: user.id
+    userId: user.id,
   };
 };
