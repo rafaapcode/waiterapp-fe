@@ -1,5 +1,5 @@
 export interface IngredientsTypeFromAPI {
-  _id: string;
+  id: string;
   icon: string;
   name: string;
 }

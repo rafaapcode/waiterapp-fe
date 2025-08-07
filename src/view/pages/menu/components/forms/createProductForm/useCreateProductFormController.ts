@@ -3,7 +3,7 @@ import { MenuService } from "@/services/api/menu";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import z from "zod";
 
@@ -13,17 +13,10 @@ const createProductschema = z.object({
   description: z
     .string()
     .min(10, "A descrição deve ter no mínimo 10 caracteres"),
-  price: z.string().regex(/\D+/g, "O preço deve ser um número válido"),
+  price: z.string(),
   category: z
     .string({ required_error: "Categoria é obrigatória" })
     .min(2, "A categoria é obrigatória"),
-  ingredients: z
-    .array(
-      z.object({
-        ingredient_name: z.string().min(1, "Ingrediente é obrigatório"),
-      })
-    )
-    .min(1, "É obrigatório selecionar ao menos 1 ingrediente"),
 });
 
 type CreateProductFormData = z.infer<typeof createProductschema>;
@@ -37,6 +30,7 @@ export const useCreateProductFormController = () => {
     () => setIngredienteModal((prev) => !prev),
     []
   );
+  const [selectedIngredients, setIngredients] = useState<string[]>([]);
 
   const { data: allCategories, isFetching: fetchingCategories } = useQuery({
     queryKey: ["get", "categories", user.orgId],
@@ -61,15 +55,22 @@ export const useCreateProductFormController = () => {
     mode: "onChange",
   });
 
-  const ingredients_array = useFieldArray({
-    name: "ingredients",
-    control: control,
-  });
-
   const { mutateAsync: createProductMutation, isPending } = useMutation({
     mutationFn: async (data: MenuService.CreateProductInput) =>
       await MenuService.createProduct(data),
   });
+
+  const toggleIngredients = (ingredientId: string) => {
+    setIngredients(prev => {
+      const ingredientExistsIndex = prev.findIndex(ing => ing === ingredientId);
+      if(ingredientExistsIndex === -1) {
+        return [...prev, ingredientId];
+      }
+      const oldIngredients = [...prev];
+      oldIngredients.splice(ingredientExistsIndex, 1);
+      return oldIngredients;
+    });
+  }
 
   const onCreate = async (data: CreateProductFormData) => {
     try {
@@ -81,7 +82,6 @@ export const useCreateProductFormController = () => {
       //   userId: user.id,
       //   imageUrl: "",
       // });
-      console.log(data);
       toast.success("Produto criado com sucesso !");
       queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
     } catch (error) {
@@ -100,12 +100,13 @@ export const useCreateProductFormController = () => {
     isValid,
     control,
     isPending,
-    ingredients_array,
     categories: allCategories,
     fetchingCategories,
     allIngredients,
     fetchingIngredients,
     orgId: user.orgId,
     userId: user.id,
+    selectedIngredients,
+    toggleIngredients,
   };
 };

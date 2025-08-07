@@ -133,11 +133,11 @@ export class MenuService {
     const { data } = await apiclient.get("/ingredient");
     const ingredient = data.data as IngredientsTypeFromAPI[];
     const formatIngredient = ingredient.map((ingredient) => ({
-      id: ingredient._id,
+      id: ingredient.id,
       name: ingredient.name,
       icon: ingredient.icon,
       ...(ingredientUsed && {
-        selected: setOfIngredientsAlreadyInUse.has(ingredient._id),
+        selected: setOfIngredientsAlreadyInUse.has(ingredient.id),
       }),
     }));
     return formatIngredient;

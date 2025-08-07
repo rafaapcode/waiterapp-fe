@@ -6,6 +6,7 @@ import { lazy, Suspense } from "react";
 import { Controller } from "react-hook-form";
 import IngredientModalSkeleton from "../../../skeletons/ingredients/IngredientModalSkeleton";
 import ImageUpload from "../../imageUpload";
+import Ingredients from "../../ingredients";
 import { useCreateProductFormController } from "./useCreateProductFormController";
 
 const IngredientModal = lazy(
@@ -22,12 +23,14 @@ export default function ProductForm() {
     isValid,
     onSubmit,
     isPending,
-    orgId,
     allIngredients,
     categories,
     fetchingCategories,
+    selectedIngredients,
+    toggleIngredients,
+    fetchingIngredients,
   } = useCreateProductFormController();
-  console.log(allIngredients);
+
   return (
     <div className="grid grid-cols-2 gap-6 w-full max-h-full">
       {ingredientModal && (
@@ -113,44 +116,18 @@ export default function ProductForm() {
       </div>
 
       {/* Ings */}
-      {/* {allIngredients?.map((ing, index) => (
-        <div
-          key={ing.id}
-          className="flex items-center justify-between p-4 border rounded-lg cursor-pointer hover:bg-gray-100 transition-all duration-200"
-          // onClick={() => toggleIngredient(ingredient.id)}
-        >
-          <div className="flex items-center">
-            <span className="mr-2">{ing.icon || "🍽️"}</span>
-            <span>{ing.name}</span>
-          </div>
-          <Checkbox
-            checked={ing.selected}
-            // onCheckedChange={() => toggleIngredient(ingredient.id)}
-            className="h-5 w-5 border-gray-300 rounded-md"
-            id={ing.id}
-          />
-        </div>
-      ))} */}
-
-      {/* <Controller
-        name="ingredients"
-        control={control}
-        render={({ field: { onChange } }) => (
-          <Ingredients
-            onClick={handleIngredientModal}
-            setIngredients={(ings) => onChange(ings)}
-          />
-        )}
-      /> */}
-      {/* <Ingredients
-        onClick={handleIngredientModal}
-        setIngredients={(ings) => console.log(ings)}
-      /> */}
+      <Ingredients
+        allIngredients={allIngredients ?? []}
+        fetchingIngredients={fetchingIngredients}
+        onClickModal={handleIngredientModal}
+        selectedIngredients={selectedIngredients}
+        toggleIngredients={toggleIngredients}
+      />
 
       <div className="col-span-2 flex justify-end">
         <button
           onClick={onSubmit}
-          disabled={isPending || !isValid}
+          disabled={isPending || !isValid || selectedIngredients.length === 0}
           type="button"
           className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
         >
