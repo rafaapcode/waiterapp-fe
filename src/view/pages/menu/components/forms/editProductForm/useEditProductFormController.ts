@@ -17,6 +17,9 @@ const editProductschema = z.object({
   category: z
     .string({ required_error: "Categoria é obrigatória" })
     .min(2, "A categoria é obrigatória").optional(),
+  discount: z
+    .boolean().optional(),
+  priceInDiscount: z.string().optional()
 });
 
 type EditProductFormData = z.infer<typeof editProductschema>;
@@ -64,6 +67,7 @@ export const useEditProductFormController = ({
     handleSubmit,
     control,
     formState: { errors, isValid, isDirty, dirtyFields},
+    getValues
   } = useForm<EditProductFormData>({
     resolver: zodResolver(editProductschema),
     mode: "onChange",
@@ -78,6 +82,8 @@ export const useEditProductFormController = ({
         description: product?.description ?? '',
         name: product?.name ?? '',
         price: `${product?.price ?? '0'}`,
+        discount: product?.discount,
+        priceInDiscount: `${product?.priceInDiscount ?? '0'}`
       };
     },
   });
@@ -126,6 +132,7 @@ export const useEditProductFormController = ({
   };
 
   const onSubmit = handleSubmit(onEdit);
+
   return {
     onSubmit,
     ingredientModal,
@@ -145,6 +152,7 @@ export const useEditProductFormController = ({
     toggleIngredients,
     removeProductModal,
     toggleRemoveProductModal,
-    isDirty
+    isDirty,
+    discount: getValues().discount
   };
 };

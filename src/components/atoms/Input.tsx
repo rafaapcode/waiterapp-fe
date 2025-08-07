@@ -40,7 +40,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           name={name}
           {...props}
           className={cn(
-            "outline-none transition-all duration-100 border p-3 rounded-lg border-gray-300 focus:border-gray-500",
+            "outline-none transition-all duration-100 border p-3 rounded-lg border-gray-300 focus:border-red-500" ,
             error && "border-red-500 focus:border-red-500",
             className
           )}

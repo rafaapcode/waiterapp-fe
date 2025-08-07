@@ -48,7 +48,7 @@ function Ingredients({
           />
         </div>
       </div>
-      <div className="max-h-[350px] overflow-y-auto flex flex-col gap-1">
+      <div className="max-h-[500px] overflow-y-auto flex flex-col gap-1">
         {fetchingIngredients && (
           <div className="w-full h-full p-4 flex flex-col gap-2">
             <div className="h-10 w-full bg-gray-300 rounded animate-pulse"></div>

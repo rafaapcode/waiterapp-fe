@@ -37,7 +37,7 @@ function EditProductModal({
           </p>
         </Modal.Header>
 
-        <Modal.Body className="my-4">
+        <Modal.Body className="my-2">
           <EditProductForm onClose={onClose} productid={productid}/>
         </Modal.Body>
       </Modal.Root>
