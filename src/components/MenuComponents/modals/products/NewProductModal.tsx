@@ -1,10 +1,5 @@
 import Modal from "@/components/Modal";
-import { MenuService } from "@/services/api/menu";
-import { useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { LoaderCircle } from "lucide-react";
-import { useState } from "react";
-import { toast } from "react-toastify";
 import ProductForm from "./forms/ProductForm";
 
 interface NewProductModalProps {
@@ -26,38 +21,6 @@ export interface NewProductData {
 }
 
 function NewProductModal({ isVisible, onClose, orgId, userId }: NewProductModalProps) {
-  const queryClient = useQueryClient();
-  const [product, setProduct] = useState<NewProductData>({
-    image: null,
-    category: "",
-    description: "",
-    imageUrl: "",
-    ingredients: [],
-    name: "",
-    price: 0,
-    org: orgId,
-    userId: ''
-  });
-
-  const { createProduct, isPending } = MenuService.createProduct(
-    () => {
-      toast.success("Produto criado com sucesso !");
-      queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
-      onClose();
-    },
-    (error: any) => {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        const err = error as AxiosError<{ message: string }>;
-        toast.error(err.response?.data?.message);
-      }
-      return;
-    }
-  );
-
-  const onSave = () => createProduct({...product, userId: userId, org: orgId});
-
   return (
     <Modal.Root size="lg" isVisible={isVisible}>
       <Modal.Header onClose={onClose}>

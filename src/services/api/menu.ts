@@ -193,7 +193,20 @@ export namespace MenuService {
   export type DeleteCategorieInput = { orgId: string; id: string };
   export type ListAllCategoriesOutput = Categorie[];
   export type CreateProductInput = NewProductData;
-  export type EditProductInput = NewProductData & {productId: string; discount: boolean; priceInDiscount: number};
+  export type EditProductInput = {
+    image?: File | null;
+    imageUrl?: string;
+    name?: string;
+    description?: string;
+    ingredients?: string[];
+    category?: string;
+    price?: number;
+    org: string;
+    userId: string;
+    productId: string;
+    discount?: boolean;
+    priceInDiscount?: number;
+  };
   export type GetInfoProductsInput = { orgId: string; productId: string };
   export type GetInfoProductsOutput = Products | undefined;
   export type GetAllIngredientsOutput =

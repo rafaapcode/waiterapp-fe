@@ -21,7 +21,11 @@ const createProductschema = z.object({
 
 type CreateProductFormData = z.infer<typeof createProductschema>;
 
-export const useCreateProductFormController = () => {
+interface UseCreateProductFormControllerProps {
+  onClose: () => void;
+}
+
+export const useCreateProductFormController = ({onClose}: UseCreateProductFormControllerProps) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [ingredientModal, setIngredienteModal] = useState<boolean>(false);
@@ -74,18 +78,20 @@ export const useCreateProductFormController = () => {
 
   const onCreate = async (data: CreateProductFormData) => {
     try {
-      // await createProductMutation({
-      //   ...data,
-      //   price: Number(data.price),
-      //   image: data.image ?? null,
-      //   org: user.orgId,
-      //   userId: user.id,
-      //   imageUrl: "",
-      // });
-      toast.success("Produto criado com sucesso !");
+      await createProductMutation({
+        ...data,
+        price: Number(data.price),
+        image: data.image ?? null,
+        org: user.orgId,
+        userId: user.id,
+        imageUrl: "",
+        ingredients: selectedIngredients
+      });
+      toast.success("Produto criado com sucesso !", {toastId: 'produtoCriadoSucessoId'});
       queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
+      onClose();
     } catch (error) {
-      toast.error("Erro ao criar o produto !");
+      toast.error("Erro ao criar o produto !", {toastId: 'produtoCriadoErroId'});
     }
   };
 

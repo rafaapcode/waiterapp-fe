@@ -10,7 +10,7 @@ import { useProductsController } from "./useProductsController";
 
 const NewProductModal = lazy(() => import("../../modals/products/NewProductModal"));
 const EditProductModal = lazy(
-  () => import("../../modals/products/editProductModal/EditProductModal")
+  () => import("../../modals/products/EditProductModal")
 );
 
 interface ProductsForFe {

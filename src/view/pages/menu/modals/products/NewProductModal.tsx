@@ -15,7 +15,7 @@ function NewProductModal({ isVisible, onClose }: NewProductModalProps) {
       </Modal.Header>
 
       <Modal.Body className="my-2">
-        <ProductForm />
+        <ProductForm onClose={onClose}/>
       </Modal.Body>
     </Modal.Root>
   );
