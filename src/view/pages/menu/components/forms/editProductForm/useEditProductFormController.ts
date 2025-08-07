@@ -113,6 +113,15 @@ export const useEditProductFormController = ({
 
   const onEdit = async (data: EditProductFormData) => {
     try {
+      const keysDirtiedFields = Object.keys(dirtyFields);
+      const changedFields = Object.keys(data).reduce((acc, curr) => {
+        if(keysDirtiedFields.includes(curr)) {
+          const key = curr as keyof EditProductFormData;
+          acc[key] = data[key];
+        }
+
+        return acc;
+      }, {} as Partial<EditProductFormData>);
       // await editProductMutation({
       //   ...data,
       //   price: Number(data.price),
