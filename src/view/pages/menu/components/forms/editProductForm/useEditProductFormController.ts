@@ -121,7 +121,7 @@ export const useEditProductFormController = ({
         }
 
         return acc;
-      }, {} as Partial<EditProductFormData>);
+      }, {} as Record<string, any>);
       // await editProductMutation({
       //   ...data,
       //   price: Number(data.price),
@@ -131,7 +131,7 @@ export const useEditProductFormController = ({
       //   imageUrl: "",
       //   ingredients: selectedIngredients,
       // });
-      console.log(dirtyFields);
+      console.log(changedFields);
       toast.success("Produto editado com sucesso com sucesso !", {toastId: 'produtoEditadoSucessoId'});
       queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
       onClose();
