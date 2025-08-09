@@ -43,7 +43,6 @@ export default function EditProductForm({
     removeProductModal,
     toggleRemoveProductModal,
     orgId,
-    isDirty,
     discount
   } = useEditProductFormController({
     onClose,
@@ -204,14 +203,14 @@ export default function EditProductForm({
       <div className="col-span-2 flex justify-end">
         <button
           onClick={onSubmit}
-          disabled={isPending || !isValid || !isDirty}
+          disabled={isPending || !isValid}
           type="button"
           className="bg-[#D73035] disabled:bg-[#CCCCCC] disabled:cursor-not-allowed rounded-[48px] border-none text-white py-3 px-6"
         >
           {isPending ? (
             <LoaderCircle size={26} className="animate-spin" />
           ) : (
-            "Criar Produto"
+            "Editar Produto"
           )}
         </button>
       </div>

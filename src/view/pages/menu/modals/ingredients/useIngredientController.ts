@@ -50,7 +50,7 @@ export const useIngredientController = ({
         toastId: "ingredientCriadoSucessoId",
       });
       queryClient.invalidateQueries({
-        queryKey: ["all_ingredients"],
+         queryKey: ["get", "allingredients"],
       });
       onClose();
     } catch (error) {

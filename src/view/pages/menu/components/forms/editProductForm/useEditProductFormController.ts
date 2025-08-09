@@ -48,6 +48,7 @@ export const useEditProductFormController = ({
     []
   );
   const [selectedIngredients, setIngredients] = useState<string[]>([]);
+  const [oldIngredients, setOldIngredients] = useState<string[]>([]);
 
   const { data: allCategories, isFetching: fetchingCategories } = useQuery({
     queryKey: ["get", "categories", user.orgId],
@@ -66,7 +67,7 @@ export const useEditProductFormController = ({
     register,
     handleSubmit,
     control,
-    formState: { errors, isValid, isDirty, dirtyFields},
+    formState: { errors, isValid, dirtyFields},
     getValues
   } = useForm<EditProductFormData>({
     resolver: zodResolver(editProductschema),
@@ -76,6 +77,7 @@ export const useEditProductFormController = ({
         orgId: user.orgId,
         productId: productid,
       });
+      setOldIngredients(product?.ingredients.map(ing => ing._id) || []);
       setIngredients(product?.ingredients.map(ing => ing._id) || [])
       return {
         category: product?.category._id ?? '',
@@ -89,8 +91,9 @@ export const useEditProductFormController = ({
   });
 
   const { mutateAsync: editProductMutation, isPending } = useMutation({
-    mutationFn: async (data: MenuService.CreateProductInput) =>
+    mutationFn: async (data: MenuService.EditProductInput) =>
       await MenuService.editProduct({
+        ...data,
         userId: user.id,
         org: user.orgId,
         productId: productid
@@ -122,19 +125,31 @@ export const useEditProductFormController = ({
 
         return acc;
       }, {} as Record<string, any>);
-      // await editProductMutation({
-      //   ...data,
-      //   price: Number(data.price),
-      //   image: data.image ?? null,
-      //   org: user.orgId,
-      //   userId: user.id,
-      //   imageUrl: "",
-      //   ingredients: selectedIngredients,
-      // });
-      console.log(changedFields);
-      toast.success("Produto editado com sucesso com sucesso !", {toastId: 'produtoEditadoSucessoId'});
-      queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
+      if(oldIngredients.length !== selectedIngredients.length) {
+        changedFields.ingredients = selectedIngredients;
+      } else {
+        let isChanged = false;
+        const oldIngSet = new Set(oldIngredients);
+        const ingSet = new Set(selectedIngredients);
+        for(const ing of Array.from(oldIngSet)) {
+          if(!ingSet.has(ing)) {
+            isChanged = true;
+            break;
+          }
+        }
+        if(isChanged) {
+          changedFields.ingredients = selectedIngredients;
+        }
+      };
+      if(Object.keys(changedFields).length > 0) {
+        await editProductMutation(changedFields as MenuService.EditProductInput);
+        toast.success("Produto editado com sucesso com sucesso !", {toastId: 'produtoEditadoSucessoId'});
+        queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
+        onClose();
+        return;
+      }
       onClose();
+      return;
     } catch (error) {
       toast.error("Erro ao editar o produto !", {toastId: 'produtoEditadoErroId'});
     }
@@ -161,7 +176,6 @@ export const useEditProductFormController = ({
     toggleIngredients,
     removeProductModal,
     toggleRemoveProductModal,
-    isDirty,
     discount: getValues().discount
   };
 };
