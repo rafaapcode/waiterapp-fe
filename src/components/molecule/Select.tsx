@@ -1,6 +1,5 @@
 import * as RDXSelect from "@radix-ui/react-select";
 import { ChevronDownIcon, ChevronUpIcon, CircleX } from "lucide-react";
-import { useState } from "react";
 import { cn } from "../../utils/cn";
 
 interface SelectProps {
@@ -18,35 +17,21 @@ interface SelectProps {
 export function Select({
   className,
   error,
-  placeholder,
   options,
   onChange,
   value,
 }: SelectProps) {
-  const [selectedValue, setSelectedValue] = useState<string | undefined>(value);
-
   const handleSelect = (value: string) => {
-    setSelectedValue(value);
     onChange?.(value);
   };
 
   return (
     <div>
       <div className="relative">
-        <label
-          className={cn(
-            "absolute z-10 top-1/2 -translate-y-1/2 left-3 text-gray-700 pointer-events-none",
-            selectedValue &&
-              "text-xs left-[13px] top-2 transition-all translate-y-0"
-          )}
-        >
-          {placeholder}
-        </label>
-
         <RDXSelect.Root value={value} onValueChange={handleSelect}>
           <RDXSelect.Trigger
             className={cn(
-              "relative w-full bg-white rounded-lg border border-gray-400 px-3 h-[52px] text-gray-800 focus:border-gray-800 transition-all duration-100 outline-none text-left pt-4",
+              "relative w-full bg-white rounded-lg border border-gray-400 px-3 h-[52px] text-gray-800 focus:border-gray-800 transition-all duration-100 outline-none text-left",
               error && "!border-red-800",
               className
             )}

@@ -29,7 +29,7 @@ export const useCategoryController = () => {
   });
 
   const { data } = useQuery({
-    queryKey: ["list_all_categorie", { orgId: user.orgId }],
+    queryKey: ["list_all_categories", { orgId: user.orgId }],
     queryFn: async () => await MenuService.listAllCategories(user.orgId),
   });
 
@@ -39,7 +39,7 @@ export const useCategoryController = () => {
       toast.success("Categoria deletada com Sucesso !", {
         toastId: "categoriaDeletadaSucessoId",
       });
-      queryClient.invalidateQueries({ queryKey: ["all_categories"] });
+      queryClient.invalidateQueries({ queryKey: ["list_all_categories", { orgId: user.orgId }] });
     } catch (error) {
       toast.error("Erro ao deletar a categoria", {
         toastId: "categoriaDeletadaErroId",

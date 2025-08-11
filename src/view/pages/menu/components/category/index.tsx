@@ -33,7 +33,7 @@ function CategoriesTable() {
   } = useCategoryController();
 
   const columns = useMemo(
-    (): ColumnDef<{ _id: string; icon: string; name: string }>[] => [
+    (): ColumnDef<{ id: string; icon: string; name: string }>[] => [
       {
         accessorKey: "icon",
         header: () => (
@@ -62,14 +62,14 @@ function CategoriesTable() {
           return (
             <div className="flex gap-6">
               <button
-                onClick={() => handleEditCategorieModal(row.original)}
+                onClick={() => handleEditCategorieModal({...row.original})}
                 className="text-[#666666] hover:text-[#9e9e9e] transition-all duration-200"
               >
                 <EditIcon size={20} />
               </button>
               <button
                 disabled={isPending}
-                onClick={() => onDeleteCategorie(row.original._id)}
+                onClick={() => onDeleteCategorie(row.original.id)}
                 className="text-red-600 hover:text-red-800 transition-all duration-200"
               >
                 <Trash size={20} />

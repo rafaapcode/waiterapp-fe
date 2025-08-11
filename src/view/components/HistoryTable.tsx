@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-table";
 import { Eye, LoaderCircle, Trash } from "lucide-react";
 import { Dispatch, lazy, SetStateAction, Suspense, useMemo } from "react";
-import Pagination from "../../components/pagination/Pagination";
+import Pagination from "../../components/molecule/Pagination";
 import HistoryModalSkeleton from "../pages/history/modals/HistoryModalSkeleton";
 
 const HistoryModal = lazy(() => import("../pages/history/modals/HistoryModal"));

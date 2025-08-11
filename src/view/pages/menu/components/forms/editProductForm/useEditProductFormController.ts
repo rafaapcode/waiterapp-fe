@@ -16,10 +16,7 @@ const editProductschema = z.object({
   price: z.string().optional(),
   category: z
     .string({ required_error: "Categoria é obrigatória" })
-    .min(2, "A categoria é obrigatória").optional(),
-  discount: z
-    .boolean().optional(),
-  priceInDiscount: z.string().optional()
+    .min(2, "A categoria é obrigatória").optional()
 });
 
 type EditProductFormData = z.infer<typeof editProductschema>;
@@ -67,8 +64,7 @@ export const useEditProductFormController = ({
     register,
     handleSubmit,
     control,
-    formState: { errors, isValid, dirtyFields},
-    getValues
+    formState: { errors, isValid, dirtyFields}
   } = useForm<EditProductFormData>({
     resolver: zodResolver(editProductschema),
     mode: "onChange",
@@ -84,8 +80,6 @@ export const useEditProductFormController = ({
         description: product?.description ?? '',
         name: product?.name ?? '',
         price: `${product?.price ?? '0'}`,
-        discount: product?.discount,
-        priceInDiscount: `${product?.priceInDiscount ?? '0'}`
       };
     },
   });
@@ -125,6 +119,7 @@ export const useEditProductFormController = ({
 
         return acc;
       }, {} as Record<string, any>);
+
       if(oldIngredients.length !== selectedIngredients.length) {
         changedFields.ingredients = selectedIngredients;
       } else {
@@ -141,16 +136,24 @@ export const useEditProductFormController = ({
           changedFields.ingredients = selectedIngredients;
         }
       };
+
       if(Object.keys(changedFields).length > 0) {
-        await editProductMutation(changedFields as MenuService.EditProductInput);
+
+        await editProductMutation({
+          ...changedFields,
+          ...(changedFields.price && {price: Number(changedFields.price)})
+        } as MenuService.EditProductInput);
+
         toast.success("Produto editado com sucesso com sucesso !", {toastId: 'produtoEditadoSucessoId'});
-        queryClient.invalidateQueries({ queryKey: ["list_all_products"] });
+        queryClient.invalidateQueries({ queryKey: ["get", "all_products", { orgId: user.orgId }], });
         onClose();
         return;
       }
+
       onClose();
       return;
     } catch (error) {
+      console.log(error);
       toast.error("Erro ao editar o produto !", {toastId: 'produtoEditadoErroId'});
     }
   };
@@ -176,6 +179,5 @@ export const useEditProductFormController = ({
     toggleIngredients,
     removeProductModal,
     toggleRemoveProductModal,
-    discount: getValues().discount
   };
 };

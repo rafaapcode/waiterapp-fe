@@ -1,41 +1,24 @@
+import TableComponent from "@/components/molecule/Table";
 import createTable from "@/hooks/createTable";
 import { Users } from "@/types/Users";
-import { UseMutateAsyncFunction } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { AxiosResponse } from "axios";
 import { Edit, LoaderCircle, Trash } from "lucide-react";
 import {
-  Dispatch,
   lazy,
-  SetStateAction,
   Suspense,
   useMemo
 } from "react";
-import MenuHeader from "../MenuComponents/MenuHeader";
-import Pagination from "../molecule/Pagination";
-import TableComponent from "../molecule/Table";
+import Pagination from "../../../components/molecule/Pagination";
+import UserHeader from "./components/header";
 import EditUserModalSkeleton from "./skeletons/EditUserModalSkeleton";
 import NewUserModalSkeleton from "./skeletons/NewUserModalSkeleton";
+import { useUsersController } from "./useUsersController";
 
 const NewUserModal = lazy(() => import("./modals/NewUserModal"));
 const EditUserModal = lazy(() => import("./modals/EditUserModal"));
 
-interface UsersTableProps {
-  props: {
-    newUserModal: boolean;
-    toggleNewUserModal: () => void;
-    userToEdit: string | null;
-    setUserToEditModal: Dispatch<SetStateAction<string | null>>;
-    page: number;
-    setCurrentPage: Dispatch<SetStateAction<number>>;
-    AllUsers: {total_pages: number; users: Users[];} | undefined;
-    isPending: boolean;
-    deleteUser: UseMutateAsyncFunction<void | AxiosResponse<any, any>, Error, string, unknown>;
-  };
-}
-
-function UsersTable({props}: UsersTableProps) {
-  const { AllUsers, deleteUser, isPending, newUserModal, page, setCurrentPage, setUserToEditModal, toggleNewUserModal, userToEdit } = props;
+function UsersTable() {
+  const { allUsers, gettingAllUsers, handleDeleteUser, newUserModal, page, setCurrentPage, setUserToEditModal, toggleNewUserModal, userToEdit } = useUsersController();
 
   const columns = useMemo(
     (): ColumnDef<Users>[] => [
@@ -78,7 +61,7 @@ function UsersTable({props}: UsersTableProps) {
               </button>
               <button
                 disabled={row.original.role === "ADMIN"}
-                onClick={() => deleteUser(row.original.id)}
+                onClick={() => handleDeleteUser(row.original.id)}
                 className="text-red-600 hover:text-red-800 disabled:text-red-300 transition-all duration-200"
               >
                 <Trash size={20} />
@@ -91,7 +74,7 @@ function UsersTable({props}: UsersTableProps) {
     []
   );
 
-  const table = createTable(AllUsers?.users || [], columns);
+  const table = createTable(allUsers?.users || [], columns);
 
   return (
     <>
@@ -109,14 +92,15 @@ function UsersTable({props}: UsersTableProps) {
           />
         </Suspense>
       )}
-      <MenuHeader
-        quantity={AllUsers?.users.length ?? 0}
+
+      <UserHeader
+        quantity={allUsers?.users.length ?? 0}
         onClick={toggleNewUserModal}
         btnTitle="Novo usuário"
         title="Usuários"
       />
 
-      {isPending ? (
+      {gettingAllUsers ? (
         <div className="w-full flex justify-center items-center h-20">
           <LoaderCircle size={26} className="animate-spin" />
         </div>
@@ -127,10 +111,10 @@ function UsersTable({props}: UsersTableProps) {
             <TableComponent.Body />
           </TableComponent.Container>
           <Pagination
-            existsOrder={AllUsers?.users.length !== 0}
+            existsOrder={allUsers?.users.length !== 0}
             page={page}
             setCurrentPage={setCurrentPage}
-            totalPage={AllUsers?.total_pages || 0}
+            totalPage={allUsers?.total_pages || 0}
           />
         </TableComponent>
       )}
