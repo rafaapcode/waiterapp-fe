@@ -43,8 +43,8 @@ export class UsersService {
 
   static async getUserById(
     userId: string
-  ): Promise<UsersService.GetAllUsersOutput> {
-    const { data } = await apiclient.get<UsersService.GetAllUsersOutput>(
+  ): Promise<UsersService.GetUserOutput> {
+    const { data } = await apiclient.get<UsersService.GetUserOutput>(
       `/user/${userId}`
     );
 

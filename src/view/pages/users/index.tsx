@@ -15,7 +15,7 @@ import NewUserModalSkeleton from "./skeletons/NewUserModalSkeleton";
 import { useUsersController } from "./useUsersController";
 
 const NewUserModal = lazy(() => import("./modals/NewUserModal"));
-const EditUserModal = lazy(() => import("./modals/EditUserModal"));
+const EditUserModal = lazy(() => import("./modals/editUserModal/EditUserModal"));
 
 function UsersTable() {
   const { allUsers, gettingAllUsers, handleDeleteUser, newUserModal, page, setCurrentPage, setUserToEditModal, toggleNewUserModal, userToEdit } = useUsersController();
