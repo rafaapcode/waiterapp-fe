@@ -1,24 +1,33 @@
-import TableComponent from "@/components/molecule/Table";
+import PageHeader from "@/components/molecule/PageHeader";
 import createTable from "@/hooks/createTable";
 import { Users } from "@/types/Users";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edit, LoaderCircle, Trash } from "lucide-react";
-import {
-  lazy,
-  Suspense,
-  useMemo
-} from "react";
-import Pagination from "../../../components/molecule/Pagination";
+import { lazy, Suspense, useMemo } from "react";
+import { FiUsers } from "react-icons/fi";
 import UserHeader from "./components/header";
+import UsersTable from "./components/usersTable";
 import EditUserModalSkeleton from "./skeletons/EditUserModalSkeleton";
 import NewUserModalSkeleton from "./skeletons/NewUserModalSkeleton";
 import { useUsersController } from "./useUsersController";
 
-const NewUserModal = lazy(() => import("./modals/NewUserModal"));
-const EditUserModal = lazy(() => import("./modals/editUserModal/EditUserModal"));
+const NewUserModal = lazy(() => import("./modals/newUserModal/NewUserModal"));
+const EditUserModal = lazy(
+  () => import("./modals/editUserModal/EditUserModal")
+);
 
-function UsersTable() {
-  const { allUsers, gettingAllUsers, handleDeleteUser, newUserModal, page, setCurrentPage, setUserToEditModal, toggleNewUserModal, userToEdit } = useUsersController();
+function UsersPage() {
+  const {
+    allUsers,
+    gettingAllUsers,
+    handleDeleteUser,
+    userModalIsOpen,
+    page,
+    setCurrentPage,
+    setUserToEditModal,
+    setUserModalIsOpen,
+    userToEdit,
+  } = useUsersController();
 
   const columns = useMemo(
     (): ColumnDef<Users>[] => [
@@ -75,12 +84,13 @@ function UsersTable() {
   );
 
   const table = createTable(allUsers?.users || [], columns);
-
+  console.log('New User MOdal', userModalIsOpen)
   return (
-    <>
-      {newUserModal && (
-        <Suspense fallback={<NewUserModalSkeleton isVisible={newUserModal} />}>
-          <NewUserModal isVisible={newUserModal} onClose={toggleNewUserModal} />
+    <main className="w-full h-full pt-10 overflow-y-auto">
+      {userModalIsOpen && (
+        <Suspense fallback={<NewUserModalSkeleton isVisible={userModalIsOpen} />}>
+          {/* <NewUserModal isVisible={newUserModal} onClose={toggleNewUserModal} /> */}
+          <p>teste</p>
         </Suspense>
       )}
       {userToEdit && (
@@ -93,33 +103,35 @@ function UsersTable() {
         </Suspense>
       )}
 
-      <UserHeader
-        quantity={allUsers?.users.length ?? 0}
-        onClick={toggleNewUserModal}
-        btnTitle="Novo usuário"
+      <PageHeader
+        Icon={FiUsers}
+        subtitle="Cadastre e gerencie seus usuários"
         title="Usuários"
       />
+      <section className="w-full mt-16">
+        <UserHeader
+          quantity={allUsers?.users.length ?? 0}
+          onClick={() => setUserModalIsOpen(true)}
+          btnTitle="Novo usuário"
+          title="Usuários"
+        />
 
-      {gettingAllUsers ? (
-        <div className="w-full flex justify-center items-center h-20">
-          <LoaderCircle size={26} className="animate-spin" />
-        </div>
-      ) : (
-        <TableComponent table={table}>
-          <TableComponent.Container>
-            <TableComponent.Header />
-            <TableComponent.Body />
-          </TableComponent.Container>
-          <Pagination
+        {gettingAllUsers ? (
+          <div className="w-full flex justify-center items-center h-20">
+            <LoaderCircle size={26} className="animate-spin" />
+          </div>
+        ) : (
+          <UsersTable
             existsOrder={allUsers?.users.length !== 0}
             page={page}
             setCurrentPage={setCurrentPage}
+            table={table}
             totalPage={allUsers?.total_pages || 0}
           />
-        </TableComponent>
-      )}
-    </>
+        )}
+      </section>
+    </main>
   );
 }
 
-export default UsersTable;
+export default UsersPage;

@@ -19,11 +19,11 @@ export class UsersService {
   }
 
   static async createUser(
-    BoardsControllerParams: UsersService.CreateUserInput
+    body: UsersService.CreateUserInput
   ): Promise<UsersService.CreateUserOutput> {
     const { data } = await apiclient.post<UsersService.CreateUserOutput>(
       `/user`,
-      BoardsControllerParams
+      body
     );
 
     return data;

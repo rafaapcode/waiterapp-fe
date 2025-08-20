@@ -1,18 +1,15 @@
 import { UsersService } from "@/services/api/users";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 export const useUsersController = () => {
   const queryClient = useQueryClient();
-  const [newUserModal, setNewUserModal] = useState<boolean>(false);
+  const [userModalIsOpen, setUserModalIsOpen] = useState<boolean>(false);
   const [page, setCurrentPage] = useState<number>(1);
   const [userToEdit, setUserToEditModal] = useState<string | null>(null);
 
-  const toggleNewUserModal = useCallback(
-    () => setNewUserModal((prev) => !prev),
-    []
-  );
+  // const toggleUserModal = () => setUserModalIsOpen(true);
 
   const { data: allUsers, isPending: gettingAllUsers } = useQuery({
     queryKey: ["get_all_users", { page }],
@@ -47,11 +44,11 @@ export const useUsersController = () => {
     handleDeleteUser,
     deletingUser,
     gettingAllUsers,
-    newUserModal,
+    userModalIsOpen,
     page,
     setCurrentPage,
     setUserToEditModal,
-    toggleNewUserModal,
+    setUserModalIsOpen,
     userToEdit,
   };
 };
