@@ -1,13 +1,13 @@
 # Waiter App Front End
 
-## O que é o projeto
-- WAITERAPP é basicamente um aplicativo para ajudar restaurantes a gerenciar os pedidos de cada mesa, oferecendo uma interface administrativa para os cozinheiros e administradores e uma interface para os garçons e clientes conseguirem ver o cardápio e realiarem pedidos.
+## Project Overview
 
-- Esse repositório é onde está o código do FRONT-END desse projeto que ainda não está finalizado , porém está em andamento.
+- WAITERAPP is essentially an application designed to help restaurants manage orders for each table, offering an administrative interface for chefs and managers, and an interface for waiters and customers to view the menu and place orders.
 
-## Tecnologias
+- This repository contains the FRONT-END code for this project, which is still in progress and not yet complete.
+
+## Technologies
 - React
 - Websockets
 - ShadCnUi
 - Tailwind
-
